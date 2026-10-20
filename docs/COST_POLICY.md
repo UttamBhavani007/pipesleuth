@@ -10,7 +10,7 @@ The project must use **no paid services at any stage**. It runs locally with fre
 - Free local libraries and a loopback Ollama runtime when Stage 7 is reached.
 - FastAPI and a locally served UI in their planned stages.
 - Local tests, logs, result files, and screenshots.
-- A GitHub Free public repository is preferred for the portfolio, subject to actual user authorization and current applicable terms. This document does not mean a repository has been created or published.
+- The public GitHub repository `UttamBhavani007/pipesleuth`. The [GitHub Free plan](https://docs.github.com/en/get-started/learning-about-github/githubs-plans#github-free-for-personal-accounts) supports public repositories; checked on 20 October 2026. No paid add-on, hosted build, storage or compute service is enabled by this project.
 
 Do not enable GitHub Actions or another hosted CI service until its current terms and the intended configuration have been checked and verified to fit this policy. Local checks are sufficient for the staged build. Docker packaging is optional and requires a free, appropriately licensed local configuration and an actual validation run before claiming support.
 

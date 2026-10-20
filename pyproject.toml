@@ -12,5 +12,8 @@ license = {file = "LICENSE"}
 authors = [{name = "Uttam Bhavani"}]
 dependencies = []
 
+[project.scripts]
+pipesleuth = "pipesleuth.cli:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -61,6 +61,6 @@ Keep a short dated log with:
 
 Do not claim production readiness, learning gains, human review, measured reliability, or successful repairs without corresponding evidence.
 
-## Proposed work time
+## Work time
 
-The intended follow-up time is **19:30 Europe/Berlin**, daily from **21 October through 2 November**. This is a **proposal, not an active schedule** until automation creation and its returned configuration have been verified. Local execution requires the desktop app and host to be available and awake. A missed run follows the delivery rules above; it does not justify fabricated commits.
+The local heartbeat `build-pipesleuth-daily-milestones` is active for **19:30 Europe/Berlin**, daily from **21 October through 2 November 2026**. Its saved rule covers 13 future sessions and preserves the local time across the October DST change. Local execution requires the desktop app and host to be available and awake. A missed run follows the delivery rules above; it does not justify fabricated commits. Stop at the 2 November cutoff and report any unfinished scope accurately.
