@@ -1,4 +1,4 @@
-"""Source-only commands for authoring reproducible synthetic incidents."""
+"""Generate synthetic inputs and run or inspect the local order pipeline."""
 
 from __future__ import annotations
 
@@ -6,16 +6,18 @@ import argparse
 import json
 import sys
 from collections.abc import Sequence
+from pathlib import Path
 
 from pipesleuth import __version__
 from pipesleuth.domain import IncidentKind
 from pipesleuth.fixtures import generate_fixture
+from pipesleuth.pipeline import SandboxPipeline
 
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="pipesleuth",
-        description="PipeSleuth day-1 fixture tools. No pipeline or AI model runs yet.",
+        description="Generate synthetic orders and run a local SQLite pipeline.",
     )
     parser.add_argument("--version", action="version", version=__version__)
     commands = parser.add_subparsers(dest="command", required=True)
@@ -29,6 +31,18 @@ def _parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Trusted fixture authoring only: include labels and expected results",
     )
+    pipeline = commands.add_parser("pipeline", help="Run or inspect an isolated local pipeline")
+    operations = pipeline.add_subparsers(dest="operation", required=True)
+    run = operations.add_parser("run", help="Load clean synthetic orders into a new sandbox")
+    run.add_argument("--seed", type=int, default=42, help="Unsigned 32-bit seed (default: 42)")
+    run.add_argument("--rows", type=int, default=12, help="Clean order count, 1–10000 (default: 12)")
+    show = operations.add_parser("show", help="Read an existing pipeline run without changing it")
+    show.add_argument("run_id", help="Run identifier returned by pipeline run")
+    for operation in (run, show):
+        operation.add_argument(
+            "--data-dir", type=Path, default=Path("var/sandboxes"),
+            help="Local sandbox directory (default: var/sandboxes)",
+        )
     return parser
 
 
@@ -42,7 +56,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             "stage": "fixture_foundation",
             "scenarios": [kind.value for kind in IncidentKind],
         }
-    else:
+    elif args.command == "fixture":
         try:
             fixture = generate_fixture(args.scenario, seed=args.seed, row_count=args.rows)
         except (ValueError, TypeError) as exc:
@@ -55,5 +69,16 @@ def main(argv: Sequence[str] | None = None) -> int:
             payload = fixture.to_authoring_dict()
         else:
             payload = fixture.to_source_payload()
+    else:
+        try:
+            pipeline = SandboxPipeline(args.data_dir)
+            if args.operation == "run":
+                source = generate_fixture("healthy", seed=args.seed, row_count=args.rows)
+                run = pipeline.create(source.to_source_payload())
+                payload = pipeline.run(run.run_id).to_dict()
+            else:
+                payload = pipeline.inspect(args.run_id).to_dict()
+        except (ValueError, OSError) as exc:
+            parser.error(str(exc))
     print(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False, allow_nan=False))
-    return 0
+    return 1 if payload.get("status") == "failed" else 0

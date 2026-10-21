@@ -33,5 +33,5 @@ Do not continue the schedule beyond 2 November without a new user request.
   setup and usage, tests, brief roadmap, and license. Put scheduling, research
   design and internal build details in docs/ rather than the README.
 - Capture screenshots only once the actual application runs. Record untested
-  integrations and missing dependencies plainly. The day-1 state is a fixture
-  foundation, not a working investigation system.
+  integrations and missing dependencies plainly. Fixtures and a clean SQLite
+  pipeline are available; the AI investigation system remains a later stage.

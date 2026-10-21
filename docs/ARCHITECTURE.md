@@ -2,7 +2,7 @@
 
 ## Status and purpose
 
-PipeSleuth is a staged local portfolio project for investigating reproducible data-pipeline incidents. Stage 1 contains the scope, scaffold, incident definitions, and seeded fixture work. The components below are the **planned architecture**, introduced and validated in the order described in [DELIVERY_PLAN.md](DELIVERY_PLAN.md).
+PipeSleuth is a staged local portfolio project for investigating reproducible data-pipeline incidents. Stage 2 adds a clean-order SQLite pipeline to the fixture foundation. Each run stores source JSON and a separate warehouse database under a neutral identifier. The inspection command reads existing state without modifying it. These are local directories with path guards, not an operating-system security sandbox. The remaining components below are the **planned architecture**, introduced in the order described in [DELIVERY_PLAN.md](DELIVERY_PLAN.md).
 
 The initial incident families are schema drift, duplicate records, and invalid or missing data. Each incident runs in an isolated SQLite sandbox. The investigator explains evidence and proposes a bounded repair; successful recovery is established by independent database checks.
 

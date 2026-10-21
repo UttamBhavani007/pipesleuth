@@ -49,11 +49,11 @@ The public GitHub repository was created as
 `UttamBhavani007/pipesleuth`. Commit `e66fd9e` establishes the project; the
 second day-1 commit adds the tested fixture tools. Publication uses the
 owner's existing authenticated CLI and verified Git identity.
-The initial public upload was blocked by automatic approval review pending
-explicit user approval of this repository's code/tests/docs/license payload
-and future scheduled public pushes. Both commits remain local at this point;
-the empty public repository is not evidence of published implementation.
-The heartbeat is restricted to local work until that approval arrives.
+The initial public upload was blocked pending explicit approval. The owner
+then approved the code/tests/docs/license payload and future scheduled public
+pushes in this chat. Both day-1 commits were published; GitHub confirmed main
+at `a22aa1e11a33ce9031e2a7877b998cce29a5c211` with the owner's attribution.
+The earlier publication blocker is resolved.
 
 The `build-pipesleuth-daily-milestones` local heartbeat is active for
 **19:30 Europe/Berlin on 21 October–2 November 2026**. The 13 future dates were
@@ -70,3 +70,65 @@ evaluation methods remain in docs/.
 
 Day 2 implements an isolated local SQLite ETL sandbox and healthy pipeline
 execution. Incident execution and the investigator remain later milestones.
+
+## 2026-10-21 — day 2
+
+Implemented the next planned stage only: a clean-order SQLite ETL with isolated
+run directories. No model, paid service, new dependency, or external runtime
+service was introduced.
+
+### Pipeline core
+
+- Each run has a neutral UUID, its own `source.json`, and `warehouse.sqlite3`.
+  Only schema and observed rows enter the source file; authoring oracles and
+  scenario labels are rejected from the input envelope.
+- Run state is stored in SQLite. Starting a new run claims it atomically;
+  validated orders and the successful result commit together. Invalid input
+  or a failed insert leaves the warehouse empty and records a failed result.
+- Source bytes are bounded and checked against their saved SHA-256 before
+  loading. File and identifier guards reject traversal and symlinks; these
+  local directories are not an operating-system security sandbox.
+- Currency totals use exact Python integers, including when the combined
+  total exceeds one SQLite signed integer. Individual stored amounts must fit
+  SQLite's signed 64-bit range.
+
+### CLI and documentation
+
+Added `pipeline run --seed 42 --rows 12` and `pipeline show RUN_ID`, with an
+optional `--data-dir PATH`. The README keeps setup and usage short and clearly
+distinguishes clean loading from future fault handling. Inspection uses a
+read-only connection and never creates a missing database or run.
+
+### Verification
+
+- `PYTHONPATH=src python3 -m unittest discover -s tests -v`: **50 tests pass**
+  on Python 3.13.7. A separate reviewing agent ran the full suite and added
+  independent integration checks.
+- Exact three-order checks compare all five warehouse fields with literal
+  expected records. Additional independent checks cover multi-currency rows,
+  zero amounts, large integer totals, and oversized persisted input.
+- A separate SQLite connection inspected a live seed-42, 12-order run:
+  12 rows, 12 unique order IDs, and **73,525 EUR cents**. The first record also
+  matched its known customer, amount, currency, and UTC timestamp.
+- Failure checks cover late invalid records, duplicate-key rollback, source
+  tampering, rejected paths/symlinks, concurrent starts, and repeated-run
+  rejection. A repeated run is rejected rather than silently loading twice.
+- The CLI was exercised through subprocesses, including read-only inspection,
+  separate runs, invalid arguments, and a data directory containing spaces.
+
+These are software and database checks, not AI diagnosis or recovery results.
+Process-interruption recovery, idempotent retries, fault remediation, and the
+AI investigator are not implemented in this stage.
+
+### Next stage
+
+Day 3 (22 October): execute reproducible schema-drift and duplicate incidents,
+preserve useful failure evidence, and introduce verified idempotent loading.
+Keep the target of 1–2 meaningful commits for that day.
+
+### Commit boundaries
+
+`03ecb24` adds the pipeline core and its direct/independent database checks.
+The second day-2 commit adds the CLI, subprocess checks, and usage/status
+documentation. Both changes were made on 21 October; no future stage was
+implemented or committed in advance.
