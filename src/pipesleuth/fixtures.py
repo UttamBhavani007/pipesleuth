@@ -1,7 +1,7 @@
 """Deterministic synthetic inputs, with authoring truth kept out of evidence.
 
-No pipeline or investigator exists yet. The oracle describes the intended
-canonical orders independently of each corrupted source representation.
+These fixtures do not execute the pipeline or investigator. The oracle
+describes canonical orders independently of each corrupted representation.
 """
 
 from __future__ import annotations
