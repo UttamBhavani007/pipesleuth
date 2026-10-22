@@ -4,6 +4,15 @@
 
 PipeSleuth is a staged local portfolio project for investigating reproducible data-pipeline incidents. Stage 2 adds a clean-order SQLite pipeline to the fixture foundation. Each run stores source JSON and a separate warehouse database under a neutral identifier. The inspection command reads existing state without modifying it. These are local directories with path guards, not an operating-system security sandbox. The remaining components below are the **planned architecture**, introduced in the order described in [DELIVERY_PLAN.md](DELIVERY_PLAN.md).
 
+Stage 3 adds events derived from observed inputs and validation, including schema
+differences and repeated order IDs. Duplicate policy is selected when a run is
+created: reject repeated IDs, or skip only identical canonical orders. Conflicting
+orders always fail. A successful run can be replayed only after checking its source
+fingerprint and exact warehouse contents; replay leaves the database unchanged.
+Failed or interrupted runs cannot be restarted yet. Older databases can still be
+inspected; missing historical event data is returned as empty, without fabrication
+or a write-time migration during inspection.
+
 The initial incident families are schema drift, duplicate records, and invalid or missing data. Each incident runs in an isolated SQLite sandbox. The investigator explains evidence and proposes a bounded repair; successful recovery is established by independent database checks.
 
 ## Planned flow

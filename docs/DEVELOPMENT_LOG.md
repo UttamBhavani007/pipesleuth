@@ -132,3 +132,69 @@ Keep the target of 1–2 meaningful commits for that day.
 The second day-2 commit adds the CLI, subprocess checks, and usage/status
 documentation. Both changes were made on 21 October; no future stage was
 implemented or committed in advance.
+
+## 2026-10-22 — day 3
+
+Completed reproducible schema-change and duplicate incidents, observed event
+logs, and guarded successful replay. Today's work began after the owner asked
+for status; no scheduled day-3 completion was assumed from yesterday's output.
+No model, new dependency, paid service, quarantine, or repair executor was added.
+
+### Incident behavior
+
+- `pipeline run --scenario schema_drift` records a failed load with the observed
+  and required schema, missing `amount_minor`, and extra `gross_total_minor`.
+  Raw source remains available and no warehouse rows are loaded.
+- `pipeline run --scenario duplicate_ingestion` rejects repeated order IDs by
+  default. `--deduplicate` selects a creation-time `skip_identical` policy;
+  it skips only equal canonical orders. A repeated ID with any conflicting
+  field fails the whole load rather than selecting a record.
+- New runs persist source-received, load-started, and load-result events in
+  SQLite. Diagnostics come from observed inputs and validation, with no
+  fixture labels, seed, expected orders, or evaluator oracle in runtime events.
+- `pipeline events RUN_ID` reads a bounded chronological event list. Legacy
+  day-2 databases return an empty history without inventing events or writing
+  a migration during inspection.
+
+### Replay and integrity
+
+`pipeline rerun RUN_ID` verifies an already successful run against its source
+SHA-256, all five warehouse fields, the exact row set, and its duplicate count
+before returning the existing result. It does not insert orders or update the
+database, events, timestamps, or clock. Changed source or warehouse data is
+rejected while preserving the previous state. Failed/interrupted runs still
+cannot be restarted; process recovery and approved repairs remain later work.
+
+### Verification
+
+- `PYTHONPATH=src python3 -W error::ResourceWarning -m unittest discover -s
+  tests -q`: **71 tests pass** on Python 3.13.7 with no resource warnings.
+  Direct, subprocess, and independent SQLite checks cover the changed behavior.
+- Live seed-42 smoke: healthy input loads 12 unique orders totaling 73,525 EUR
+  cents; schema and default duplicate failures load zero orders. The explicit
+  identical-retry policy skips 3 repeated rows and loads the same 12 exact
+  canonical orders and currency total as the healthy control.
+- Replaying successful smoke runs returns the same summary, database bytes,
+  and event list. A same-count/same-total amount swap is rejected by independent
+  integration tests, as are source-byte changes and conflicting retry fields.
+- A database trigger rejecting the third insert proves that already inserted
+  rows roll back, while an observed failure event remains persisted.
+- Older database inspection/replay, missing/extra order detection, bounded
+  event reads, and failed/interrupted run rejection are covered. The README
+  retains simple purpose, setup, usage, tests, and roadmap sections.
+
+These are implementation and data-integrity results, not AI diagnosis accuracy
+or autonomous recovery results. No later stage was implemented in advance.
+
+### Next stage
+
+Day 4 (23 October): validate invalid records, quarantine rejected rows with
+reasons, and independently inspect exact warehouse and quarantine contents.
+Today's two commits exhaust the 22 October target; a later duplicate wake-up
+must not advance to day 4 on the same date.
+
+### Commit boundaries
+
+`8210a28` adds the incident events, duplicate policies, guarded replay, and
+direct/independent database checks. The second day-3 commit exposes those
+features through the CLI and updates usage documentation with subprocess checks.

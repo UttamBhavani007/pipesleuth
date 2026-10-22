@@ -18,9 +18,9 @@ checks the database afterward to confirm the result.
 ## Current features
 
 - Reproducible order data with healthy, schema-change, duplicate, and invalid-record scenarios.
-- Validated order records with integer amounts and UTC timestamps.
-- A command-line tool for generating incident inputs.
-- Isolated SQLite runs that load clean orders and report row counts and totals.
+- Isolated SQLite runs with exact integer amounts, row counts, and currency totals.
+- Logged schema-change and duplicate-record failures.
+- Optional skipping of identical retry records, with safe verification of completed runs.
 
 ## Getting started
 
@@ -31,29 +31,37 @@ for the current version.
 git clone https://github.com/UttamBhavani007/pipesleuth.git
 cd pipesleuth
 
-# List the available scenarios
-PYTHONPATH=src python3 -m pipesleuth scenarios
-
 # Load clean orders into a new local database
 PYTHONPATH=src python3 -m pipesleuth pipeline run --seed 42 --rows 12
 
 # Inspect a run using the run_id printed by the command above
 PYTHONPATH=src python3 -m pipesleuth pipeline show RUN_ID
 
-# Generate a small input with a renamed amount column
-PYTHONPATH=src python3 -m pipesleuth fixture --scenario schema_drift --seed 42 --rows 3
+# Read its events, or verify it again without inserting rows
+PYTHONPATH=src python3 -m pipesleuth pipeline events RUN_ID
+PYTHONPATH=src python3 -m pipesleuth pipeline rerun RUN_ID
 ```
 
-The fixture command prints JSON. Use the same scenario and seed to reproduce
-an input. `--include-oracle` adds expected results for fixture authors; keep
-that output separate from investigator inputs.
+To try the two supported incident inputs:
+
+```sh
+# Deliberately fail on a renamed amount column; inspect the returned run_id
+PYTHONPATH=src python3 -m pipesleuth pipeline run --scenario schema_drift
+
+# Load a retry batch while skipping identical repeated orders
+PYTHONPATH=src python3 -m pipesleuth pipeline run --scenario duplicate_ingestion --deduplicate
+```
+
+Without `--deduplicate`, duplicate IDs fail the load. Conflicting records with
+the same ID always fail. Replaying a completed run checks the source and stored
+rows first; it rejects changed data instead of silently reloading it.
 
 Pipeline files are saved under `var/sandboxes/RUN_ID/`. Each run has its own
-`source.json` and `warehouse.sqlite3`. Use `--data-dir PATH` with either pipeline
+`source.json` and `warehouse.sqlite3`. Use `--data-dir PATH` with any pipeline
 command to choose another local directory.
 
-The pipeline currently loads clean data only. Fault handling is the next stage;
-the other scenarios are available as generated inputs.
+Automatic schema repair, invalid-record quarantine, and AI investigation are
+planned. No AI model runs in the current version.
 
 ## Tests
 
@@ -63,7 +71,7 @@ PYTHONPATH=src python3 -m unittest discover -s tests -v
 
 ## Roadmap
 
-- Fault handling and read-only tools for inspecting failures.
+- Invalid-record quarantine and read-only evidence tools.
 - A local AI investigator with saved progress and limited tool access.
 - Repair approval, database verification, and a simple web interface.
 - Evaluation against a checklist and a single model call.

@@ -15,7 +15,7 @@ Build a local data-pipeline incident investigator over **14 actual days, 20 Octo
 - Use real commit dates. If a session is missed or a stage is blocked, record the delay and continue from it. Do not backdate, fabricate progress, or silently compress unfinished work into later days.
 - Each stage must pass its acceptance check before being marked complete. Record commands and observed results; distinguish a skipped check from a passed check.
 - Use local execution and free software only. Follow [COST_POLICY.md](COST_POLICY.md); never add a paid or cloud fallback.
-- Stage 2 is the current delivery boundary: isolated SQLite loading of clean orders, on top of the scope, scaffold and seeded fixtures. Fault handling, model integration, agent, repair engine, API, and UI belong to later stages.
+- Stage 3 is the current delivery boundary: SQLite runs with reproducible schema/duplicate failures, observed event logs, optional exact-retry deduplication, and guarded successful replay. Quarantine, model integration, agent, repair engine, API, and UI belong to later stages.
 
 ## Stages and acceptance checks
 

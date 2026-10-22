@@ -33,12 +33,25 @@ def _parser() -> argparse.ArgumentParser:
     )
     pipeline = commands.add_parser("pipeline", help="Run or inspect an isolated local pipeline")
     operations = pipeline.add_subparsers(dest="operation", required=True)
-    run = operations.add_parser("run", help="Load clean synthetic orders into a new sandbox")
+    run = operations.add_parser("run", help="Run a synthetic order batch in a new sandbox")
     run.add_argument("--seed", type=int, default=42, help="Unsigned 32-bit seed (default: 42)")
     run.add_argument("--rows", type=int, default=12, help="Clean order count, 1–10000 (default: 12)")
+    run.add_argument(
+        "--scenario", choices=["healthy", "schema_drift", "duplicate_ingestion"],
+        default="healthy", help="Synthetic input to execute (default: healthy)",
+    )
+    run.add_argument(
+        "--deduplicate", action="store_true",
+        help="Skip identical repeated orders; conflicting records still fail",
+    )
     show = operations.add_parser("show", help="Read an existing pipeline run without changing it")
     show.add_argument("run_id", help="Run identifier returned by pipeline run")
-    for operation in (run, show):
+    rerun = operations.add_parser("rerun", help="Verify a successful run without inserting rows again")
+    rerun.add_argument("run_id", help="Previously successful run to verify")
+    events = operations.add_parser("events", help="Read the observed events for a pipeline run")
+    events.add_argument("run_id", help="Run identifier returned by pipeline run")
+    events.add_argument("--limit", type=int, default=100, help="Maximum events, 1–1000 (default: 100)")
+    for operation in (run, show, rerun, events):
         operation.add_argument(
             "--data-dir", type=Path, default=Path("var/sandboxes"),
             help="Local sandbox directory (default: var/sandboxes)",
@@ -73,9 +86,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         try:
             pipeline = SandboxPipeline(args.data_dir)
             if args.operation == "run":
-                source = generate_fixture("healthy", seed=args.seed, row_count=args.rows)
-                run = pipeline.create(source.to_source_payload())
+                source = generate_fixture(args.scenario, seed=args.seed, row_count=args.rows)
+                run = pipeline.create(
+                    source.to_source_payload(),
+                    duplicate_policy="skip_identical" if args.deduplicate else "reject",
+                )
                 payload = pipeline.run(run.run_id).to_dict()
+            elif args.operation == "rerun":
+                payload = pipeline.run(args.run_id).to_dict()
+            elif args.operation == "events":
+                payload = {"run_id": args.run_id, "events": pipeline.events(args.run_id, limit=args.limit)}
             else:
                 payload = pipeline.inspect(args.run_id).to_dict()
         except (ValueError, OSError) as exc:
