@@ -1,5 +1,6 @@
 """Independent SQLite checks for currency and persisted-source boundaries."""
 
+from contextlib import closing
 from pathlib import Path
 import sqlite3
 import tempfile
@@ -28,7 +29,7 @@ class PipelineIntegrationTests(unittest.TestCase):
 
     def read_rows_independently(self, run_id):
         database = self.pipeline.data_dir / run_id / "warehouse.sqlite3"
-        with sqlite3.connect(database.as_uri() + "?mode=ro", uri=True) as connection:
+        with closing(sqlite3.connect(database.as_uri() + "?mode=ro", uri=True)) as connection:
             return connection.execute(
                 "SELECT order_id, customer_id, amount_minor, currency, created_at "
                 "FROM warehouse_orders ORDER BY order_id"

@@ -27,10 +27,12 @@ from pipesleuth.domain import ORDER_COLUMNS, Order, OrderValidationError
 
 MAX_SOURCE_BYTES = 2 * 1024 * 1024
 MAX_SOURCE_ROWS = 10_000
+MAX_EVENT_LIMIT = 1000
 SQLITE_MAX_INTEGER = 2**63 - 1
 _RUN_ID = re.compile(r"[0-9a-f]{32}")
 _SHA256 = re.compile(r"[0-9a-f]{64}")
 _STATUSES = {"new", "running", "succeeded", "failed"}
+_DUPLICATE_POLICIES = {"reject", "skip_identical"}
 
 
 class PipelineError(ValueError):
@@ -39,6 +41,15 @@ class PipelineError(ValueError):
 
 class PipelineStateError(PipelineError):
     """A run cannot be started from its current state."""
+
+
+class _LoadFailure(PipelineError):
+    """An observed load failure with a machine-readable diagnostic."""
+
+    def __init__(self, code: str, message: str, **details: object) -> None:
+        super().__init__(message)
+        self.code = code
+        self.details = details
 
 
 @dataclass(frozen=True, slots=True)
@@ -52,6 +63,8 @@ class RunSummary:
     started_at: str | None = None
     finished_at: str | None = None
     error: str | None = None
+    duplicate_policy: str = "reject"
+    duplicates_skipped: int = 0
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "totals_minor", MappingProxyType(dict(self.totals_minor)))
@@ -66,6 +79,8 @@ class RunSummary:
             "created_at": self.created_at,
             "started_at": self.started_at,
             "finished_at": self.finished_at,
+            "duplicate_policy": self.duplicate_policy,
+            "duplicates_skipped": self.duplicates_skipped,
         }
         if self.error is not None:
             result["error"] = self.error
@@ -126,7 +141,7 @@ def _encode_source(payload: Mapping[str, object]) -> bytes:
 
 
 class SandboxPipeline:
-    """Create, execute once, and inspect isolated source-to-SQLite runs."""
+    """Create and inspect isolated ETL runs; verify successful replays."""
 
     def __init__(self, data_dir: Path | str) -> None:
         requested = Path(data_dir).expanduser().absolute()
@@ -170,7 +185,11 @@ class SandboxPipeline:
         except sqlite3.Error as exc:
             raise PipelineError(f"cannot open run database: {exc}") from exc
 
-    def create(self, source_payload: Mapping[str, object]) -> RunSummary:
+    def create(
+        self, source_payload: Mapping[str, object], *, duplicate_policy: str = "reject"
+    ) -> RunSummary:
+        if not isinstance(duplicate_policy, str) or duplicate_policy not in _DUPLICATE_POLICIES:
+            raise PipelineError("duplicate_policy must be reject or skip_identical")
         encoded = _encode_source(source_payload)
         digest = hashlib.sha256(encoded).hexdigest()
         _check_no_symlinks(self.data_dir)
@@ -183,7 +202,9 @@ class SandboxPipeline:
                 connection.execute(
                     "CREATE TABLE pipeline_run ("
                     "run_id TEXT PRIMARY KEY, status TEXT NOT NULL, source_sha256 TEXT NOT NULL, "
-                    "created_at TEXT NOT NULL, started_at TEXT, finished_at TEXT, error TEXT)"
+                    "created_at TEXT NOT NULL, started_at TEXT, finished_at TEXT, error TEXT, "
+                    "duplicate_policy TEXT NOT NULL DEFAULT 'reject', "
+                    "duplicates_skipped INTEGER NOT NULL DEFAULT 0)"
                 )
                 connection.execute(
                     "CREATE TABLE warehouse_orders (order_id TEXT PRIMARY KEY NOT NULL, "
@@ -191,8 +212,19 @@ class SandboxPipeline:
                     "currency TEXT NOT NULL, created_at TEXT NOT NULL)"
                 )
                 connection.execute(
-                    "INSERT INTO pipeline_run (run_id, status, source_sha256, created_at) VALUES (?, ?, ?, ?)",
-                    (directory.name, "new", digest, _now()),
+                    "CREATE TABLE pipeline_events (event_id INTEGER PRIMARY KEY, "
+                    "event_type TEXT NOT NULL, created_at TEXT NOT NULL, details_json TEXT NOT NULL)"
+                )
+                connection.execute(
+                    "INSERT INTO pipeline_run (run_id, status, source_sha256, created_at, duplicate_policy) "
+                    "VALUES (?, ?, ?, ?, ?)",
+                    (directory.name, "new", digest, _now(), duplicate_policy),
+                )
+                # Observe the serialized copy, not mutable caller-owned objects.
+                observed = json.loads(encoded)
+                self._record_event(
+                    connection, "source_received", observed_schema=observed["schema"],
+                    required_schema=list(ORDER_COLUMNS), raw_row_count=len(observed["rows"]),
                 )
         except (OSError, sqlite3.Error) as exc:
             raise PipelineError(f"cannot create pipeline run: {exc}") from exc
@@ -202,34 +234,92 @@ class SandboxPipeline:
         self._source_path(run_id)
         connection = self._connect(run_id, "ro")
         try:
-            metadata = connection.execute("SELECT * FROM pipeline_run").fetchall()
-            if len(metadata) != 1 or metadata[0]["run_id"] != run_id:
-                raise PipelineError("run database metadata does not match run_id")
-            record = metadata[0]
-            if record["status"] not in _STATUSES or _SHA256.fullmatch(record["source_sha256"]) is None:
-                raise PipelineError("run database contains invalid status or source checksum")
-            totals: dict[str, int] = {}
-            rows_loaded = 0
-            for row in connection.execute("SELECT currency, amount_minor FROM warehouse_orders"):
-                totals[row["currency"]] = totals.get(row["currency"], 0) + row["amount_minor"]
-                rows_loaded += 1
-            return RunSummary(
-                run_id=run_id,
-                status=record["status"],
-                rows_loaded=rows_loaded,
-                totals_minor=totals,
-                source_sha256=record["source_sha256"],
-                created_at=record["created_at"],
-                started_at=record["started_at"],
-                finished_at=record["finished_at"],
-                error=record["error"],
-            )
+            connection.execute("BEGIN")
+            return self._summary(connection, run_id)
         except sqlite3.Error as exc:
             raise PipelineError(f"cannot inspect run database: {exc}") from exc
         finally:
             connection.close()
 
-    def _read_orders(self, source_path: Path, expected_digest: str) -> list[Order]:
+    @staticmethod
+    def _metadata(connection: sqlite3.Connection, run_id: str) -> dict[str, object]:
+        records = connection.execute("SELECT * FROM pipeline_run").fetchall()
+        if len(records) != 1 or records[0]["run_id"] != run_id:
+            raise PipelineError("run database metadata does not match run_id")
+        record = dict(records[0])
+        record.setdefault("duplicate_policy", "reject")
+        record.setdefault("duplicates_skipped", 0)
+        if (
+            record["status"] not in _STATUSES
+            or not isinstance(record["source_sha256"], str)
+            or _SHA256.fullmatch(record["source_sha256"]) is None
+            or record["duplicate_policy"] not in _DUPLICATE_POLICIES
+            or type(record["duplicates_skipped"]) is not int
+            or record["duplicates_skipped"] < 0
+        ):
+            raise PipelineError("run database contains invalid status, checksum or duplicate policy metadata")
+        return record
+
+    def _summary(self, connection: sqlite3.Connection, run_id: str) -> RunSummary:
+        record = self._metadata(connection, run_id)
+        totals: dict[str, int] = {}
+        rows_loaded = 0
+        for row in connection.execute("SELECT currency, amount_minor FROM warehouse_orders"):
+            totals[row["currency"]] = totals.get(row["currency"], 0) + row["amount_minor"]
+            rows_loaded += 1
+        return RunSummary(
+            run_id=run_id, status=record["status"], rows_loaded=rows_loaded, totals_minor=totals,
+            source_sha256=record["source_sha256"], created_at=record["created_at"],
+            started_at=record["started_at"], finished_at=record["finished_at"], error=record["error"],
+            duplicate_policy=record["duplicate_policy"], duplicates_skipped=record["duplicates_skipped"],
+        )
+
+    @staticmethod
+    def _has_events(connection: sqlite3.Connection) -> bool:
+        return connection.execute(
+            "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?", ("pipeline_events",)
+        ).fetchone() is not None
+
+    def _record_event(self, connection: sqlite3.Connection, event_type: str, **details: object) -> None:
+        # Legacy databases remain readable without implicit schema migrations.
+        if self._has_events(connection):
+            connection.execute(
+                "INSERT INTO pipeline_events (event_type, created_at, details_json) VALUES (?, ?, ?)",
+                (event_type, _now(), json.dumps(details, separators=(",", ":"), allow_nan=False)),
+            )
+
+    def events(self, run_id: str, limit: int = 100) -> list[dict[str, object]]:
+        """Read the first bounded set of persisted events in chronological order.
+
+        Legacy runs without this table have no recorded events; return []
+        rather than manufacturing a history or migrating their databases.
+        """
+
+        if type(limit) is not int or not 1 <= limit <= MAX_EVENT_LIMIT:
+            raise PipelineError(f"event limit must be an integer between 1 and {MAX_EVENT_LIMIT}")
+        self._source_path(run_id)
+        connection = self._connect(run_id, "ro")
+        try:
+            connection.execute("BEGIN")
+            self._metadata(connection, run_id)
+            if not self._has_events(connection):
+                return []
+            return [
+                {"event_id": row["event_id"], "event_type": row["event_type"],
+                 "created_at": row["created_at"], "details": json.loads(row["details_json"])}
+                for row in connection.execute(
+                    "SELECT event_id, event_type, created_at, details_json "
+                    "FROM pipeline_events ORDER BY event_id LIMIT ?", (limit,)
+                )
+            ]
+        except (sqlite3.Error, ValueError) as exc:
+            raise PipelineError(f"cannot read run events: {exc}") from exc
+        finally:
+            connection.close()
+
+    def _read_orders(
+        self, source_path: Path, expected_digest: str, duplicate_policy: str
+    ) -> tuple[list[Order], int]:
         flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
         with os.fdopen(os.open(source_path, flags), "rb") as source_file:
             info = os.fstat(source_file.fileno())
@@ -238,28 +328,84 @@ class SandboxPipeline:
             encoded = source_file.read(MAX_SOURCE_BYTES + 1)
         if len(encoded) > MAX_SOURCE_BYTES:
             raise PipelineError(f"source JSON exceeds {MAX_SOURCE_BYTES} bytes")
-        if hashlib.sha256(encoded).hexdigest() != expected_digest:
-            raise PipelineError("source checksum mismatch; source.json changed after run creation")
+        observed_digest = hashlib.sha256(encoded).hexdigest()
+        if observed_digest != expected_digest:
+            raise _LoadFailure(
+                "source_changed", "source checksum mismatch; source.json changed after run creation",
+                expected_sha256=expected_digest, observed_sha256=observed_digest,
+            )
         payload = json.loads(encoded)
         _encode_source(payload)
         if payload["schema"] != list(ORDER_COLUMNS):
-            raise PipelineError("source schema does not match canonical order columns")
+            observed = payload["schema"]
+            raise _LoadFailure(
+                "schema_mismatch", "source schema does not match canonical order columns",
+                observed_schema=observed, required_schema=list(ORDER_COLUMNS),
+                missing_columns=sorted(set(ORDER_COLUMNS) - set(observed)),
+                extra_columns=sorted(set(observed) - set(ORDER_COLUMNS)),
+            )
         orders = []
+        seen: dict[str, Order] = {}
+        duplicates_skipped = 0
         for row_number, row in enumerate(payload["rows"], start=1):
             try:
                 order = Order.from_record(row)
             except OrderValidationError as exc:
-                raise PipelineError(f"row {row_number}: {exc}") from exc
+                raise _LoadFailure(
+                    "invalid_row", f"row {row_number}: {exc}", row_number=row_number, reason=str(exc)
+                ) from exc
             if order.amount_minor > SQLITE_MAX_INTEGER:
-                raise PipelineError(f"row {row_number}: amount_minor exceeds SQLite signed 64-bit integer range")
+                message = "amount_minor exceeds SQLite signed 64-bit integer range"
+                raise _LoadFailure(
+                    "invalid_row", f"row {row_number}: {message}", row_number=row_number, reason=message
+                )
+            if order.order_id in seen:
+                if seen[order.order_id] != order:
+                    raise _LoadFailure(
+                        "conflicting_duplicate", f"row {row_number}: conflicting values for order_id {order.order_id}",
+                        row_number=row_number, order_id=order.order_id,
+                    )
+                if duplicate_policy == "reject":
+                    raise _LoadFailure(
+                        "duplicate_key", f"row {row_number}: duplicate order_id {order.order_id}",
+                        row_number=row_number, order_id=order.order_id,
+                    )
+                duplicates_skipped += 1
+                continue
+            seen[order.order_id] = order
             orders.append(order)
-        return orders
+        return orders, duplicates_skipped
+
+    def _verify_replay(
+        self, connection: sqlite3.Connection, source_path: Path, record: Mapping[str, object]
+    ) -> None:
+        try:
+            orders, skipped = self._read_orders(source_path, record["source_sha256"], record["duplicate_policy"])
+        except (OSError, ValueError, OverflowError) as exc:
+            raise PipelineStateError(f"successful run cannot be replayed: {exc}") from exc
+        expected = sorted(tuple(order.to_record()[column] for column in ORDER_COLUMNS) for order in orders)
+        observed = [tuple(row) for row in connection.execute(
+            "SELECT order_id, customer_id, amount_minor, currency, created_at "
+            "FROM warehouse_orders ORDER BY order_id"
+        )]
+        if expected != observed or skipped != record["duplicates_skipped"]:
+            raise PipelineStateError("successful run cannot be replayed: warehouse contents or skip count changed")
 
     def run(self, run_id: str) -> RunSummary:
         source_path = self._source_path(run_id)
         connection = self._connect(run_id, "rw")
         try:
             connection.execute("BEGIN IMMEDIATE")
+            record = self._metadata(connection, run_id)
+            if record["status"] == "succeeded":
+                # Hold the database writer lock across the full comparison;
+                # return without status, event, clock or warehouse writes.
+                self._verify_replay(connection, source_path, record)
+                summary = self._summary(connection, run_id)
+                connection.rollback()
+                return summary
+            if record["status"] != "new":
+                raise PipelineStateError("only new runs can start; failed or interrupted runs cannot restart")
             claimed = connection.execute(
                 "UPDATE pipeline_run SET status = 'running', started_at = ? "
                 "WHERE run_id = ? AND status = 'new'",
@@ -267,23 +413,30 @@ class SandboxPipeline:
             )
             if claimed.rowcount != 1:
                 connection.rollback()
-                raise PipelineStateError("only a new run can start; repeated runs and crash recovery are not implemented")
-            digest = connection.execute(
-                "SELECT source_sha256 FROM pipeline_run WHERE run_id = ?", (run_id,)
-            ).fetchone()[0]
+                raise PipelineStateError("run is no longer new")
+            self._record_event(connection, "load_started", duplicate_policy=record["duplicate_policy"])
             connection.commit()
             try:
-                orders = self._read_orders(source_path, digest)
+                orders, skipped = self._read_orders(
+                    source_path, record["source_sha256"], record["duplicate_policy"]
+                )
                 connection.execute("BEGIN IMMEDIATE")
                 connection.executemany(
                     "INSERT INTO warehouse_orders (order_id, customer_id, amount_minor, currency, created_at) "
                     "VALUES (?, ?, ?, ?, ?)",
                     (tuple(order.to_record()[column] for column in ORDER_COLUMNS) for order in orders),
                 )
-                connection.execute(
-                    "UPDATE pipeline_run SET status = 'succeeded', finished_at = ? WHERE run_id = ?",
-                    (_now(), run_id),
-                )
+                if "duplicates_skipped" in {row[1] for row in connection.execute("PRAGMA table_info(pipeline_run)")}:
+                    connection.execute(
+                        "UPDATE pipeline_run SET status = 'succeeded', finished_at = ?, duplicates_skipped = ? "
+                        "WHERE run_id = ?", (_now(), skipped, run_id),
+                    )
+                else:
+                    connection.execute(
+                        "UPDATE pipeline_run SET status = 'succeeded', finished_at = ? WHERE run_id = ?",
+                        (_now(), run_id),
+                    )
+                self._record_event(connection, "load_succeeded", rows_loaded=len(orders), duplicates_skipped=skipped)
                 connection.commit()
             except (OSError, ValueError, sqlite3.Error, OverflowError) as exc:
                 connection.rollback()
@@ -292,6 +445,10 @@ class SandboxPipeline:
                     connection.execute(
                         "UPDATE pipeline_run SET status = 'failed', finished_at = ?, error = ? WHERE run_id = ?",
                         (_now(), str(exc), run_id),
+                    )
+                    self._record_event(
+                        connection, "load_failed", code=exc.code if isinstance(exc, _LoadFailure) else "load_error",
+                        message=str(exc), **(exc.details if isinstance(exc, _LoadFailure) else {}),
                     )
         except sqlite3.Error as exc:
             connection.rollback()

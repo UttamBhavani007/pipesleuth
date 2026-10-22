@@ -3,6 +3,7 @@
 import hashlib
 import json
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import closing
 from pathlib import Path
 import sqlite3
 import tempfile
@@ -29,7 +30,7 @@ class PipelineTests(unittest.TestCase):
         self.payload = generate_fixture("healthy", row_count=3).to_source_payload()
 
     def read_orders(self, run_id):
-        with sqlite3.connect(self.pipeline.database_path(run_id)) as connection:
+        with closing(sqlite3.connect(self.pipeline.database_path(run_id))) as connection:
             return connection.execute("SELECT * FROM warehouse_orders ORDER BY order_id").fetchall()
 
     def test_healthy_run_loads_exact_known_rows_and_summary(self) -> None:
@@ -56,7 +57,7 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(self.pipeline.inspect(created.run_id), completed)
         self.assertNotIn("error", completed.to_dict())
         self.assertEqual(json.loads(json.dumps(completed.to_dict())), completed.to_dict())
-        with sqlite3.connect(self.pipeline.database_path(created.run_id)) as connection:
+        with closing(sqlite3.connect(self.pipeline.database_path(created.run_id))) as connection:
             columns = connection.execute("PRAGMA table_info(warehouse_orders)").fetchall()
         self.assertEqual(tuple(row[1] for row in columns), ORDER_COLUMNS)
 
@@ -67,7 +68,7 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(json.loads(source), self.payload)
         self.assertEqual(hashlib.sha256(source).hexdigest(), created.source_sha256)
         self.assertEqual({path.name for path in directory.iterdir()}, {"source.json", "warehouse.sqlite3"})
-        with sqlite3.connect(self.pipeline.database_path(created.run_id)) as connection:
+        with closing(sqlite3.connect(self.pipeline.database_path(created.run_id))) as connection:
             metadata = connection.execute("SELECT * FROM pipeline_run").fetchone()
         persisted = source.decode() + repr(metadata) + json.dumps(created.to_dict())
         for label in ("healthy", "scenario", "expected_orders", "oracle", "seed"):
@@ -87,11 +88,10 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(self.pipeline.inspect(first.run_id).totals_minor, {"EUR": 8207})
         self.assertEqual(self.pipeline.inspect(second.run_id).rows_loaded, 1)
 
-    def test_repeated_run_is_rejected_without_adding_rows(self) -> None:
+    def test_repeated_success_returns_same_summary_without_adding_rows(self) -> None:
         created = self.pipeline.create(self.payload)
         completed = self.pipeline.run(created.run_id)
-        with self.assertRaises(PipelineStateError):
-            self.pipeline.run(created.run_id)
+        self.assertEqual(self.pipeline.run(created.run_id), completed)
         self.assertEqual(self.pipeline.inspect(created.run_id), completed)
         self.assertEqual(len(self.read_orders(created.run_id)), 3)
 
@@ -106,7 +106,8 @@ class PipelineTests(unittest.TestCase):
 
         with ThreadPoolExecutor(max_workers=2) as executor:
             results = list(executor.map(lambda _: attempt(), range(2)))
-        self.assertCountEqual(results, ["succeeded", "rejected"])
+        self.assertIn("succeeded", results)
+        self.assertTrue(all(result in {"succeeded", "rejected"} for result in results))
         self.assertEqual(len(self.read_orders(created.run_id)), 3)
 
     def test_sql_like_identifiers_are_stored_as_parameter_data(self) -> None:
@@ -131,7 +132,7 @@ class PipelineTests(unittest.TestCase):
         with self.assertRaises(PipelineStateError):
             self.pipeline.run(created.run_id)
 
-    def test_duplicate_failure_rolls_back_already_inserted_rows(self) -> None:
+    def test_duplicate_failure_leaves_no_partial_rows(self) -> None:
         self.payload["rows"].append(dict(self.payload["rows"][0]))
         created = self.pipeline.create(self.payload)
         failed = self.pipeline.run(created.run_id)
