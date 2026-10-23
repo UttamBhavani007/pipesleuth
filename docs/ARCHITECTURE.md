@@ -13,6 +13,14 @@ Failed or interrupted runs cannot be restarted yet. Older databases can still be
 inspected; missing historical event data is returned as empty, without fabrication
 or a write-time migration during inspection.
 
+Stage 4 adds a creation-time invalid-row policy: reject the batch (default), or
+retain invalid records with their source row number, raw JSON, reason code, and
+first validation reason. Accepted rows and quarantine records commit together.
+Schema mismatches, source changes, conflicting valid duplicates, and storage
+errors still fail the whole load. Results expose accepted and quarantined counts;
+a successful run means processing completed under its selected policy. Replay
+checks the exact quarantine records and reasons as well as the warehouse.
+
 The initial incident families are schema drift, duplicate records, and invalid or missing data. Each incident runs in an isolated SQLite sandbox. The investigator explains evidence and proposes a bounded repair; successful recovery is established by independent database checks.
 
 ## Planned flow

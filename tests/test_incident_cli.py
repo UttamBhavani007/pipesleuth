@@ -98,8 +98,8 @@ class IncidentCliTests(unittest.TestCase):
         self.assertNotIn("Traceback", retry.stderr)
         self.assertEqual(self.database(summary["run_id"]).read_bytes(), before)
 
-    def test_future_scenario_and_invalid_event_limit_fail_cleanly(self):
-        future = self.cli("run", "--scenario", "invalid_records")
+    def test_unknown_scenario_and_invalid_event_limit_fail_cleanly(self):
+        future = self.cli("run", "--scenario", "unknown_incident")
         self.assertEqual(future.returncode, 2)
         self.assertFalse(self.data_dir.exists())
         run = json.loads(self.cli("run", "--rows", "1").stdout)

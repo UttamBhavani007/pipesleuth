@@ -198,3 +198,65 @@ must not advance to day 4 on the same date.
 `8210a28` adds the incident events, duplicate policies, guarded replay, and
 direct/independent database checks. The second day-3 commit exposes those
 features through the CLI and updates usage documentation with subprocess checks.
+
+## 2026-10-23 — day 4
+
+Completed invalid-record validation and opt-in quarantine. Today's work began
+after the owner asked for status; the latest completed stage was still day 3.
+No later-stage tools, model, new dependency, paid service, or repair executor
+was added. Publication continues under the owner's existing public-upload and
+scheduled-push approval.
+
+### Validation and quarantine
+
+- The creation-time `invalid_policy` defaults to `reject`: one invalid row
+  still fails the entire load. `pipeline run --scenario invalid_records
+  --quarantine` explicitly selects quarantine and loads the valid rows.
+- Each rejected record retains its one-based source position, original JSON
+  values, stable reason code, and first validation reason. Missing fields,
+  invalid currency/timestamps, invalid money types, and signed-integer overflow
+  are handled without silently coercing the input.
+- Accepted orders, rejected records, counts, and the successful event commit
+  together. A schema mismatch, changed source, conflicting valid duplicate,
+  or storage failure still fails the batch. Exact-retry deduplication can be
+  combined with quarantine.
+- Results expose accepted and quarantined counts separately. An all-invalid
+  batch can complete with zero accepted rows and a nonzero quarantine count;
+  success means processing completed under the selected policy.
+- `pipeline quarantine RUN_ID --limit 100` reads retained records without
+  writing. Reads accept limits of 1–1,000. Successful replay also verifies every
+  quarantine row, raw JSON, reason, and count before returning the old result.
+  Legacy day-2/day-3 databases remain readable without implicit migrations.
+
+### Verification
+
+- `PYTHONPATH=src python3 -W error::ResourceWarning -m unittest discover -s
+  tests -q`: **91 tests pass** on Python 3.13.7. A separate reviewing agent
+  also ran the full suite and added independent SQLite integration checks.
+- Live CLI smoke with seed 42 and 12 clean orders: healthy input loads all
+  12; invalid input without quarantine fails with both stores empty; explicit
+  quarantine loads the same 12 exact orders totaling **73,525 EUR cents** and
+  retains the four original invalid records at positions 13–16 with reasons.
+  A schema-change batch still fails with both stores empty under quarantine.
+- A separate read-only SQLite connection compared all five accepted fields
+  against the separately held fixture oracle and inspected the rejected raw
+  records directly. CLI quarantine output matched those original records.
+  Successful smoke replay preserved summaries, database bytes, and events.
+- Integration checks compare literal multi-currency rows and raw boolean and
+  oversized-integer rejections. Same-count corruption of any quarantine field
+  blocks replay without writes, including a boolean changed to an integer.
+- An injected SQL failure after accepted rows and the first rejected row were
+  inserted rolls both stores back. Tests also cover all-invalid input, combined
+  policies, conflicting valid retries, bounded reads, and legacy compatibility.
+
+These are software and data-integrity checks, not AI diagnosis accuracy or
+autonomous recovery results. The README documents current behavior and keeps
+AI investigation and approved repairs explicitly planned.
+
+### Next stage and commit boundaries
+
+Day 5 (24 October): add allowlisted, read-only evidence tools with bounded
+outputs and argument validation. Today's two cohesive commits cover the
+pipeline/quarantine implementation with database checks (`2e3c81b`), followed
+by its CLI, subprocess checks, and usage/status documentation. They exhaust the 23 October
+target; a duplicate session must not advance to day 5 on the same date.

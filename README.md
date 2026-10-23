@@ -21,6 +21,7 @@ checks the database afterward to confirm the result.
 - Isolated SQLite runs with exact integer amounts, row counts, and currency totals.
 - Logged schema-change and duplicate-record failures.
 - Optional skipping of identical retry records, with safe verification of completed runs.
+- Optional quarantine of invalid rows, preserving their input and validation reasons.
 
 ## Getting started
 
@@ -42,7 +43,7 @@ PYTHONPATH=src python3 -m pipesleuth pipeline events RUN_ID
 PYTHONPATH=src python3 -m pipesleuth pipeline rerun RUN_ID
 ```
 
-To try the two supported incident inputs:
+To try incident inputs:
 
 ```sh
 # Deliberately fail on a renamed amount column; inspect the returned run_id
@@ -50,18 +51,26 @@ PYTHONPATH=src python3 -m pipesleuth pipeline run --scenario schema_drift
 
 # Load a retry batch while skipping identical repeated orders
 PYTHONPATH=src python3 -m pipesleuth pipeline run --scenario duplicate_ingestion --deduplicate
+
+# Load valid rows and retain invalid records separately, then inspect them
+PYTHONPATH=src python3 -m pipesleuth pipeline run --scenario invalid_records --quarantine
+PYTHONPATH=src python3 -m pipesleuth pipeline quarantine RUN_ID
 ```
 
-Without `--deduplicate`, duplicate IDs fail the load. Conflicting records with
-the same ID always fail. Replaying a completed run checks the source and stored
-rows first; it rejects changed data instead of silently reloading it.
+Without `--deduplicate`, duplicate IDs fail the load. Conflicting valid orders
+with the same ID always fail. Without `--quarantine`, an invalid row fails the
+whole load. Quarantine retains each rejected input and its first validation
+reason; the result reports `rows_loaded` and `rows_quarantined` separately.
+
+Replaying a completed run checks the source, accepted rows, and quarantined
+records first. Changed data is rejected without reloading it.
 
 Pipeline files are saved under `var/sandboxes/RUN_ID/`. Each run has its own
 `source.json` and `warehouse.sqlite3`. Use `--data-dir PATH` with any pipeline
 command to choose another local directory.
 
-Automatic schema repair, invalid-record quarantine, and AI investigation are
-planned. No AI model runs in the current version.
+AI investigation, automatic schema repair, and approved repairs are planned.
+No AI model runs in the current version.
 
 ## Tests
 
@@ -71,7 +80,7 @@ PYTHONPATH=src python3 -m unittest discover -s tests -v
 
 ## Roadmap
 
-- Invalid-record quarantine and read-only evidence tools.
+- Read-only evidence tools for investigation.
 - A local AI investigator with saved progress and limited tool access.
 - Repair approval, database verification, and a simple web interface.
 - Evaluation against a checklist and a single model call.

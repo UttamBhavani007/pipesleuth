@@ -34,5 +34,6 @@ Do not continue the schedule beyond 2 November without a new user request.
   design and internal build details in docs/ rather than the README.
 - Capture screenshots only once the actual application runs. Record untested
   integrations and missing dependencies plainly. Fixtures, SQLite loading,
-  schema/duplicate incident events, and guarded replay are available. Quarantine,
-  AI investigation and approved repairs remain later stages.
+  schema/duplicate incident events, quarantine with validation reasons, and
+  guarded replay are available. AI investigation and approved repairs remain
+  later stages.
