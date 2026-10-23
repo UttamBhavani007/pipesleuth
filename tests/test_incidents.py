@@ -70,7 +70,7 @@ class IncidentTests(unittest.TestCase):
         self.assertEqual(succeeded.rows_loaded, 3)
         self.assertEqual(succeeded.totals_minor, {"EUR": 8207})
         self.assertEqual(self.pipeline.events(accepted.run_id)[-1]["details"], {
-            "rows_loaded": 3, "duplicates_skipped": 3,
+            "rows_loaded": 3, "duplicates_skipped": 3, "rows_quarantined": 0,
         })
         self.assertEqual(self.pipeline.run(accepted.run_id), succeeded)
         self.assertEqual(len(self.rows(accepted.run_id)), 3)

@@ -28,11 +28,13 @@ from pipesleuth.domain import ORDER_COLUMNS, Order, OrderValidationError
 MAX_SOURCE_BYTES = 2 * 1024 * 1024
 MAX_SOURCE_ROWS = 10_000
 MAX_EVENT_LIMIT = 1000
+MAX_QUARANTINE_LIMIT = 1000
 SQLITE_MAX_INTEGER = 2**63 - 1
 _RUN_ID = re.compile(r"[0-9a-f]{32}")
 _SHA256 = re.compile(r"[0-9a-f]{64}")
 _STATUSES = {"new", "running", "succeeded", "failed"}
 _DUPLICATE_POLICIES = {"reject", "skip_identical"}
+_INVALID_POLICIES = {"reject", "quarantine"}
 
 
 class PipelineError(ValueError):
@@ -65,6 +67,8 @@ class RunSummary:
     error: str | None = None
     duplicate_policy: str = "reject"
     duplicates_skipped: int = 0
+    invalid_policy: str = "reject"
+    rows_quarantined: int = 0
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "totals_minor", MappingProxyType(dict(self.totals_minor)))
@@ -81,6 +85,8 @@ class RunSummary:
             "finished_at": self.finished_at,
             "duplicate_policy": self.duplicate_policy,
             "duplicates_skipped": self.duplicates_skipped,
+            "invalid_policy": self.invalid_policy,
+            "rows_quarantined": self.rows_quarantined,
         }
         if self.error is not None:
             result["error"] = self.error
@@ -186,10 +192,13 @@ class SandboxPipeline:
             raise PipelineError(f"cannot open run database: {exc}") from exc
 
     def create(
-        self, source_payload: Mapping[str, object], *, duplicate_policy: str = "reject"
+        self, source_payload: Mapping[str, object], *, duplicate_policy: str = "reject",
+        invalid_policy: str = "reject",
     ) -> RunSummary:
         if not isinstance(duplicate_policy, str) or duplicate_policy not in _DUPLICATE_POLICIES:
             raise PipelineError("duplicate_policy must be reject or skip_identical")
+        if not isinstance(invalid_policy, str) or invalid_policy not in _INVALID_POLICIES:
+            raise PipelineError("invalid_policy must be reject or quarantine")
         encoded = _encode_source(source_payload)
         digest = hashlib.sha256(encoded).hexdigest()
         _check_no_symlinks(self.data_dir)
@@ -204,7 +213,13 @@ class SandboxPipeline:
                     "run_id TEXT PRIMARY KEY, status TEXT NOT NULL, source_sha256 TEXT NOT NULL, "
                     "created_at TEXT NOT NULL, started_at TEXT, finished_at TEXT, error TEXT, "
                     "duplicate_policy TEXT NOT NULL DEFAULT 'reject', "
-                    "duplicates_skipped INTEGER NOT NULL DEFAULT 0)"
+                    "duplicates_skipped INTEGER NOT NULL DEFAULT 0, "
+                    "invalid_policy TEXT NOT NULL DEFAULT 'reject', "
+                    "rows_quarantined INTEGER NOT NULL DEFAULT 0)"
+                )
+                connection.execute(
+                    "CREATE TABLE quarantined_records (row_number INTEGER PRIMARY KEY NOT NULL, "
+                    "reason_code TEXT NOT NULL, reason TEXT NOT NULL, raw_record_json TEXT NOT NULL)"
                 )
                 connection.execute(
                     "CREATE TABLE warehouse_orders (order_id TEXT PRIMARY KEY NOT NULL, "
@@ -216,9 +231,10 @@ class SandboxPipeline:
                     "event_type TEXT NOT NULL, created_at TEXT NOT NULL, details_json TEXT NOT NULL)"
                 )
                 connection.execute(
-                    "INSERT INTO pipeline_run (run_id, status, source_sha256, created_at, duplicate_policy) "
-                    "VALUES (?, ?, ?, ?, ?)",
-                    (directory.name, "new", digest, _now(), duplicate_policy),
+                    "INSERT INTO pipeline_run "
+                    "(run_id, status, source_sha256, created_at, duplicate_policy, invalid_policy) "
+                    "VALUES (?, ?, ?, ?, ?, ?)",
+                    (directory.name, "new", digest, _now(), duplicate_policy, invalid_policy),
                 )
                 # Observe the serialized copy, not mutable caller-owned objects.
                 observed = json.loads(encoded)
@@ -249,6 +265,8 @@ class SandboxPipeline:
         record = dict(records[0])
         record.setdefault("duplicate_policy", "reject")
         record.setdefault("duplicates_skipped", 0)
+        record.setdefault("invalid_policy", "reject")
+        record.setdefault("rows_quarantined", 0)
         if (
             record["status"] not in _STATUSES
             or not isinstance(record["source_sha256"], str)
@@ -256,8 +274,11 @@ class SandboxPipeline:
             or record["duplicate_policy"] not in _DUPLICATE_POLICIES
             or type(record["duplicates_skipped"]) is not int
             or record["duplicates_skipped"] < 0
+            or record["invalid_policy"] not in _INVALID_POLICIES
+            or type(record["rows_quarantined"]) is not int
+            or not 0 <= record["rows_quarantined"] <= MAX_SOURCE_ROWS
         ):
-            raise PipelineError("run database contains invalid status, checksum or duplicate policy metadata")
+            raise PipelineError("run database contains invalid status, checksum or policy metadata")
         return record
 
     def _summary(self, connection: sqlite3.Connection, run_id: str) -> RunSummary:
@@ -272,17 +293,18 @@ class SandboxPipeline:
             source_sha256=record["source_sha256"], created_at=record["created_at"],
             started_at=record["started_at"], finished_at=record["finished_at"], error=record["error"],
             duplicate_policy=record["duplicate_policy"], duplicates_skipped=record["duplicates_skipped"],
+            invalid_policy=record["invalid_policy"], rows_quarantined=record["rows_quarantined"],
         )
 
     @staticmethod
-    def _has_events(connection: sqlite3.Connection) -> bool:
+    def _has_table(connection: sqlite3.Connection, table: str) -> bool:
         return connection.execute(
-            "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?", ("pipeline_events",)
+            "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?", (table,)
         ).fetchone() is not None
 
     def _record_event(self, connection: sqlite3.Connection, event_type: str, **details: object) -> None:
         # Legacy databases remain readable without implicit schema migrations.
-        if self._has_events(connection):
+        if self._has_table(connection, "pipeline_events"):
             connection.execute(
                 "INSERT INTO pipeline_events (event_type, created_at, details_json) VALUES (?, ?, ?)",
                 (event_type, _now(), json.dumps(details, separators=(",", ":"), allow_nan=False)),
@@ -302,7 +324,7 @@ class SandboxPipeline:
         try:
             connection.execute("BEGIN")
             self._metadata(connection, run_id)
-            if not self._has_events(connection):
+            if not self._has_table(connection, "pipeline_events"):
                 return []
             return [
                 {"event_id": row["event_id"], "event_type": row["event_type"],
@@ -317,9 +339,59 @@ class SandboxPipeline:
         finally:
             connection.close()
 
+    def _quarantine_rows(self, connection: sqlite3.Connection, limit: int) -> list[tuple]:
+        if not self._has_table(connection, "quarantined_records"):
+            return []
+        return [tuple(row) for row in connection.execute(
+            "SELECT row_number, reason_code, reason, raw_record_json "
+            "FROM quarantined_records ORDER BY row_number LIMIT ?", (limit,)
+        )]
+
+    def quarantine(self, run_id: str, limit: int = 100) -> list[dict[str, object]]:
+        """Read retained invalid source records without modifying the run.
+
+        Legacy runs without a quarantine table return an empty list; their
+        schema and history are preserved rather than migrated implicitly.
+        """
+
+        if type(limit) is not int or not 1 <= limit <= MAX_QUARANTINE_LIMIT:
+            raise PipelineError(f"quarantine limit must be an integer between 1 and {MAX_QUARANTINE_LIMIT}")
+        self._source_path(run_id)
+        connection = self._connect(run_id, "ro")
+        try:
+            connection.execute("BEGIN")
+            self._metadata(connection, run_id)
+            result = []
+            for row_number, reason_code, reason, encoded in self._quarantine_rows(connection, limit):
+                raw_record = json.loads(encoded)
+                if not isinstance(raw_record, dict):
+                    raise PipelineError("quarantine raw_record_json must contain an object")
+                result.append({"row_number": row_number, "reason_code": reason_code,
+                               "reason": reason, "raw_record": raw_record})
+            return result
+        except (sqlite3.Error, ValueError) as exc:
+            raise PipelineError(f"cannot read run quarantine: {exc}") from exc
+        finally:
+            connection.close()
+
+    @staticmethod
+    def _validated_order(row: Mapping[str, object], row_number: int) -> Order:
+        try:
+            order = Order.from_record(row)
+        except OrderValidationError as exc:
+            raise _LoadFailure(
+                "invalid_row", f"row {row_number}: {exc}", row_number=row_number, reason=str(exc)
+            ) from exc
+        if order.amount_minor > SQLITE_MAX_INTEGER:
+            message = "amount_minor exceeds SQLite signed 64-bit integer range"
+            raise _LoadFailure(
+                "integer_overflow", f"row {row_number}: {message}", row_number=row_number, reason=message
+            )
+        return order
+
     def _read_orders(
-        self, source_path: Path, expected_digest: str, duplicate_policy: str
-    ) -> tuple[list[Order], int]:
+        self, source_path: Path, expected_digest: str, duplicate_policy: str, invalid_policy: str
+    ) -> tuple[list[Order], int, list[tuple[int, str, str, str]]]:
         flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
         with os.fdopen(os.open(source_path, flags), "rb") as source_file:
             info = os.fstat(source_file.fileno())
@@ -347,18 +419,18 @@ class SandboxPipeline:
         orders = []
         seen: dict[str, Order] = {}
         duplicates_skipped = 0
+        quarantined = []
         for row_number, row in enumerate(payload["rows"], start=1):
             try:
-                order = Order.from_record(row)
-            except OrderValidationError as exc:
-                raise _LoadFailure(
-                    "invalid_row", f"row {row_number}: {exc}", row_number=row_number, reason=str(exc)
-                ) from exc
-            if order.amount_minor > SQLITE_MAX_INTEGER:
-                message = "amount_minor exceeds SQLite signed 64-bit integer range"
-                raise _LoadFailure(
-                    "invalid_row", f"row {row_number}: {message}", row_number=row_number, reason=message
-                )
+                order = self._validated_order(row, row_number)
+            except _LoadFailure as exc:
+                if invalid_policy == "reject":
+                    raise
+                quarantined.append((
+                    row_number, exc.code, exc.details["reason"],
+                    json.dumps(row, ensure_ascii=False, separators=(",", ":"), allow_nan=False),
+                ))
+                continue
             if order.order_id in seen:
                 if seen[order.order_id] != order:
                     raise _LoadFailure(
@@ -374,13 +446,15 @@ class SandboxPipeline:
                 continue
             seen[order.order_id] = order
             orders.append(order)
-        return orders, duplicates_skipped
+        return orders, duplicates_skipped, quarantined
 
     def _verify_replay(
         self, connection: sqlite3.Connection, source_path: Path, record: Mapping[str, object]
     ) -> None:
         try:
-            orders, skipped = self._read_orders(source_path, record["source_sha256"], record["duplicate_policy"])
+            orders, skipped, quarantined = self._read_orders(
+                source_path, record["source_sha256"], record["duplicate_policy"], record["invalid_policy"]
+            )
         except (OSError, ValueError, OverflowError) as exc:
             raise PipelineStateError(f"successful run cannot be replayed: {exc}") from exc
         expected = sorted(tuple(order.to_record()[column] for column in ORDER_COLUMNS) for order in orders)
@@ -390,6 +464,11 @@ class SandboxPipeline:
         )]
         if expected != observed or skipped != record["duplicates_skipped"]:
             raise PipelineStateError("successful run cannot be replayed: warehouse contents or skip count changed")
+        if (
+            quarantined != self._quarantine_rows(connection, MAX_SOURCE_ROWS + 1)
+            or len(quarantined) != record["rows_quarantined"]
+        ):
+            raise PipelineStateError("successful run cannot be replayed: quarantine contents or count changed")
 
     def run(self, run_id: str) -> RunSummary:
         source_path = self._source_path(run_id)
@@ -414,11 +493,12 @@ class SandboxPipeline:
             if claimed.rowcount != 1:
                 connection.rollback()
                 raise PipelineStateError("run is no longer new")
-            self._record_event(connection, "load_started", duplicate_policy=record["duplicate_policy"])
+            self._record_event(connection, "load_started", duplicate_policy=record["duplicate_policy"],
+                               invalid_policy=record["invalid_policy"])
             connection.commit()
             try:
-                orders, skipped = self._read_orders(
-                    source_path, record["source_sha256"], record["duplicate_policy"]
+                orders, skipped, quarantined = self._read_orders(
+                    source_path, record["source_sha256"], record["duplicate_policy"], record["invalid_policy"]
                 )
                 connection.execute("BEGIN IMMEDIATE")
                 connection.executemany(
@@ -426,7 +506,21 @@ class SandboxPipeline:
                     "VALUES (?, ?, ?, ?, ?)",
                     (tuple(order.to_record()[column] for column in ORDER_COLUMNS) for order in orders),
                 )
-                if "duplicates_skipped" in {row[1] for row in connection.execute("PRAGMA table_info(pipeline_run)")}:
+                if self._has_table(connection, "quarantined_records"):
+                    connection.executemany(
+                        "INSERT INTO quarantined_records (row_number, reason_code, reason, raw_record_json) "
+                        "VALUES (?, ?, ?, ?)", quarantined,
+                    )
+                elif quarantined:
+                    raise PipelineError("run database is missing its quarantine table")
+                metadata_columns = {row[1] for row in connection.execute("PRAGMA table_info(pipeline_run)")}
+                if "rows_quarantined" in metadata_columns:
+                    connection.execute(
+                        "UPDATE pipeline_run SET status = 'succeeded', finished_at = ?, "
+                        "duplicates_skipped = ?, rows_quarantined = ? WHERE run_id = ?",
+                        (_now(), skipped, len(quarantined), run_id),
+                    )
+                elif "duplicates_skipped" in metadata_columns:
                     connection.execute(
                         "UPDATE pipeline_run SET status = 'succeeded', finished_at = ?, duplicates_skipped = ? "
                         "WHERE run_id = ?", (_now(), skipped, run_id),
@@ -436,7 +530,8 @@ class SandboxPipeline:
                         "UPDATE pipeline_run SET status = 'succeeded', finished_at = ? WHERE run_id = ?",
                         (_now(), run_id),
                     )
-                self._record_event(connection, "load_succeeded", rows_loaded=len(orders), duplicates_skipped=skipped)
+                self._record_event(connection, "load_succeeded", rows_loaded=len(orders),
+                                   duplicates_skipped=skipped, rows_quarantined=len(quarantined))
                 connection.commit()
             except (OSError, ValueError, sqlite3.Error, OverflowError) as exc:
                 connection.rollback()
