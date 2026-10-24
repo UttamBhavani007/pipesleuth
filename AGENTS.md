@@ -35,5 +35,6 @@ Do not continue the schedule beyond 2 November without a new user request.
 - Capture screenshots only once the actual application runs. Record untested
   integrations and missing dependencies plainly. Fixtures, SQLite loading,
   schema/duplicate incident events, quarantine with validation reasons, and
-  guarded replay are available. AI investigation and approved repairs remain
-  later stages.
+  guarded replay are available. Bounded read-only evidence tools are also
+  available. The troubleshooting checklist, AI investigation and approved
+  repairs remain later stages.

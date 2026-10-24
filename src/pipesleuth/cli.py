@@ -10,6 +10,7 @@ from pathlib import Path
 
 from pipesleuth import __version__
 from pipesleuth.domain import IncidentKind
+from pipesleuth.evidence import EvidenceGateway
 from pipesleuth.fixtures import generate_fixture
 from pipesleuth.pipeline import SandboxPipeline
 
@@ -63,6 +64,23 @@ def _parser() -> argparse.ArgumentParser:
             "--data-dir", type=Path, default=Path("var/sandboxes"),
             help="Local sandbox directory (default: var/sandboxes)",
         )
+    evidence = commands.add_parser("evidence", help="Read bounded investigation evidence")
+    evidence_tools = evidence.add_subparsers(dest="tool", required=True)
+    evidence_tools.add_parser("tools", help="List the available read-only evidence tools")
+    for name, description in (
+        ("read_run", "Read run status and counts"),
+        ("read_logs", "Read observed pipeline events"),
+        ("inspect_schema", "Inspect source and warehouse columns"),
+        ("inspect_validation", "Inspect rejected records and validation results"),
+    ):
+        tool = evidence_tools.add_parser(name, help=description)
+        tool.add_argument("run_id", help="Run identifier returned by pipeline run")
+        tool.add_argument(
+            "--data-dir", type=Path, default=Path("var/sandboxes"),
+            help="Local sandbox directory (default: var/sandboxes)",
+        )
+        if name in ("read_logs", "inspect_validation"):
+            tool.add_argument("--limit", type=int, default=10, help="Maximum records, 1–20 (default: 10)")
     return parser
 
 
@@ -89,6 +107,17 @@ def main(argv: Sequence[str] | None = None) -> int:
             payload = fixture.to_authoring_dict()
         else:
             payload = fixture.to_source_payload()
+    elif args.command == "evidence":
+        if args.tool == "tools":
+            payload = {"tools": EvidenceGateway.tools()}
+        else:
+            arguments = {"run_id": args.run_id}
+            if args.tool in ("read_logs", "inspect_validation"):
+                arguments["limit"] = args.limit
+            try:
+                payload = EvidenceGateway(args.data_dir).call(args.tool, arguments)
+            except (ValueError, OSError) as exc:
+                parser.error(str(exc))
     else:
         try:
             pipeline = SandboxPipeline(args.data_dir)
@@ -110,5 +139,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                 payload = pipeline.inspect(args.run_id).to_dict()
         except (ValueError, OSError) as exc:
             parser.error(str(exc))
-    print(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False, allow_nan=False))
+    if args.command == "evidence":
+        print(json.dumps(payload, separators=(",", ":"), sort_keys=True, ensure_ascii=False, allow_nan=False))
+    else:
+        print(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False, allow_nan=False))
     return 1 if payload.get("status") == "failed" else 0

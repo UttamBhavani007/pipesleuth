@@ -22,6 +22,7 @@ checks the database afterward to confirm the result.
 - Logged schema-change and duplicate-record failures.
 - Optional skipping of identical retry records, with safe verification of completed runs.
 - Optional quarantine of invalid rows, preserving their input and validation reasons.
+- Read-only evidence tools for run status, logs, schema, and validation results.
 
 ## Getting started
 
@@ -69,6 +70,18 @@ Pipeline files are saved under `var/sandboxes/RUN_ID/`. Each run has its own
 `source.json` and `warehouse.sqlite3`. Use `--data-dir PATH` with any pipeline
 command to choose another local directory.
 
+To inspect investigation evidence:
+
+```sh
+PYTHONPATH=src python3 -m pipesleuth evidence tools
+PYTHONPATH=src python3 -m pipesleuth evidence inspect_schema RUN_ID
+PYTHONPATH=src python3 -m pipesleuth evidence inspect_validation RUN_ID --limit 5
+```
+
+The tools return bounded JSON with a content fingerprint. They cannot change
+data or run caller-supplied SQL or shell commands. See the
+[tool reference](docs/EVIDENCE_TOOLS.md).
+
 AI investigation, automatic schema repair, and approved repairs are planned.
 No AI model runs in the current version.
 
@@ -80,7 +93,7 @@ PYTHONPATH=src python3 -m unittest discover -s tests -v
 
 ## Roadmap
 
-- Read-only evidence tools for investigation.
+- A deterministic troubleshooting checklist.
 - A local AI investigator with saved progress and limited tool access.
 - Repair approval, database verification, and a simple web interface.
 - Evaluation against a checklist and a single model call.

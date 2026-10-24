@@ -21,6 +21,13 @@ errors still fail the whole load. Results expose accepted and quarantined counts
 a successful run means processing completed under its selected policy. Replay
 checks the exact quarantine records and reasons as well as the warehouse.
 
+Stage 5 adds the read-only evidence gateway described in
+[EVIDENCE_TOOLS.md](EVIDENCE_TOOLS.md). It exposes four fixed tools with strict
+arguments, bounded JSON, provenance fingerprints, and a SQLite read snapshot.
+Unknown tools and SQL, shell, or path arguments are rejected. Evidence is
+untrusted data and cannot authorize another operation. No model or diagnosis
+policy is part of this stage.
+
 The initial incident families are schema drift, duplicate records, and invalid or missing data. Each incident runs in an isolated SQLite sandbox. The investigator explains evidence and proposes a bounded repair; successful recovery is established by independent database checks.
 
 ## Planned flow

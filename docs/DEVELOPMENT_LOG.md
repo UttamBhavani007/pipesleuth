@@ -260,3 +260,72 @@ outputs and argument validation. Today's two cohesive commits cover the
 pipeline/quarantine implementation with database checks (`2e3c81b`), followed
 by its CLI, subprocess checks, and usage/status documentation. They exhaust the 23 October
 target; a duplicate session must not advance to day 5 on the same date.
+
+## 2026-10-24 — day 5
+
+Completed the read-only evidence gateway after the owner requested today's
+stage. The checkout was clean at the published day-4 head, with zero commits
+on today's Berlin date. Only this stage was implemented; the checklist,
+model adapter, investigator, repair system, API, and UI remain planned.
+No dependency, account, external runtime service, or model was added.
+The initial session finished verification; a later same-day wake-up applied
+the reviewed patch and reran the suite and live smoke before publication.
+
+### Evidence tools
+
+- Added four fixed tools: `read_run`, `read_logs`, `inspect_schema`, and
+  `inspect_validation`. Each requires a neutral run ID; only log and validation
+  reads accept a record limit. Unknown tools, extra arguments, SQL, shell,
+  paths, boolean limits, and invalid IDs are rejected before filesystem access.
+- Reads use fixed SQLite queries, read-only connections, a read transaction,
+  query-only mode, and selected runtime fields. Accepted/quarantined counts
+  come from the actual tables. Missing legacy evidence is explicitly unavailable.
+- Responses bind the run, tool, normalized arguments, returned data, and
+  truncation flag to a SHA-256 fingerprint. Observation time is separate.
+  JSON is capped at 16,384 UTF-8 bytes; record limits, text clipping, pre-decode
+  field bounds, lock waits, progress interruption, and elapsed checks constrain
+  reads. The time budget is cooperative, not an operating-system timeout.
+- Added `evidence tools` and the four evidence reads to the CLI. The README
+  keeps purpose and usage brief; detailed limits live in `EVIDENCE_TOOLS.md`.
+  Runtime evidence is untrusted data and cannot authorize an action.
+
+### Verification and findings
+
+- `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python3 -W error::ResourceWarning
+  -m unittest discover -s tests -q`: **117 tests pass** on Python 3.13.7.
+  A separate reviewing agent added independent database integration checks.
+- Live command smoke exercised all four tools on healthy, schema-change,
+  duplicate, and quarantined-invalid runs: **16 successful evidence reads**.
+  Responses were 481–1,541 bytes, fingerprints recomputed correctly, and all
+  source/database bytes, modification times, and file sets stayed unchanged.
+- A SQLite authorizer denied private evaluator-table/column reads during
+  integration checks; no such reads occurred. Nested private objects in
+  otherwise allowed fields are rejected. Instruction text in retained records
+  stays inert, and unrelated files remain unchanged.
+- Oversized Unicode JSON is truncated or safely rejected under a 1 KiB cap.
+  A real exclusive database lock respects the short configured read budget.
+  Tests cover malformed/deep JSON, source tampering, strict argument rejection,
+  symlinks, legacy availability, and deterministic provenance.
+- Live testing found that SQLite `mode=ro` can create WAL/shared-memory files
+  for a WAL-mode database. The gateway now inspects a bounded database header
+  and rejects WAL or existing journal sidecars before connecting. All four
+  rejection paths preserve exact files. Only the pipeline's ordinary rollback
+  journal mode is supported; concurrent journal-mode changes are unsupported.
+- Review also caught an unknown quarantine code being mapped to a known code.
+  Unknown codes and malformed diagnostic fields now fail safely, with regression
+  checks, rather than inventing a validation diagnosis.
+- A real named-pipe input exposed a blocking file-open path. Nonblocking opens
+  now precede regular-file checks; isolated subprocess checks reject source and
+  database FIFOs promptly without changing the files.
+
+These are software and evidence-boundary checks, not AI accuracy or repair
+results. No later stage was implemented early.
+
+### Next stage and commit boundaries
+
+Day 6 (25 October): implement the deterministic troubleshooting checklist with
+uncertainty for insufficient evidence. Today's two cohesive commits cover the
+gateway with direct/independent checks, followed by its CLI, subprocess checks,
+and documentation. The gateway commit is `3c08908`. They exhaust the 24 October
+target; a duplicate run must not advance to day 6 on this date. Public pushes
+use the existing approval.

@@ -15,7 +15,7 @@ Build a local data-pipeline incident investigator over **14 actual days, 20 Octo
 - Use real commit dates. If a session is missed or a stage is blocked, record the delay and continue from it. Do not backdate, fabricate progress, or silently compress unfinished work into later days.
 - Each stage must pass its acceptance check before being marked complete. Record commands and observed results; distinguish a skipped check from a passed check.
 - Use local execution and free software only. Follow [COST_POLICY.md](COST_POLICY.md); never add a paid or cloud fallback.
-- Stage 4 is the current delivery boundary: SQLite runs with schema/duplicate incidents, observed events, optional exact-retry deduplication, invalid-row quarantine with reasons, and guarded successful replay. The evidence gateway, model integration, agent, repair engine, API, and UI belong to later stages.
+- Stage 5 is the current delivery boundary: SQLite runs with schema/duplicate incidents, observed events, optional exact-retry deduplication, invalid-row quarantine with reasons, guarded successful replay, and bounded read-only evidence tools. The checklist, model integration, agent, repair engine, API, and UI belong to later stages.
 
 ## Stages and acceptance checks
 
@@ -63,4 +63,4 @@ Do not claim production readiness, learning gains, human review, measured reliab
 
 ## Work time
 
-The local heartbeat `build-pipesleuth-daily-milestones` is active for **19:30 Europe/Berlin**, daily from **21 October through 2 November 2026**. Its saved rule covers 13 future sessions and preserves the local time across the October DST change. Local execution requires the desktop app and host to be available and awake. A missed run follows the delivery rules above; it does not justify fabricated commits. Stop at the 2 November cutoff and report any unfinished scope accurately.
+The local heartbeat `build-pipesleuth-daily-milestones` is active for **19:30 Europe/Berlin**, daily from **21 October through 2 November 2026**. Its saved rule covers 13 scheduled sessions and preserves the local time across the October DST change. Local execution requires the desktop app and host to be available and awake. A missed run follows the delivery rules above; it does not justify fabricated commits. Stop at the 2 November cutoff and report any unfinished scope accurately.
