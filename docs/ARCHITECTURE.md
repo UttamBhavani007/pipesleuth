@@ -28,6 +28,13 @@ Unknown tools and SQL, shell, or path arguments are rejected. Evidence is
 untrusted data and cannot authorize another operation. No model or diagnosis
 policy is part of this stage.
 
+Stage 6 adds the [deterministic checklist](CHECKLIST.md). It collects the four
+gateway responses in a fixed order, validates their provenance and consistency,
+and applies explicit rules. Missing, truncated, unsupported, or conflicting
+evidence produces uncertainty. This is a baseline without a model or execution
+authority. Its development probe is separate from the planned three-approach
+evaluation.
+
 The initial incident families are schema drift, duplicate records, and invalid or missing data. Each incident runs in an isolated SQLite sandbox. The investigator explains evidence and proposes a bounded repair; successful recovery is established by independent database checks.
 
 ## Planned flow

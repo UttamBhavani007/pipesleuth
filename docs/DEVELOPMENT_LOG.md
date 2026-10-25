@@ -329,3 +329,68 @@ gateway with direct/independent checks, followed by its CLI, subprocess checks,
 and documentation. The gateway commit is `3c08908`. They exhaust the 24 October
 target; a duplicate run must not advance to day 6 on this date. Public pushes
 use the existing approval.
+
+## 2026-10-25 — day 6
+
+Completed the deterministic troubleshooting baseline from the published day-5
+head, with a clean checkout and zero commits on today's Berlin date. No model,
+new dependency, paid service, agent loop, repair, API, or UI was introduced.
+Repository writes and temporary test runs used scoped sandbox escalation; the
+existing public-push approval remains in effect.
+
+### Checklist behavior
+
+- `diagnose RUN_ID` calls the existing run, log, schema, and validation tools
+  once each in a fixed order. It receives no fixture labels, evaluator data,
+  raw file access, arbitrary SQL, or execution capability.
+- Supported schema, duplicate, invalid-row, and integer-overflow observations
+  produce static explanations, validated facts, and actual evidence references.
+  Quarantine findings describe retained rejections; they do not execute a repair.
+  Successful identical-retry deduplication is a handled control with a note.
+- Missing, malformed, truncated, unsupported, unfinished, or conflicting
+  evidence produces `unknown` without confident findings. Invalid IDs fail
+  before tool access. The compact result contains the bounded evidence bundle,
+  real call count, and measured elapsed time; its limit is 80 KiB.
+- The baseline recomputes provenance hashes and checks strict tool shapes,
+  normalized arguments, source/schema observations, actual counts, lifecycle
+  events, failure details, and chronological timestamps. Hashes bind content;
+  they do not authenticate its truth. Separate tool snapshots are not atomic.
+- CLI exit codes distinguish supported conclusions (0), uncertainty (1), and
+  invalid arguments (2). README usage stays short; `CHECKLIST.md` records rules,
+  limits, development evidence, and what remains unimplemented.
+
+### Verification and development probe
+
+- `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python3 -W error::ResourceWarning
+  -m unittest discover -s tests -q`: **140 tests pass** on Python 3.13.7.
+  A separate reviewing agent also ran the suite and added independent checks.
+- Real subprocess checks cover clean runs, handled retries, supported failed
+  and quarantined runs, missing evidence, invalid arguments, actual evidence
+  references, and unchanged source/database bytes and modification times.
+- Independent tests deny private evaluator-table/column reads and keep
+  instruction text inert. Even correctly rehashed but conflicting affected-row,
+  schema, or count claims produce `unknown`. Additional direct checks reject
+  impossible totals, first-row duplicates, untrimmed IDs, and reversed clocks.
+- `scripts/checklist_development.py` executed ten AI-authored, source-checked
+  synthetic development cases. All **10/10** matched their declared expected
+  behaviors: **4 diagnosed, 2 no_incident, 4 unknown**, with **40 actual tool
+  calls**, zero exceptions, ten unchanged file snapshots, and ten matching,
+  unchanged independent database counts. Actual probe time was about 0.060 s.
+- `reports/checklist-development.json` records inputs' expected behaviors,
+  observed bounded evidence, per-case timing/errors, and denominator counts.
+  Its checklist, gateway, and probe source hashes match the final files.
+  Documentation links and the unchanged empty runtime dependency list pass.
+
+The development cases were used during implementation. These results are not
+held-out accuracy, human review, local-model results, agent evaluation, or
+verified recovery. The full comparison remains scheduled for stage 13.
+
+### Next stage and commit boundaries
+
+Day 7 (26 October): add the loopback-only local Ollama adapter and single-call
+baseline, with real model smoke evidence and timeout/unavailable handling.
+Verify licenses and capabilities before any weights download. Today's two
+cohesive commits cover the checklist with direct/independent checks, followed
+by the CLI, development probe/results, and documentation. The checklist commit
+is `9e860d8`. They exhaust the
+25 October target; a duplicate run must not implement day 7 on this date.

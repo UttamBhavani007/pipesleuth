@@ -1,6 +1,10 @@
 # PipeSleuth evaluation plan
 
-**Status: planned. No evaluation results or human review are claimed.** Introduce the harness as the implementation progresses and run the full comparison in Stage 13.
+**Status: full comparison planned.** Stage 6 adds a small checklist-only
+[development probe](CHECKLIST.md); it is not held out or human-reviewed.
+No local-model, agent, or three-approach comparison results are claimed.
+Introduce the full harness as the implementation progresses and run the
+comparison in Stage 13.
 
 ## Question
 

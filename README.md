@@ -23,6 +23,7 @@ checks the database afterward to confirm the result.
 - Optional skipping of identical retry records, with safe verification of completed runs.
 - Optional quarantine of invalid rows, preserving their input and validation reasons.
 - Read-only evidence tools for run status, logs, schema, and validation results.
+- A deterministic troubleshooting checklist with evidence references and uncertainty.
 
 ## Getting started
 
@@ -42,6 +43,9 @@ PYTHONPATH=src python3 -m pipesleuth pipeline show RUN_ID
 # Read its events, or verify it again without inserting rows
 PYTHONPATH=src python3 -m pipesleuth pipeline events RUN_ID
 PYTHONPATH=src python3 -m pipesleuth pipeline rerun RUN_ID
+
+# Diagnose observed faults using the deterministic checklist
+PYTHONPATH=src python3 -m pipesleuth diagnose RUN_ID
 ```
 
 To try incident inputs:
@@ -82,6 +86,10 @@ The tools return bounded JSON with a content fingerprint. They cannot change
 data or run caller-supplied SQL or shell commands. See the
 [tool reference](docs/EVIDENCE_TOOLS.md).
 
+The checklist reports supported faults or `unknown` when evidence is incomplete
+or inconsistent. It leaves the data unchanged. See the
+[checklist reference](docs/CHECKLIST.md) for its rules and limitations.
+
 AI investigation, automatic schema repair, and approved repairs are planned.
 No AI model runs in the current version.
 
@@ -93,7 +101,6 @@ PYTHONPATH=src python3 -m unittest discover -s tests -v
 
 ## Roadmap
 
-- A deterministic troubleshooting checklist.
 - A local AI investigator with saved progress and limited tool access.
 - Repair approval, database verification, and a simple web interface.
 - Evaluation against a checklist and a single model call.
