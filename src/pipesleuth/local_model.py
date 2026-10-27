@@ -250,7 +250,13 @@ class LocalModelClient:
     def health(self) -> dict[str, object]:
         return self._health(time.monotonic() + self.config.timeout_seconds)
 
-    def generate(self, system: str, prompt: str, schema: dict[str, object]) -> ModelResponse:
+    def generate(self, system: str, prompt: str, schema: dict[str, object], *,
+                 timeout_seconds: float | None = None) -> ModelResponse:
+        # Trusted callers can narrow a call's budget; model output cannot set it.
+        timeout = self.config.timeout_seconds if timeout_seconds is None else timeout_seconds
+        if (type(timeout) not in (int, float) or not 0 < timeout <= self.config.timeout_seconds
+                or not math.isfinite(timeout)):
+            raise LocalModelError("call timeout must be finite, positive and within the configured limit")
         if not isinstance(system, str) or not isinstance(prompt, str) or not prompt:
             raise LocalModelError("system and non-empty prompt must be text")
         try:
@@ -268,7 +274,7 @@ class LocalModelClient:
                    "options": {"temperature": 0, "num_ctx": self.config.num_ctx, "num_predict": self.config.max_output_tokens}}
         if len(_encoded(payload)) > MAX_REQUEST_BYTES:
             raise LocalModelError("local model request exceeds its byte limit")
-        deadline = time.monotonic() + self.config.timeout_seconds
+        deadline = time.monotonic() + timeout
         health = self._health(deadline)
         _remaining(deadline)
         self._generation_requests += 1

@@ -50,9 +50,15 @@ observation time is separate. It is not proof that the database is correct.
   SQLite uses a short lock wait and an interrupting progress handler. Deadline
   checks also surround reads and rendering. These are cooperative bounds,
   not an operating-system process timeout.
+
 - Source inspection reads at most 2 MiB and verifies the stored source hash.
   Corrupt or changed source is rejected; logs and run status remain separately
   readable to investigate a failed load.
+
+Trusted Python callers may narrow an individual read with
+`gateway.call(tool, arguments, timeout_seconds=remaining)`. The value must be
+positive, finite, and no larger than the configured tool timeout. It is a host
+keyword, not an allowed JSON tool argument, so model output cannot extend it.
 
 ## Safety and limitations
 

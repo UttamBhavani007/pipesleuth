@@ -176,8 +176,11 @@ class EvidenceGateway:
             _deadline_check(deadline)
             _check_database_header(database)
             _deadline_check(deadline)
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise EvidenceError("evidence read exceeded its time limit")
             connection = sqlite3.connect(database.as_uri() + "?mode=ro", uri=True,
-                                         timeout=min(self.timeout_seconds, 0.1))
+                                         timeout=min(self.timeout_seconds, 0.1, remaining))
             connection.row_factory = sqlite3.Row
             connection.set_progress_handler(lambda: int(time.monotonic() >= deadline), 100)
             # Also bound SQLite values before Python receives or parses them.
@@ -436,9 +439,15 @@ class EvidenceGateway:
                 return response
         raise EvidenceError("evidence response cannot fit its byte limit")
 
-    def call(self, tool_name: str, arguments: Mapping[str, object]) -> dict[str, object]:
+    def call(self, tool_name: str, arguments: Mapping[str, object], *,
+             timeout_seconds: float | None = None) -> dict[str, object]:
+        # This budget is a trusted host keyword, never a tool JSON argument.
+        timeout = self.timeout_seconds if timeout_seconds is None else timeout_seconds
+        if (type(timeout) not in (int, float) or not 0 < timeout <= self.timeout_seconds
+                or not math.isfinite(timeout)):
+            raise EvidenceError("call timeout must be finite, positive and within the configured limit")
         normalized = self._arguments(tool_name, arguments)
-        deadline = time.monotonic() + self.timeout_seconds
+        deadline = time.monotonic() + timeout
         with self._snapshot(normalized["run_id"], deadline) as (snapshot, directory):
             record = self._metadata(snapshot, normalized["run_id"])
             if tool_name == "read_run":
