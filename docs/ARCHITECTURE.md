@@ -35,6 +35,14 @@ evidence produces uncertainty. This is a baseline without a model or execution
 authority. Its development probe is separate from the planned three-approach
 evaluation.
 
+Stage 7 adds an optional [single-call Ollama baseline](LOCAL_MODEL.md). It
+collects the same four bounded tool responses and shares only their envelope
+validation with the checklist. Checklist predictions and evaluator labels do
+not enter the prompt. The adapter verifies a cached local model, refuses remote
+endpoints and redirects, and makes at most one generation request. Output
+schema and reference checks do not establish semantic correctness; observed
+smoke failures remain recorded. The model cannot call tools or approve repairs.
+
 The initial incident families are schema drift, duplicate records, and invalid or missing data. Each incident runs in an isolated SQLite sandbox. The investigator explains evidence and proposes a bounded repair; successful recovery is established by independent database checks.
 
 ## Planned flow
@@ -81,7 +89,12 @@ The model may inspect only tool-visible logs, schema information, and validation
 
 Record evidence provenance: incident identifier, tool name, validated arguments, time, and a content fingerprint. Bound response size and handle unavailable or malformed evidence explicitly. Tool output is untrusted data; text inside logs cannot authorize a new tool or an execution step.
 
-The local model integration is scheduled for Stage 7. It must use an explicit loopback Ollama endpoint, disable inherited proxies and redirects, and reject nonlocal destinations. Disable any cloud mode or fallback. A working integration requires an actual local model smoke test; a mock test alone does not establish it works.
+The local model adapter uses an explicit loopback Ollama endpoint, ignores
+inherited proxies, rejects redirects and nonlocal destinations, and checks the
+allowlisted cached model's identity and completion capability. The foreground
+runtime wrapper disables cloud features and cache pruning. Real local smoke
+observations are recorded separately from controlled HTTP fixtures; neither
+software tests nor a completed request demonstrate diagnosis accuracy.
 
 ## Investigation and repair are separate
 

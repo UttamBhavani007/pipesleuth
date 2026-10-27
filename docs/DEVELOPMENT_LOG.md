@@ -394,3 +394,92 @@ cohesive commits cover the checklist with direct/independent checks, followed
 by the CLI, development probe/results, and documentation. The checklist commit
 is `9e860d8`. They exhaust the
 25 October target; a duplicate run must not implement day 7 on this date.
+
+## 2026-10-27 — stage 7, delayed from 26 October
+
+The 26 October wake-up reached execution after midnight in Berlin. This stage
+was implemented and verified on 27 October, with an interruption before the
+owner requested continuation. No 26 October commits or completed work are
+invented. Work resumed from the published stage-6 head and saved adapter files;
+there were zero commits on today's Berlin date before this delivery.
+
+### Local adapter and baseline
+
+- Added a standard-library Ollama client for one explicitly cached allowlisted
+  local model. Literal loopback endpoints, fixed routes, no proxy inheritance,
+  no redirects, bounded bodies, and one shared request deadline constrain access.
+  Inventory, digest, architecture, cloud markers, completion, UTF-8, and usage
+  metadata are checked. There is no automatic pull, account, key, paid endpoint,
+  retry, or cloud fallback.
+- The foreground runtime wrapper disables cloud features, inherited provider
+  settings, request-body debug logging, and cache pruning. It uses an 8192-token
+  context and one parallel request. Existing verified local runtime/model
+  artifacts were reused read-only; nothing was downloaded or added to Git.
+- `diagnose RUN_ID --method local` collects the same four bounded evidence
+  responses, sharing only envelope validation with the checklist. Checklist
+  predictions and evaluator labels never enter the prompt. At most one actual
+  generation request follows; incomplete evidence or input-budget rejection
+  causes zero model requests.
+- The response contract validates JSON fields, statuses, code allowlists, and
+  references to existing evidence. Malformed output becomes `unknown`, preserving
+  bounded raw output and real metrics. Reference existence is not semantic
+  support: `semantic_support_verified` remains false. The model cannot invoke
+  tools, write data, approve a plan, or execute a repair.
+
+### Verification and actual observations
+
+- `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python3 -W error::ResourceWarning
+  -m unittest discover -s tests -q`: **177 tests pass** on Python 3.13.7.
+  Independent checks cover real loopback HTTP transport, slow-header/body
+  deadlines, redirects/proxies, private-data isolation, unchanged files,
+  strict model output, unavailable evidence, and single-generation limits.
+- The new positive CLI fixture found an HTTP/1.0 completion bug: reading again
+  after consuming the declared body could touch a closed socket. The adapter
+  now stops at the complete body length; the regression and full suite pass.
+- Four actual local generations are retained across two smoke attempts with
+  unchanged model, prompt, and synthetic fixtures. The initial attempt's
+  recorded client hash already matches the final source, but its execution
+  overlapped the transport edit, so a fresh-process attempt was recorded rather
+  than assuming which in-memory code version had been loaded.
+- Initial attempt: a healthy control falsely produced three invalid-row claims
+  with invented IDs; the schema failure produced a schema-mismatch finding.
+  Literal declared expectations matched **1/2** cases.
+- Fresh attempt: the healthy control falsely produced invalid-row, duplicate,
+  and schema claims. The schema case returned `unknown` with findings, violating
+  the output contract, and was rejected as `invalid_generation`. Literal declared
+  expectations matched **0/2** cases. Both raw responses and failures remain in
+  the reports; no prompt or model tuning followed these observations.
+- Both attempts completed two real model responses without transport exceptions
+  and preserved all run files and cached-model size/modification-time metadata.
+  Actual Ollama missing-model HTTP 404 checks and separately labelled controlled
+  missing-inventory/timeout checks passed. Software fixtures are not model runs.
+- Runtime v0.40.7 served digest
+  `8f68893c685c3ddff2aa3fffce2aa60a30bb2da65ca488b61fff134a4d1730e7`.
+  Cloud-off, loopback, no-prune, debug-off, and effective 8192 context settings
+  were observed. The served license was verified separately from publisher
+  descriptions. Runtime-reported parameter/context metadata differences are
+  recorded without guessing model identity from a mutable tag.
+- The fresh report's adapter, baseline, gateway, and smoke source hashes match
+  the final files. The owned foreground server was stopped and port 11436 was
+  confirmed closed. No VersionLens source, schedule, model cache, or service
+  configuration was changed.
+
+The local transport and experimental single-call baseline are implemented;
+diagnosis quality is not established and the observed healthy false positives
+are a material limitation. These four calls are development smoke observations,
+not an accuracy benchmark, human review, or verified recovery result.
+
+### Capacity conflict and next stage
+
+Read-only inspection still found VersionLens's recorded question/answer reviews
+pending and no final completion entry. Its higher-capacity assumption is not
+treated as satisfied, and only two cohesive stage-7 commits are made today.
+The first contains the adapter/baseline and their direct/independent checks;
+its commit is `d34b004`. The second contains CLI/runtime integration, actual
+smoke reports, and docs.
+
+Stage 8, the bounded investigator, remains the next unfinished stage for the
+next development date. Do not advance it during another 27 October wake-up or
+pad today's count. Recheck actual VersionLens completion before ramping. Keep
+the 2 November cutoff; report any scope still incomplete at that date rather
+than extending the schedule or claiming an unrun stage.

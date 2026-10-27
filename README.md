@@ -3,7 +3,7 @@
 A local tool for investigating data pipeline failures.
 
 **In development:** synthetic fixtures and a local SQLite pipeline are available.
-The AI investigator and repair workflow are planned.
+The tool-calling investigator and repair workflow are planned.
 
 ## Why this project?
 
@@ -24,11 +24,13 @@ checks the database afterward to confirm the result.
 - Optional quarantine of invalid rows, preserving their input and validation reasons.
 - Read-only evidence tools for run status, logs, schema, and validation results.
 - A deterministic troubleshooting checklist with evidence references and uncertainty.
+- An experimental single-call local model baseline with validated JSON and evidence references.
 
 ## Getting started
 
-Requires Python **3.11+**. No third-party dependencies or accounts are needed
-for the current version.
+Requires Python **3.11+**. The pipeline and checklist use the standard library.
+The optional model method needs a local Ollama installation and cached model;
+no account or API key is used.
 
 ```sh
 git clone https://github.com/UttamBhavani007/pipesleuth.git
@@ -90,8 +92,16 @@ The checklist reports supported faults or `unknown` when evidence is incomplete
 or inconsistent. It leaves the data unchanged. See the
 [checklist reference](docs/CHECKLIST.md) for its rules and limitations.
 
-AI investigation, automatic schema repair, and approved repairs are planned.
-No AI model runs in the current version.
+To try the single-call model, follow the [local setup](docs/LOCAL_MODEL.md), then:
+
+```sh
+PYTHONPATH=src python3 -m pipesleuth diagnose RUN_ID --method local
+```
+
+This method is experimental: a real smoke run produced a false finding on
+healthy input. Output validation checks structure and references, not accuracy.
+The tool-calling investigator, automatic schema repair, and approved repairs
+are planned.
 
 ## Tests
 

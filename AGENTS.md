@@ -37,5 +37,7 @@ Do not continue the schedule beyond 2 November without a new user request.
   schema/duplicate incident events, quarantine with validation reasons, and
   guarded replay are available. Bounded read-only evidence tools are also
   available. The deterministic troubleshooting checklist uses that gateway and
-  can return unknown; it is not an AI agent. Local model integration, AI
-  investigation and approved repairs remain later stages.
+  can return unknown; it is not an AI agent. The experimental single-call
+  Ollama baseline is available; real smoke observations include a healthy-input
+  false positive, so do not claim diagnosis accuracy. The bounded investigator
+  and approved repairs remain later stages.

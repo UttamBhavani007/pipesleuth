@@ -15,7 +15,14 @@ Build a local data-pipeline incident investigator over **14 actual days, 20 Octo
 - Use real commit dates. If a session is missed or a stage is blocked, record the delay and continue from it. Do not backdate, fabricate progress, or silently compress unfinished work into later days.
 - Each stage must pass its acceptance check before being marked complete. Record commands and observed results; distinguish a skipped check from a passed check.
 - Use local execution and free software only. Follow [COST_POLICY.md](COST_POLICY.md); never add a paid or cloud fallback.
-- Stage 6 is the current delivery boundary: SQLite runs with schema/duplicate incidents, observed events, optional exact-retry deduplication, invalid-row quarantine with reasons, guarded successful replay, bounded read-only evidence tools, and a deterministic troubleshooting checklist. Model integration, the agent, repair engine, API, and UI belong to later stages.
+- Stage 7 is the current delivery boundary: the SQLite pipeline, bounded evidence tools, deterministic checklist, and experimental single-call local model baseline. The bounded investigator, repair engine, API, and UI belong to later stages.
+
+The 26 October wake-up reached execution after midnight in Berlin. Stage 7
+therefore continued on 27 October with real dates; no 26 October work or commits
+are invented. The higher commit pace remains conditional on verified VersionLens
+completion. Finish only this delayed stage on 27 October; a duplicate session
+must not advance to stage 8 that day. Continue the next unfinished stage on the
+next development date and keep the 2 November cutoff, reporting unfinished scope.
 
 ## Stages and acceptance checks
 

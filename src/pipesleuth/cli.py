@@ -13,7 +13,9 @@ from pipesleuth.checklist import ChecklistBaseline
 from pipesleuth.domain import IncidentKind
 from pipesleuth.evidence import EvidenceGateway
 from pipesleuth.fixtures import generate_fixture
+from pipesleuth.local_model import LocalModelClient, LocalModelConfig
 from pipesleuth.pipeline import SandboxPipeline
+from pipesleuth.single_call import SingleCallBaseline
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -82,8 +84,15 @@ def _parser() -> argparse.ArgumentParser:
         )
         if name in ("read_logs", "inspect_validation"):
             tool.add_argument("--limit", type=int, default=10, help="Maximum records, 1–20 (default: 10)")
-    diagnose = commands.add_parser("diagnose", help="Run the deterministic troubleshooting checklist")
+    diagnose = commands.add_parser("diagnose", help="Run a troubleshooting baseline")
     diagnose.add_argument("run_id", help="Run identifier returned by pipeline run")
+    diagnose.add_argument("--method", choices=("checklist", "local"), default="checklist",
+                          help="Troubleshooting method (default: checklist)")
+    diagnose.add_argument("--endpoint", default="http://127.0.0.1:11436",
+                          help="Explicit loopback Ollama endpoint for the local method")
+    diagnose.add_argument("--model-timeout", type=float, default=120,
+                          help="Total local model request budget, at most 120 seconds")
+    diagnose.add_argument("--model-digest", help="Optional expected local model SHA-256 digest")
     diagnose.add_argument(
         "--data-dir", type=Path, default=Path("var/sandboxes"),
         help="Local sandbox directory (default: var/sandboxes)",
@@ -116,7 +125,15 @@ def main(argv: Sequence[str] | None = None) -> int:
             payload = fixture.to_source_payload()
     elif args.command == "diagnose":
         try:
-            payload = ChecklistBaseline(EvidenceGateway(args.data_dir)).diagnose(args.run_id)
+            gateway = EvidenceGateway(args.data_dir)
+            if args.method == "local":
+                client = LocalModelClient(LocalModelConfig(
+                    endpoint=args.endpoint, timeout_seconds=args.model_timeout,
+                    expected_digest=args.model_digest,
+                ))
+                payload = SingleCallBaseline(gateway, client).diagnose(args.run_id)
+            else:
+                payload = ChecklistBaseline(gateway).diagnose(args.run_id)
         except (ValueError, OSError) as exc:
             parser.error(str(exc))
     elif args.command == "evidence":

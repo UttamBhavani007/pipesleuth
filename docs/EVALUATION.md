@@ -2,7 +2,9 @@
 
 **Status: full comparison planned.** Stage 6 adds a small checklist-only
 [development probe](CHECKLIST.md); it is not held out or human-reviewed.
-No local-model, agent, or three-approach comparison results are claimed.
+Stage 7 records a small [local-model smoke](LOCAL_MODEL.md), including an observed
+healthy-input false positive; it is not a quality estimate. No held-out model,
+agent, or three-approach comparison results are claimed.
 Introduce the full harness as the implementation progresses and run the
 comparison in Stage 13.
 
