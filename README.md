@@ -3,7 +3,7 @@
 A local tool for investigating data pipeline failures.
 
 **In development:** synthetic fixtures and a local SQLite pipeline are available.
-The tool-calling investigator and repair workflow are planned.
+The repair workflow and web interface are planned.
 
 ## Why this project?
 
@@ -25,6 +25,7 @@ checks the database afterward to confirm the result.
 - Read-only evidence tools for run status, logs, schema, and validation results.
 - A deterministic troubleshooting checklist with evidence references and uncertainty.
 - An experimental single-call local model baseline with validated JSON and evidence references.
+- A bounded local investigator that selects read-only evidence tools and records its steps.
 
 ## Getting started
 
@@ -96,12 +97,15 @@ To try the single-call model, follow the [local setup](docs/LOCAL_MODEL.md), the
 
 ```sh
 PYTHONPATH=src python3 -m pipesleuth diagnose RUN_ID --method local
+
+# Let the bounded investigator select additional evidence tools
+PYTHONPATH=src python3 -m pipesleuth diagnose RUN_ID --method agent
 ```
 
-This method is experimental: a real smoke run produced a false finding on
-healthy input. Output validation checks structure and references, not accuracy.
-The tool-calling investigator, automatic schema repair, and approved repairs
-are planned.
+Both model methods are experimental: the small local model has produced false
+findings on healthy input. Output validation checks structure and references,
+not accuracy. The [investigator guide](docs/INVESTIGATOR.md) explains its limits.
+Automatic schema repair and approved repairs are planned.
 
 ## Tests
 
@@ -111,7 +115,7 @@ PYTHONPATH=src python3 -m unittest discover -s tests -v
 
 ## Roadmap
 
-- A local AI investigator with saved progress and limited tool access.
+- Saved investigations and safe resume.
 - Repair approval, database verification, and a simple web interface.
 - Evaluation against a checklist and a single model call.
 

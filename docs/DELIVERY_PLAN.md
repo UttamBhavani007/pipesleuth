@@ -15,7 +15,7 @@ Build a local data-pipeline incident investigator over **14 actual days, 20 Octo
 - Use real commit dates. If a session is missed or a stage is blocked, record the delay and continue from it. Do not backdate, fabricate progress, or silently compress unfinished work into later days.
 - Each stage must pass its acceptance check before being marked complete. Record commands and observed results; distinguish a skipped check from a passed check.
 - Use local execution and free software only. Follow [COST_POLICY.md](COST_POLICY.md); never add a paid or cloud fallback.
-- Stage 7 is the current delivery boundary: the SQLite pipeline, bounded evidence tools, deterministic checklist, and experimental single-call local model baseline. The bounded investigator, repair engine, API, and UI belong to later stages.
+- Stage 8 is the current delivery boundary: the SQLite pipeline, bounded evidence tools, deterministic checklist, single-call model baseline, and bounded local investigator. Model diagnosis remains experimental. Durable checkpoints, repair execution, API, and UI belong to later stages.
 
 The 26 October wake-up reached execution after midnight in Berlin. Stage 7
 therefore continued on 27 October with real dates; no 26 October work or commits
@@ -23,6 +23,12 @@ are invented. The higher commit pace remains conditional on verified VersionLens
 completion. Finish only this delayed stage on 27 October; a duplicate session
 must not advance to stage 8 that day. Continue the next unfinished stage on the
 next development date and keep the 2 November cutoff, reporting unfinished scope.
+
+On 28 October, read-only inspection verified VersionLens's completed prototype
+build and release at `2c69be6`. Its human reviews and reviewed holdout remain
+unfinished external work, not completed evaluation. The software-build capacity
+condition is now satisfied, so stage 8 uses the focused-build pace. Only stage 8
+is attempted on 28 October; a duplicate wake-up must not advance to stage 9.
 
 ## Stages and acceptance checks
 

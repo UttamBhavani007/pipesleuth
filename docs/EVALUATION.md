@@ -5,6 +5,10 @@
 Stage 7 records a small [local-model smoke](LOCAL_MODEL.md), including an observed
 healthy-input false positive; it is not a quality estimate. No held-out model,
 agent, or three-approach comparison results are claimed.
+Stage 8 also records two [bounded-agent integration cases](INVESTIGATOR.md):
+the model selected real evidence tools, but both finishes were rejected as
+inconsistent. These are failed development conclusions with retained traces,
+not evidence of agent accuracy or an improvement over the baseline.
 Introduce the full harness as the implementation progresses and run the
 comparison in Stage 13.
 

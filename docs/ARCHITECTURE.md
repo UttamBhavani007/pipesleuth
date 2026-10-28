@@ -43,6 +43,14 @@ endpoints and redirects, and makes at most one generation request. Output
 schema and reference checks do not establish semantic correctness; observed
 smoke failures remain recorded. The model cannot call tools or approve repairs.
 
+Stage 8 adds the [bounded investigator](INVESTIGATOR.md). A trusted initial
+status read precedes model-selected, unvisited evidence tools. The host supplies
+the run ID and fixed arguments, validates every decision, and enforces model-step,
+tool, elapsed-time, input and trace limits. At least two distinct evidence reads
+are required before a finish is offered. The model can request a named read;
+the host remains responsible for all I/O. No checkpoint, retry/resume workflow,
+repair plan, approval, or executor is introduced in this stage.
+
 The initial incident families are schema drift, duplicate records, and invalid or missing data. Each incident runs in an isolated SQLite sandbox. The investigator explains evidence and proposes a bounded repair; successful recovery is established by independent database checks.
 
 ## Planned flow

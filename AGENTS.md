@@ -40,4 +40,6 @@ Do not continue the schedule beyond 2 November without a new user request.
   can return unknown; it is not an AI agent. The experimental single-call
   Ollama baseline is available; real smoke observations include a healthy-input
   false positive, so do not claim diagnosis accuracy. The bounded investigator
-  and approved repairs remain later stages.
+  uses only allowlisted read-only tools with model/tool/time/output budgets;
+  model results remain experimental. Durable resume and approved repairs
+  remain later stages.

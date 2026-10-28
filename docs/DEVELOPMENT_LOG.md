@@ -483,3 +483,94 @@ next development date. Do not advance it during another 27 October wake-up or
 pad today's count. Recheck actual VersionLens completion before ramping. Keep
 the 2 November cutoff; report any scope still incomplete at that date rather
 than extending the schedule or claiming an unrun stage.
+
+## 2026-10-28 — stage 8, bounded investigator
+
+The 27 October scheduled wake-up reached execution after midnight in Berlin.
+Stage 7 was already published, so only the next unfinished stage was built on
+the actual 28 October date. The checkout was clean at `d38f951` and no commits
+existed on today's Berlin date when this stage began.
+
+Read-only inspection verified VersionLens's completed prototype software build
+and release at `2c69be6`. Its human question/answer reviews and reviewed holdout
+remain unfinished external requirements, not completed evaluation. With the
+software-build workload finished, the focused-build pace is now enabled.
+
+### Implemented boundaries
+
+- Evidence and model calls now accept a trusted per-call timeout that can only
+  narrow their configured budget. Model health and generation share the budget;
+  SQLite lock waits also use the remaining time. This keyword is not a model
+  tool argument and does not change existing default calls or model settings.
+- A pure, closed decision protocol offers only unvisited evidence tools or a
+  structured finish. Unknown actions, extra arguments, run IDs, SQL, paths,
+  approvals, repeated tools, duplicate JSON keys, and fabricated references are
+  rejected before any corresponding operation. References prove existence only.
+- The investigator first performs a trusted `read_run`, then lets the model
+  select additional allowlisted evidence. The host supplies the original UUID
+  and limit 20 for log/validation reads. Two distinct reads are required before
+  a finish is offered. Checklist predictions and evaluator labels are absent.
+- Defaults are four model steps, four total tool reads including the initial
+  read, and 60 seconds. Hard configuration ceilings are eight steps, four reads,
+  and 120 seconds. Remaining time is passed through to every component, with
+  deadline checks after tool/decision validation and before final conclusions.
+- Input is bounded for the unchanged 8192-token context/768-token output setup;
+  output is capped at 128 KiB with explicit trace truncation. Actual model
+  request attempts, tool attempts, raw responses, usage, elapsed time, evidence
+  references, and failure codes remain inspectable. No checkpoint, retry/resume,
+  repair, approval, API, or UI is introduced by this stage.
+- `diagnose RUN_ID --method agent` exposes the investigator with explicit step,
+  tool, and whole-investigation budget flags. The default checklist and optional
+  single-call method remain available.
+
+### Verification and actual smoke
+
+- `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python3 -W error::ResourceWarning
+  -m unittest discover -s tests -q`: **213 tests pass** on Python 3.13.7.
+  Independent integration checks and real CLI/HTTP fixtures cover the new work.
+- Five new shared-deadline checks include slow HTTP headers/body and a real
+  exclusive SQLite lock. Ten protocol checks cover closed decisions. Eleven
+  direct loop checks cover adaptive reads, counts, limits, errors, truncation,
+  and expiry during finish validation. Five independent checks deny private
+  evaluator reads, preserve exact files, and reject injected/cross-run actions.
+  Five CLI checks exercise actual subprocesses and controlled loopback fixtures.
+- `scripts/smoke_investigator.py` ran the healthy and renamed-column development
+  cases once each. There were **four real local generations** and **two admitted
+  model-selected `read_logs` calls**, in addition to the two trusted initial
+  status reads. Actual argument and request counters matched the trace.
+- **Neither case produced an accepted finish.** Both second responses contained
+  `status: unknown` with nonempty findings. The parser rejected these inconsistent
+  decisions and returned `unknown`/`invalid_decision` with no accepted findings.
+  Raw healthy-input text also invented fault claims. Literal declared development
+  expectations matched **0/2** cases. All responses remain in the report; there
+  was no retry, prompt tuning, model substitution, or discarded failed case.
+- The report records zero case/driver exceptions, unchanged exact warehouse and
+  quarantine contents, unchanged run-file bytes/mtimes, and unchanged model-cache
+  size/mtime metadata. Local generation used the same cached Qwen digest,
+  temperature 0, thinking disabled, and context/output settings as stage 7.
+  Runtime logs confirmed loopback, cloud-off, debug-off, no-prune, and effective
+  context 8192. The owned foreground server was stopped; port 11436 was closed.
+- Recorded implementation hashes match the final files. Documentation links,
+  the unchanged empty runtime dependency list, and actual-date commit counts
+  were checked. No model weights, database, credential, or unrelated files are
+  included, and VersionLens was inspected without edits.
+
+This stage establishes bounded integration and strict rejection of unsupported
+model output. It does not establish a correct diagnosis, improved accuracy,
+human review, semantic support, production safety, or successful recovery.
+The model remains experimental and its failures are material limitations.
+
+### Commit boundaries and next stage
+
+Five substantive increments deliver only stage 8:
+
+1. `58fdeca`: shared per-call deadlines and real lock/HTTP checks.
+2. `4eff984`: the closed decision protocol and its tests.
+3. `debffad`: the bounded loop with direct and independent checks.
+4. `413f794`: CLI budgets/trace integration with subprocess checks.
+5. The actual smoke driver/results, user guide, and this evidence/log update.
+
+Stage 9, durable checkpoints and resume, is the next unfinished stage for the
+next actual development date. Do not advance it during another 28 October
+wake-up or add commits to pad the count. The 2 November cutoff is unchanged;
+report any remaining scope honestly rather than extending the schedule.

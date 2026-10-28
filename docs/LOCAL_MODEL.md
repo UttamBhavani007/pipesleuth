@@ -1,7 +1,8 @@
 # Local model setup
 
-PipeSleuth's Stage 7 adds a single-call local model baseline. It is not the
-later tool-calling investigator. Local transport and schema checks do not
+PipeSleuth's Stage 7 adds a single-call local model baseline. The separate
+[bounded investigator](INVESTIGATOR.md) uses the same runtime and model settings.
+Local transport and schema checks do not
 establish that a diagnosis is correct. No account, API key, paid service, or
 cloud fallback is used.
 
