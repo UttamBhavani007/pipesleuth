@@ -41,5 +41,6 @@ Do not continue the schedule beyond 2 November without a new user request.
   Ollama baseline is available; real smoke observations include a healthy-input
   false positive, so do not claim diagnosis accuracy. The bounded investigator
   uses only allowlisted read-only tools with model/tool/time/output budgets;
-  model results remain experimental. Durable resume and approved repairs
-  remain later stages.
+  model results remain experimental. Saved investigations use a separate local
+  checkpoint store; uncertain in-flight requests cannot be silently replayed.
+  Approved repairs, API, and UI remain later stages.

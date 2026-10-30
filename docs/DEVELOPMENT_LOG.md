@@ -574,3 +574,92 @@ Stage 9, durable checkpoints and resume, is the next unfinished stage for the
 next actual development date. Do not advance it during another 28 October
 wake-up or add commits to pad the count. The 2 November cutoff is unchanged;
 report any remaining scope honestly rather than extending the schedule.
+
+## 2026-10-30 — stage 9, durable investigation progress
+
+The 29 October session did not complete before the date advanced in Berlin.
+Write-review waits and an account usage interruption were observed; no commits
+or completed work are invented for 29 October. This stage resumed on 30 October
+from the published stage-8 head `715f496`. All six commits use their actual dates.
+Publication continues under the owner's existing public-upload/scheduled-push
+approval. VersionLens's prototype release at `2c69be6` was checked read-only;
+its pending human evaluation remains separate unfinished work. No VersionLens
+files or schedules were changed.
+
+### What changed
+
+- A separate SQLite checkpoint store saves bounded JSON with a version marker
+  and corruption checksum. Atomic revision claims record intent before an
+  operation; only the claim token can commit the resulting state and cursor.
+  Missing-store inspection creates nothing. Pending claims are never taken over.
+- The same investigator now advances one tool read or model decision at a time.
+  Completed evidence, selected tools, raw traces, model/tool counts, step limits
+  and active elapsed time survive a fresh process. Ordinary `diagnose` remains
+  unsaved and retains its previous defaults.
+- Exact source and raw warehouse bytes bind the input. Hashing uses the fixed
+  read-only gateway's shared SQLite snapshot and bounded regular-file reads.
+  Saved configuration pins the model digest, endpoint, engine/gateway settings,
+  retry limit, policy and pipeline root. Changed roots or inputs are rejected.
+- The coordinator checks inputs before and after each operation. An observed
+  post-check failure saves the actual counts/evidence as terminal `unknown`.
+  A request without a durable completion stays pending with an uncertain
+  outcome: confirmed saved counters may be lower bounds, and resume refuses it.
+- One global retry is available only for a failed read without an admitted
+  envelope, or a model health failure with zero generation requests. Attempted
+  generation, invalid output and unresolved requests are never automatically
+  retried. Prior failures stay visible in the trace.
+- `investigation start`, `show` and `resume` expose saved progress. Resume restores
+  the original settings; an optional 1–16 operation pause stops between commits.
+  Terminal inspection/resume performs no new model or evidence operation.
+
+### Verification and actual interruption
+
+- `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python3 -W error::ResourceWarning
+  -m unittest discover -s tests -q`: **255 software tests pass** on Python 3.13.7.
+  The 42 new checks comprise 9 store, 10 engine-state, 6 exact-input/lock,
+  8 coordinator-fault, 4 independent integration and 5 fresh-process CLI checks.
+  Imported test classes were excluded from discovery to avoid padded counts.
+- Checks include simultaneous claims, stale tokens, failed transactions,
+  corrupt/foreign/WAL databases, unsafe files, a real SQLite writer lock,
+  source changes, equal-count/equal-total row changes, configuration changes,
+  failed model-result saves, post-check failures and cumulative time budgets.
+- The [actual restart report](../reports/resume-smoke.json) records **two real
+  local generations**. The first selected `read_logs`; after that model decision
+  was durably saved, the owned child was stopped with SIGTERM. A fresh process
+  consumed the saved tool choice before any further generation. It retained
+  the exact evidence/trace prefix without repeating the bootstrap or saved
+  model decision. Cumulative counters matched the actual request attempts.
+- The second response again used `unknown` with two nonempty findings. It was
+  rejected as `invalid_decision`, leaving `unknown` with no accepted findings.
+  The failure and raw response are preserved. There was no prompt tuning,
+  model substitution, repeated actual run, inference retry or accuracy claim.
+- A separate controlled fixture was stopped with an unresolved generation
+  intent. Fresh resume refused it with zero further tool/model calls and an
+  unchanged store. This fixture performed **no real model inference**.
+- All restart checks passed with zero driver errors. Exact pipeline database
+  contents, file bytes/mtimes and model-cache size/mtime metadata stayed
+  unchanged. Terminal reinspection made zero calls and changed no store bytes.
+  Recorded implementation hashes match the files used in the actual run.
+- The cached Qwen digest, 8,192-token context, 768-token output cap, temperature 0
+  and disabled thinking remain unchanged. Startup observations confirm loopback,
+  cloud-off, no-prune and request-body debug-off settings. No weights were
+  downloaded, and no paid/cloud service or dependency was added.
+  The owned foreground runtime was stopped; port 11436 then refused connections.
+
+### Limits and next stage
+
+These checks establish local checkpoint/restart behavior, not diagnosis accuracy,
+semantic support, successful repair, production reliability or power-loss
+recovery. Checksums are not authentication against a local owner. WAL/hot-journal
+and corrupt stores are refused without implicit recovery. Raw-byte binding can
+reject a harmless database rewrite. Active-time accounting excludes downtime;
+a final checkpoint write cannot persist its own duration and is bounded by the
+store's separate deadline. See [CHECKPOINTS.md](CHECKPOINTS.md).
+
+Five implementation commits are `4d8c443`, `2045522`, `d6b2e9d`, `f859dcd` and
+`4d3fc5d`. The sixth adds the actual interruption driver/report, guide and this
+log. Stage 10, approved trusted repairs, is next for the next development date.
+Do not advance it during another 30 October session. Repairs, API, UI, matched
+three-approach evaluation and final packaging remain unfinished. There is not
+enough time for every original stage at one per day; keep the **2 November**
+cutoff and report remaining scope honestly instead of extending the schedule.

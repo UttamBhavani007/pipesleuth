@@ -2,8 +2,8 @@
 
 A local tool for investigating data pipeline failures.
 
-**In development:** synthetic fixtures and a local SQLite pipeline are available.
-The repair workflow and web interface are planned.
+**In development:** the local pipeline, evidence tools, and experimental model
+investigation are available. The repair workflow and web interface are planned.
 
 ## Why this project?
 
@@ -26,6 +26,7 @@ checks the database afterward to confirm the result.
 - A deterministic troubleshooting checklist with evidence references and uncertainty.
 - An experimental single-call local model baseline with validated JSON and evidence references.
 - A bounded local investigator that selects read-only evidence tools and records its steps.
+- Saved investigation progress with input checks and explicit restart limits.
 
 ## Getting started
 
@@ -107,6 +108,11 @@ findings on healthy input. Output validation checks structure and references,
 not accuracy. The [investigator guide](docs/INVESTIGATOR.md) explains its limits.
 Automatic schema repair and approved repairs are planned.
 
+For saved progress, use `investigation start RUN_ID --model-digest SHA256`,
+then `investigation show INVESTIGATION_ID` or `investigation resume INVESTIGATION_ID`.
+The [checkpoint guide](docs/CHECKPOINTS.md) covers setup, pausing, and interrupted
+requests whose outcomes could not be saved.
+
 ## Tests
 
 ```sh
@@ -115,7 +121,6 @@ PYTHONPATH=src python3 -m unittest discover -s tests -v
 
 ## Roadmap
 
-- Saved investigations and safe resume.
 - Repair approval, database verification, and a simple web interface.
 - Evaluation against a checklist and a single model call.
 

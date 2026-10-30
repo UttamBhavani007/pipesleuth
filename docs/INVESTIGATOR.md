@@ -55,8 +55,9 @@ returns `unknown` with a limitation instead of inventing a completed diagnosis.
 
 The compact result is capped at 128 KiB. Its bounded trace records admitted tool
 choices, generation requests, usage, raw model text, timing, failures and evidence
-identifiers. A truncated trace is marked explicitly. No checkpoint or repair state
-is written by this stage; durable resume belongs to a later stage.
+identifiers. A truncated trace is marked explicitly. The `diagnose` command
+remains an unsaved run. The separate [checkpoint commands](CHECKPOINTS.md)
+persist the same investigator between operations. Repairs remain a later stage.
 
 `diagnosed`, `no_incident`, and `unknown` have the same meanings as the
 [single-call baseline](LOCAL_MODEL.md). JSON/schema and reference checks only

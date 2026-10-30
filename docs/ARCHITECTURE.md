@@ -51,6 +51,13 @@ are required before a finish is offered. The model can request a named read;
 the host remains responsible for all I/O. No checkpoint, retry/resume workflow,
 repair plan, approval, or executor is introduced in this stage.
 
+Stage 9 adds [durable investigations](CHECKPOINTS.md). Each completed read or
+model decision saves its evidence, counters, remaining work, and consumed time
+atomically in a separate SQLite store. Input bytes, local model identity, and
+configuration are bound to the saved run. A pending operation with no durable
+result cannot be automatically replayed: its external outcome is uncertain.
+This adds restart behavior, without repair or approval authority.
+
 The initial incident families are schema drift, duplicate records, and invalid or missing data. Each incident runs in an isolated SQLite sandbox. The investigator explains evidence and proposes a bounded repair; successful recovery is established by independent database checks.
 
 ## Planned flow

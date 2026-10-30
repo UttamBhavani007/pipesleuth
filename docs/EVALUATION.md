@@ -60,6 +60,11 @@ Report denominators, raw counts, and failure categories alongside percentages. F
 
 ## Recovery verification
 
+The [checkpoint restart report](../reports/resume-smoke.json) is a development
+integration observation. It checks saved operations and a separately labelled
+uncertain-request fixture; it does not evaluate diagnosis accuracy or repairs.
+The matched three-approach evaluation below remains planned.
+
 The verifier runs outside the model. After each approach, compare actual warehouse rows, key uniqueness, relevant schema, row counts, and quarantine rows/reasons with evaluator-only expectations. Row counts alone are insufficient. Confirm no unrelated sandbox data changed. Include a clean rerun to check the applicable idempotency requirements.
 
 Use an identical scripted trusted approval policy when measuring repair execution, clearly labelled as an **evaluation protocol**, not human approval or human review. Separately test actual approval rejection paths. A diagnosis-only run is not a repair success; a repair proposal is not an executed action; an executed action is not recovery until state verification passes.
