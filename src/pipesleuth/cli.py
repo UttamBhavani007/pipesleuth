@@ -104,6 +104,28 @@ def _parser() -> argparse.ArgumentParser:
         "--data-dir", type=Path, default=Path("var/sandboxes"),
         help="Local sandbox directory (default: var/sandboxes)",
     )
+    investigation = commands.add_parser("investigation", help="Save, inspect, or resume an investigation")
+    saved = investigation.add_subparsers(dest="operation", required=True)
+    start = saved.add_parser("start", help="Create and run a saved local investigation")
+    start.add_argument("run_id", help="Existing pipeline run identifier")
+    start.add_argument("--data-dir", type=Path, default=Path("var/sandboxes"))
+    start.add_argument("--endpoint", default="http://127.0.0.1:11436")
+    start.add_argument("--model-digest", required=True, help="Pinned local model SHA-256 from the local inventory")
+    start.add_argument("--model-timeout", type=float, default=120)
+    start.add_argument("--max-steps", type=int, default=4)
+    start.add_argument("--max-tool-calls", type=int, default=4)
+    start.add_argument("--agent-timeout", type=float, default=60)
+    start.add_argument("--retry-limit", type=int, default=1, help="Known safe transient failures, 0–1 (default: 1)")
+    resume = saved.add_parser("resume", help="Continue with the original saved input and limits")
+    resume.add_argument("investigation_id")
+    inspect = saved.add_parser("show", help="Read saved state without contacting the model")
+    inspect.add_argument("investigation_id")
+    for operation in (start, resume, inspect):
+        operation.add_argument("--state-dir", type=Path, default=Path("var/investigations"),
+                               help="Local checkpoint directory (default: var/investigations)")
+    for operation in (start, resume):
+        operation.add_argument("--max-operations", type=int,
+                               help="Pause after 1–16 durable operations; omitted runs to a finish or limit")
     return parser
 
 
@@ -130,6 +152,52 @@ def main(argv: Sequence[str] | None = None) -> int:
             payload = fixture.to_authoring_dict()
         else:
             payload = fixture.to_source_payload()
+    elif args.command == "investigation":
+        # Import here so ordinary pipeline commands do not open checkpoint storage.
+        from pipesleuth.checkpoints import CheckpointStore
+        from pipesleuth.persistent import PersistentInvestigator
+        try:
+            store = CheckpointStore(args.state_dir)
+            if args.operation == "show":
+                payload = store.load(args.investigation_id)
+            else:
+                if args.operation == "start":
+                    gateway = EvidenceGateway(args.data_dir)
+                    client = LocalModelClient(LocalModelConfig(
+                        endpoint=args.endpoint, timeout_seconds=args.model_timeout,
+                        expected_digest=args.model_digest,
+                    ))
+                    engine = BoundedInvestigator(gateway, client, max_steps=args.max_steps,
+                                                max_tool_calls=args.max_tool_calls,
+                                                timeout_seconds=args.agent_timeout)
+                    runner = PersistentInvestigator(engine, store, retry_limit=args.retry_limit)
+                    # Reject a bad pause limit before creating any saved state.
+                    if args.max_operations is not None and (
+                            type(args.max_operations) is not int or not 1 <= args.max_operations <= 16):
+                        raise ValueError("max_operations must be between 1 and 16")
+                    created = runner.start(args.run_id)
+                    identifier = created["investigation_id"]
+                else:
+                    saved = store.load(args.investigation_id)
+                    binding = saved["binding"]
+                    config = binding["config"]
+                    gateway = EvidenceGateway(binding["data_dir"],
+                                              timeout_seconds=config["gateway_timeout_seconds"],
+                                              max_response_bytes=config["gateway_max_response_bytes"])
+                    client = LocalModelClient(LocalModelConfig(
+                        endpoint=config["endpoint"], model=config["model"],
+                        expected_digest=config["expected_digest"],
+                        timeout_seconds=config["timeout_seconds"], num_ctx=config["num_ctx"],
+                        max_output_tokens=config["max_output_tokens"],
+                    ))
+                    engine = BoundedInvestigator(gateway, client, max_steps=config["max_steps"],
+                                                max_tool_calls=config["max_tool_calls"],
+                                                timeout_seconds=config["agent_timeout"])
+                    runner = PersistentInvestigator(engine, store, retry_limit=config["retry_limit"])
+                    identifier = args.investigation_id
+                payload = runner.resume(identifier, max_operations=args.max_operations)
+        except (ValueError, OSError, KeyError, TypeError) as exc:
+            parser.error(str(exc))
     elif args.command == "diagnose":
         try:
             gateway = EvidenceGateway(args.data_dir)
@@ -181,8 +249,12 @@ def main(argv: Sequence[str] | None = None) -> int:
                 payload = pipeline.inspect(args.run_id).to_dict()
         except (ValueError, OSError) as exc:
             parser.error(str(exc))
-    if args.command in {"evidence", "diagnose"}:
+    if args.command in {"evidence", "diagnose", "investigation"}:
         print(json.dumps(payload, separators=(",", ":"), sort_keys=True, ensure_ascii=False, allow_nan=False))
     else:
         print(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False, allow_nan=False))
+    if args.command == "investigation":
+        if args.operation == "show":
+            return 0
+        return 1 if payload["state"]["done"] and payload["state"]["result"]["status"] == "unknown" else 0
     return 1 if payload.get("status") in {"failed", "unknown"} else 0
