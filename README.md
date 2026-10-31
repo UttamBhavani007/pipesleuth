@@ -3,7 +3,8 @@
 A local tool for investigating data pipeline failures.
 
 **In development:** the local pipeline, evidence tools, and experimental model
-investigation are available. The repair workflow and web interface are planned.
+investigation are available. Fixed approved repairs are available; the web
+interface is planned.
 
 ## Why this project?
 
@@ -27,6 +28,7 @@ checks the database afterward to confirm the result.
 - An experimental single-call local model baseline with validated JSON and evidence references.
 - A bounded local investigator that selects read-only evidence tools and records its steps.
 - Saved investigation progress with input checks and explicit restart limits.
+- Three fixed repair actions with exact-plan approval and independent database checks.
 
 ## Getting started
 
@@ -106,12 +108,24 @@ PYTHONPATH=src python3 -m pipesleuth diagnose RUN_ID --method agent
 Both model methods are experimental: the small local model has produced false
 findings on healthy input. Output validation checks structure and references,
 not accuracy. The [investigator guide](docs/INVESTIGATOR.md) explains its limits.
-Automatic schema repair and approved repairs are planned.
 
 For saved progress, use `investigation start RUN_ID --model-digest SHA256`,
 then `investigation show INVESTIGATION_ID` or `investigation resume INVESTIGATION_ID`.
 The [checkpoint guide](docs/CHECKPOINTS.md) covers setup, pausing, and interrupted
 requests whose outcomes could not be saved.
+
+For a supported failed incident, prepare a repair and inspect its printed plan:
+
+```sh
+PYTHONPATH=src python3 -m pipesleuth repair plan RUN_ID --action rename_amount_column
+PYTHONPATH=src python3 -m pipesleuth repair approve REPAIR_ID \
+  --plan-sha256 PLAN_HASH --input-fingerprint-sha256 INPUT_HASH
+PYTHONPATH=src python3 -m pipesleuth repair execute REPAIR_ID
+```
+
+Repairs create a new run under `var/repaired/` and preserve the original incident.
+The model cannot approve or execute them. The [repair guide](docs/REPAIRS.md)
+explains the three actions, their assumptions, and stale-input rejection.
 
 ## Tests
 
@@ -121,7 +135,7 @@ PYTHONPATH=src python3 -m unittest discover -s tests -v
 
 ## Roadmap
 
-- Repair approval, database verification, and a simple web interface.
+- A local API and simple web interface.
 - Evaluation against a checklist and a single model call.
 
 Built with synthetic data and local infrastructure. No paid services or cloud

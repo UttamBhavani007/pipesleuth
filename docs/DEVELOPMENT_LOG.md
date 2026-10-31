@@ -663,3 +663,92 @@ Do not advance it during another 30 October session. Repairs, API, UI, matched
 three-approach evaluation and final packaging remain unfinished. There is not
 enough time for every original stage at one per day; keep the **2 November**
 cutoff and report remaining scope honestly instead of extending the schedule.
+
+## 2026-10-31 — stage 10, fixed approved repairs
+
+Started with a clean tree at published `fc662bf` and zero commits for today's
+Berlin date. Only the next unfinished stage was built. VersionLens's prototype
+release at `2c69be6` was confirmed read-only; its human evaluation is still not
+claimed complete. Public publication uses the owner's existing approval, with
+real commit dates and no changes to VersionLens, its schedule or parent sources.
+
+### What changed
+
+- Three deterministic actions have strict source preconditions: map only the
+  known `gross_total_minor` alias, skip identical canonical duplicates, or
+  quarantine invalid records while loading unique valid rows. Combined faults,
+  conflicting duplicates and unnecessary interventions are refused. The alias
+  mapping explicitly assumes unchanged minor currency units; it is not inferred.
+- Plans bind the original source/raw database fingerprints, all three local
+  roots, target UUID, action/version, policies, effects and warnings. A separate
+  approval must acknowledge the exact plan hash and input-fingerprint hash.
+  Approval is a trusted local caller acknowledgement, not authenticated proof
+  of human review. No approval/execution tool is offered to the model.
+- Execution creates a new derived run and preserves the original failed
+  incident. The optional trusted pipeline UUID is validated before writes and
+  atomic directory creation prevents collisions from overwriting a target.
+- A shared original SQLite snapshot spans admission and execution. Source and
+  database hashes are checked again immediately before output commit and after
+  execution. Derived rows, metadata and success events share one transaction.
+  A pre-commit failure rolls back that load; its initialized target remains as
+  an unverified audit artifact. A committed result is never called rolled back.
+- The verifier separately derives expected rows/quarantine from the order
+  contract, without executor projections, planner results or fixture oracles.
+  It inspects exact schema, warehouse/quarantine contents, raw JSON types,
+  metadata and event facts before commit, then checks a fresh read-only view.
+- Atomic state claims precede approval and execution. Failed audit saves or
+  uncertain commit acknowledgements retain pending intent and refuse replay.
+  The target UUID remains in the plan for inspection. This does not promise
+  exactly-once execution across every filesystem/power-loss failure.
+- `repair actions`, `plan`, `show`, `approve` and `execute` expose that workflow.
+  Show/approve/execute restore the bound roots; hashes must be supplied for
+  approval and execution cannot implicitly approve a plan.
+
+### Verification and actual deterministic audit
+
+- `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python3 -W error::ResourceWarning
+  -m unittest discover -s tests -q`: **295 tests pass** on Python 3.13.7.
+  The 40 new checks comprise 9 planner, 7 independent verifier, 7 executor,
+  8 service-fault/concurrency, 6 independent integration and 3 CLI checks.
+- Checks cover conflicting/compound inputs, integer overflow and raw types,
+  equal-count/equal-total database corruption, stale source/database/roots,
+  changed plans, unknown command fields, concurrent/pending execution,
+  target collisions, SQL failure after partial insertion, verifier failure,
+  post-commit drift and failed checkpoint completion. Faults preserve truthful
+  commit/rollback status. A real commit followed by an injected lost
+  acknowledgement leaves the outcome explicitly unknown, with replay refused.
+- One new check initially exposed a generic evidence-context error masking an
+  uncertain workflow outcome. The workflow now preserves that caller error;
+  its focused checks and the complete 295-test suite passed after the fix.
+- The [actual deterministic audit](../reports/repair-smoke.json) ran once:
+  **3/3 derived runs verified**, **10/10 refusal checks verified**, zero case or
+  driver errors, and **zero model generation requests**. All approvals are
+  explicitly labelled `scripted_test`; this is not a human review or approval.
+- The driver uses literal synthetic sources and independent expected rows,
+  reads the committed databases through fresh SQLite connections, and compares
+  exact warehouse, quarantine and run metadata. Original and unrelated file
+  bytes/mtimes stayed unchanged. All three successful receipts have verified
+  post-input checks and no unresolved outcome.
+- The audit binds the actual implementation hashes; they match the final
+  files. It contains no local absolute paths. No runtime, download, paid/cloud
+  dependency, external inference, hosted CI or service was used for this stage.
+
+### Commit boundaries, limits and next stage
+
+Five implementation commits are `0164b78` (fixed action preconditions), `ac24fa8`
+(independent verifier), `3780d49` (transactional executor/target UUID), `d7bb163`
+(exact approval and input/root guards) and `b63ee78` (CLI). The sixth contains the
+actual audit driver/report, conventional README, guide and this log.
+
+These are fixed, operator-selected repair actions over synthetic data, not
+model-selected repairs, general autonomous recovery, human review, production
+use, or diagnosis-accuracy evidence. Earlier local-model failures remain
+unresolved. Path/lock checks protect a trusted local workspace; arbitrary
+owner-level file replacement and power-loss recovery are not established.
+Corrupt/WAL/hot-journal stores and uncertain outcomes are refused without
+implicit recovery or deletion. See [REPAIRS.md](REPAIRS.md).
+
+Stage 11, the local API, is next for the next development date. Do not advance
+it during another 31 October wake-up. UI, matched three-approach evaluation and
+final packaging also remain unfinished. Keep the **2 November cutoff** and
+report incomplete scope honestly rather than extending or backdating work.

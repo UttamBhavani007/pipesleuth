@@ -43,4 +43,7 @@ Do not continue the schedule beyond 2 November without a new user request.
   uses only allowlisted read-only tools with model/tool/time/output budgets;
   model results remain experimental. Saved investigations use a separate local
   checkpoint store; uncertain in-flight requests cannot be silently replayed.
-  Approved repairs, API, and UI remain later stages.
+  Fixed repairs require an exact-plan/input approval and produce a new derived
+  run. Independent checks compare actual warehouse/quarantine contents before
+  commit and after reopening. Original incident files remain read-only.
+  API, UI, matched evaluation and final packaging remain later stages.

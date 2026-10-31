@@ -1,0 +1,618 @@
+{
+  "cases": [
+    {
+      "action": "rename_amount_column",
+      "actual_database": {
+        "pipeline_run": [
+          [
+            "65dad4966da141d6a2b40f7df9fb8ecb",
+            "succeeded",
+            "reject",
+            "reject",
+            0,
+            0
+          ]
+        ],
+        "quarantined_records": [],
+        "warehouse_orders": [
+          [
+            "L-1",
+            "C-A",
+            125,
+            "EUR",
+            "2026-01-01T09:00:00Z"
+          ],
+          [
+            "L-2",
+            "C-B",
+            375,
+            "EUR",
+            "2026-01-02T09:00:00Z"
+          ],
+          [
+            "L-3",
+            "C-C",
+            0,
+            "USD",
+            "2026-01-03T09:00:00Z"
+          ]
+        ]
+      },
+      "approval": {
+        "action": "rename_amount_column",
+        "approval_origin": "scripted_test",
+        "effects": {
+          "duplicates_skipped": 0,
+          "rows_loaded": 3,
+          "rows_quarantined": 0
+        },
+        "execution": null,
+        "input_fingerprint_sha256": "ce7091a1059997b97ff934332dbfeb63d4eacf9eec734e77987ca34f85dacab2",
+        "pending": null,
+        "plan_sha256": "e8f8877f0fd88789e9160ed6c255761e2f1bd4b62c1dc31b3d6415e205ce914e",
+        "policies": {
+          "duplicate_policy": "reject",
+          "invalid_policy": "reject"
+        },
+        "repair_id": "5dceacd13e694b05b56f2afe381d1d1b",
+        "revision": 3,
+        "source_run_id": "e87d978a48a14f8a976aaa6c2ca53734",
+        "state_sha256": "5988a67e4741e8df8e7e5e1929ec0b0db3433b19fdbc4ecc1fbbe9bdda6b3964",
+        "status": "approved",
+        "target_run_id": "65dad4966da141d6a2b40f7df9fb8ecb"
+      },
+      "checks": {
+        "all_refusals_verified": true,
+        "completed_successfully": true,
+        "derived_uuid_distinct": true,
+        "exact_quarantine_rows": true,
+        "exact_run_metadata": true,
+        "exact_warehouse_rows": true,
+        "original_and_unrelated_files_unchanged": true,
+        "original_database_exactly_unchanged": true,
+        "post_input_verified": true,
+        "scripted_approval_recorded": true
+      },
+      "completed": {
+        "action": "rename_amount_column",
+        "approval_origin": "scripted_test",
+        "effects": {
+          "duplicates_skipped": 0,
+          "rows_loaded": 3,
+          "rows_quarantined": 0
+        },
+        "execution": {
+          "committed": true,
+          "failure_code": null,
+          "outcome_uncertain": false,
+          "post_input_verified": true,
+          "rolled_back": false,
+          "status": "verified"
+        },
+        "input_fingerprint_sha256": "ce7091a1059997b97ff934332dbfeb63d4eacf9eec734e77987ca34f85dacab2",
+        "pending": null,
+        "plan_sha256": "e8f8877f0fd88789e9160ed6c255761e2f1bd4b62c1dc31b3d6415e205ce914e",
+        "policies": {
+          "duplicate_policy": "reject",
+          "invalid_policy": "reject"
+        },
+        "repair_id": "5dceacd13e694b05b56f2afe381d1d1b",
+        "revision": 5,
+        "source_run_id": "e87d978a48a14f8a976aaa6c2ca53734",
+        "state_sha256": "52e1315471a5f2ea29638ee69f44a6aaf770a8b1b34551a77d518d2704b3240b",
+        "status": "succeeded",
+        "target_run_id": "65dad4966da141d6a2b40f7df9fb8ecb"
+      },
+      "error": null,
+      "expected_driver_only": {
+        "pipeline_run": [
+          [
+            "65dad4966da141d6a2b40f7df9fb8ecb",
+            "succeeded",
+            "reject",
+            "reject",
+            0,
+            0
+          ]
+        ],
+        "quarantined_records": [],
+        "warehouse_orders": [
+          [
+            "L-1",
+            "C-A",
+            125,
+            "EUR",
+            "2026-01-01T09:00:00Z"
+          ],
+          [
+            "L-2",
+            "C-B",
+            375,
+            "EUR",
+            "2026-01-02T09:00:00Z"
+          ],
+          [
+            "L-3",
+            "C-C",
+            0,
+            "USD",
+            "2026-01-03T09:00:00Z"
+          ]
+        ]
+      },
+      "passed": true,
+      "plan": {
+        "action": "rename_amount_column",
+        "approval_origin": null,
+        "effects": {
+          "duplicates_skipped": 0,
+          "rows_loaded": 3,
+          "rows_quarantined": 0
+        },
+        "execution": null,
+        "input_fingerprint_sha256": "ce7091a1059997b97ff934332dbfeb63d4eacf9eec734e77987ca34f85dacab2",
+        "pending": null,
+        "plan_sha256": "e8f8877f0fd88789e9160ed6c255761e2f1bd4b62c1dc31b3d6415e205ce914e",
+        "policies": {
+          "duplicate_policy": "reject",
+          "invalid_policy": "reject"
+        },
+        "repair_id": "5dceacd13e694b05b56f2afe381d1d1b",
+        "revision": 1,
+        "source_run_id": "e87d978a48a14f8a976aaa6c2ca53734",
+        "state_sha256": "77cc032ed7b30b9b5a1a884b88e7be371dc3a9dee63afe1d445ac08d46534344",
+        "status": "planned",
+        "target_run_id": "65dad4966da141d6a2b40f7df9fb8ecb"
+      },
+      "refusals": {
+        "duplicate_execution": {
+          "output_files_unchanged": true,
+          "record_unchanged": true,
+          "refused": true
+        },
+        "mismatched_plan_hash": {
+          "output_files_unchanged": true,
+          "record_unchanged": true,
+          "refused": true
+        },
+        "unapproved_execution": {
+          "output_files_unchanged": true,
+          "record_unchanged": true,
+          "refused": true
+        }
+      }
+    },
+    {
+      "action": "skip_identical_duplicates",
+      "actual_database": {
+        "pipeline_run": [
+          [
+            "89eaa45f98fd4f2e8742c7b4172c75d7",
+            "succeeded",
+            "skip_identical",
+            "reject",
+            2,
+            0
+          ]
+        ],
+        "quarantined_records": [],
+        "warehouse_orders": [
+          [
+            "L-1",
+            "C-A",
+            125,
+            "EUR",
+            "2026-01-01T09:00:00Z"
+          ],
+          [
+            "L-2",
+            "C-B",
+            375,
+            "EUR",
+            "2026-01-02T09:00:00Z"
+          ],
+          [
+            "L-3",
+            "C-C",
+            0,
+            "USD",
+            "2026-01-03T09:00:00Z"
+          ]
+        ]
+      },
+      "approval": {
+        "action": "skip_identical_duplicates",
+        "approval_origin": "scripted_test",
+        "effects": {
+          "duplicates_skipped": 2,
+          "rows_loaded": 3,
+          "rows_quarantined": 0
+        },
+        "execution": null,
+        "input_fingerprint_sha256": "b041ddd5973c307bb90a1763acaf8bf3030a6dc9bcdf42b36daf57352c738c69",
+        "pending": null,
+        "plan_sha256": "650bdcedd3890e988f14689e94fa9d67c661daac2880c8650af99b62e06eb10f",
+        "policies": {
+          "duplicate_policy": "skip_identical",
+          "invalid_policy": "reject"
+        },
+        "repair_id": "88f7e78ac6ba48338a1a2850527dcadd",
+        "revision": 3,
+        "source_run_id": "72d8634e07674edfa1c73f4d8fd91c10",
+        "state_sha256": "c286ad6b18133adb3322b67de1cc6ecc042ad34044007acb2f6e102e6fb30af9",
+        "status": "approved",
+        "target_run_id": "89eaa45f98fd4f2e8742c7b4172c75d7"
+      },
+      "checks": {
+        "all_refusals_verified": true,
+        "completed_successfully": true,
+        "derived_uuid_distinct": true,
+        "exact_quarantine_rows": true,
+        "exact_run_metadata": true,
+        "exact_warehouse_rows": true,
+        "original_and_unrelated_files_unchanged": true,
+        "original_database_exactly_unchanged": true,
+        "post_input_verified": true,
+        "scripted_approval_recorded": true
+      },
+      "completed": {
+        "action": "skip_identical_duplicates",
+        "approval_origin": "scripted_test",
+        "effects": {
+          "duplicates_skipped": 2,
+          "rows_loaded": 3,
+          "rows_quarantined": 0
+        },
+        "execution": {
+          "committed": true,
+          "failure_code": null,
+          "outcome_uncertain": false,
+          "post_input_verified": true,
+          "rolled_back": false,
+          "status": "verified"
+        },
+        "input_fingerprint_sha256": "b041ddd5973c307bb90a1763acaf8bf3030a6dc9bcdf42b36daf57352c738c69",
+        "pending": null,
+        "plan_sha256": "650bdcedd3890e988f14689e94fa9d67c661daac2880c8650af99b62e06eb10f",
+        "policies": {
+          "duplicate_policy": "skip_identical",
+          "invalid_policy": "reject"
+        },
+        "repair_id": "88f7e78ac6ba48338a1a2850527dcadd",
+        "revision": 5,
+        "source_run_id": "72d8634e07674edfa1c73f4d8fd91c10",
+        "state_sha256": "69347a297dc82755830ab6d5462e5dadbf70d37238c9f484d9235f43dadbb02c",
+        "status": "succeeded",
+        "target_run_id": "89eaa45f98fd4f2e8742c7b4172c75d7"
+      },
+      "error": null,
+      "expected_driver_only": {
+        "pipeline_run": [
+          [
+            "89eaa45f98fd4f2e8742c7b4172c75d7",
+            "succeeded",
+            "skip_identical",
+            "reject",
+            2,
+            0
+          ]
+        ],
+        "quarantined_records": [],
+        "warehouse_orders": [
+          [
+            "L-1",
+            "C-A",
+            125,
+            "EUR",
+            "2026-01-01T09:00:00Z"
+          ],
+          [
+            "L-2",
+            "C-B",
+            375,
+            "EUR",
+            "2026-01-02T09:00:00Z"
+          ],
+          [
+            "L-3",
+            "C-C",
+            0,
+            "USD",
+            "2026-01-03T09:00:00Z"
+          ]
+        ]
+      },
+      "passed": true,
+      "plan": {
+        "action": "skip_identical_duplicates",
+        "approval_origin": null,
+        "effects": {
+          "duplicates_skipped": 2,
+          "rows_loaded": 3,
+          "rows_quarantined": 0
+        },
+        "execution": null,
+        "input_fingerprint_sha256": "b041ddd5973c307bb90a1763acaf8bf3030a6dc9bcdf42b36daf57352c738c69",
+        "pending": null,
+        "plan_sha256": "650bdcedd3890e988f14689e94fa9d67c661daac2880c8650af99b62e06eb10f",
+        "policies": {
+          "duplicate_policy": "skip_identical",
+          "invalid_policy": "reject"
+        },
+        "repair_id": "88f7e78ac6ba48338a1a2850527dcadd",
+        "revision": 1,
+        "source_run_id": "72d8634e07674edfa1c73f4d8fd91c10",
+        "state_sha256": "41a24c429bb10032d231452581c716e85f3a242f2141a6f91392ff9b8ca54423",
+        "status": "planned",
+        "target_run_id": "89eaa45f98fd4f2e8742c7b4172c75d7"
+      },
+      "refusals": {
+        "duplicate_execution": {
+          "output_files_unchanged": true,
+          "record_unchanged": true,
+          "refused": true
+        },
+        "mismatched_plan_hash": {
+          "output_files_unchanged": true,
+          "record_unchanged": true,
+          "refused": true
+        },
+        "unapproved_execution": {
+          "output_files_unchanged": true,
+          "record_unchanged": true,
+          "refused": true
+        }
+      }
+    },
+    {
+      "action": "quarantine_invalid_rows",
+      "actual_database": {
+        "pipeline_run": [
+          [
+            "a42998eb7a58436a832314f3a34c8c77",
+            "succeeded",
+            "reject",
+            "quarantine",
+            0,
+            1
+          ]
+        ],
+        "quarantined_records": [
+          [
+            4,
+            "invalid_row",
+            "amount_minor must be a non-negative integer",
+            {
+              "amount_minor": -7,
+              "created_at": "2026-01-01T09:00:00Z",
+              "currency": "EUR",
+              "customer_id": "C-A",
+              "order_id": "L-X"
+            }
+          ]
+        ],
+        "warehouse_orders": [
+          [
+            "L-1",
+            "C-A",
+            125,
+            "EUR",
+            "2026-01-01T09:00:00Z"
+          ],
+          [
+            "L-2",
+            "C-B",
+            375,
+            "EUR",
+            "2026-01-02T09:00:00Z"
+          ],
+          [
+            "L-3",
+            "C-C",
+            0,
+            "USD",
+            "2026-01-03T09:00:00Z"
+          ]
+        ]
+      },
+      "approval": {
+        "action": "quarantine_invalid_rows",
+        "approval_origin": "scripted_test",
+        "effects": {
+          "duplicates_skipped": 0,
+          "rows_loaded": 3,
+          "rows_quarantined": 1
+        },
+        "execution": null,
+        "input_fingerprint_sha256": "7e8526e6c99c2de62fa96f0be07a9f97256875ab9f794e1d47a6af76c6d6138c",
+        "pending": null,
+        "plan_sha256": "b34f5b16b72d95d88faa79c55fb7800ee07f7ed1309d19e75db720e817928cfb",
+        "policies": {
+          "duplicate_policy": "reject",
+          "invalid_policy": "quarantine"
+        },
+        "repair_id": "0cc3c782e14d425e8affce1e96b14d0c",
+        "revision": 3,
+        "source_run_id": "b71c24922218419baf900d07e12e0dc8",
+        "state_sha256": "d6f130509f9e13adb90ea66ad4604719d5539c7833e84ef80cccc88f7e3713ad",
+        "status": "approved",
+        "target_run_id": "a42998eb7a58436a832314f3a34c8c77"
+      },
+      "checks": {
+        "all_refusals_verified": true,
+        "completed_successfully": true,
+        "derived_uuid_distinct": true,
+        "exact_quarantine_rows": true,
+        "exact_run_metadata": true,
+        "exact_warehouse_rows": true,
+        "original_and_unrelated_files_unchanged": true,
+        "original_database_exactly_unchanged": true,
+        "post_input_verified": true,
+        "scripted_approval_recorded": true
+      },
+      "completed": {
+        "action": "quarantine_invalid_rows",
+        "approval_origin": "scripted_test",
+        "effects": {
+          "duplicates_skipped": 0,
+          "rows_loaded": 3,
+          "rows_quarantined": 1
+        },
+        "execution": {
+          "committed": true,
+          "failure_code": null,
+          "outcome_uncertain": false,
+          "post_input_verified": true,
+          "rolled_back": false,
+          "status": "verified"
+        },
+        "input_fingerprint_sha256": "7e8526e6c99c2de62fa96f0be07a9f97256875ab9f794e1d47a6af76c6d6138c",
+        "pending": null,
+        "plan_sha256": "b34f5b16b72d95d88faa79c55fb7800ee07f7ed1309d19e75db720e817928cfb",
+        "policies": {
+          "duplicate_policy": "reject",
+          "invalid_policy": "quarantine"
+        },
+        "repair_id": "0cc3c782e14d425e8affce1e96b14d0c",
+        "revision": 5,
+        "source_run_id": "b71c24922218419baf900d07e12e0dc8",
+        "state_sha256": "e005692b662b35981dad988115abd8083cfb9ef6ac4db5b216c3646f080ab288",
+        "status": "succeeded",
+        "target_run_id": "a42998eb7a58436a832314f3a34c8c77"
+      },
+      "error": null,
+      "expected_driver_only": {
+        "pipeline_run": [
+          [
+            "a42998eb7a58436a832314f3a34c8c77",
+            "succeeded",
+            "reject",
+            "quarantine",
+            0,
+            1
+          ]
+        ],
+        "quarantined_records": [
+          [
+            4,
+            "invalid_row",
+            "amount_minor must be a non-negative integer",
+            {
+              "amount_minor": -7,
+              "created_at": "2026-01-01T09:00:00Z",
+              "currency": "EUR",
+              "customer_id": "C-A",
+              "order_id": "L-X"
+            }
+          ]
+        ],
+        "warehouse_orders": [
+          [
+            "L-1",
+            "C-A",
+            125,
+            "EUR",
+            "2026-01-01T09:00:00Z"
+          ],
+          [
+            "L-2",
+            "C-B",
+            375,
+            "EUR",
+            "2026-01-02T09:00:00Z"
+          ],
+          [
+            "L-3",
+            "C-C",
+            0,
+            "USD",
+            "2026-01-03T09:00:00Z"
+          ]
+        ]
+      },
+      "passed": true,
+      "plan": {
+        "action": "quarantine_invalid_rows",
+        "approval_origin": null,
+        "effects": {
+          "duplicates_skipped": 0,
+          "rows_loaded": 3,
+          "rows_quarantined": 1
+        },
+        "execution": null,
+        "input_fingerprint_sha256": "7e8526e6c99c2de62fa96f0be07a9f97256875ab9f794e1d47a6af76c6d6138c",
+        "pending": null,
+        "plan_sha256": "b34f5b16b72d95d88faa79c55fb7800ee07f7ed1309d19e75db720e817928cfb",
+        "policies": {
+          "duplicate_policy": "reject",
+          "invalid_policy": "quarantine"
+        },
+        "repair_id": "0cc3c782e14d425e8affce1e96b14d0c",
+        "revision": 1,
+        "source_run_id": "b71c24922218419baf900d07e12e0dc8",
+        "state_sha256": "8bd4e6e22dac99f11e6ff803dde8c0f6ebadcef411fcb0c7684785fc0c045a60",
+        "status": "planned",
+        "target_run_id": "a42998eb7a58436a832314f3a34c8c77"
+      },
+      "refusals": {
+        "duplicate_execution": {
+          "output_files_unchanged": true,
+          "record_unchanged": true,
+          "refused": true
+        },
+        "mismatched_plan_hash": {
+          "output_files_unchanged": true,
+          "record_unchanged": true,
+          "refused": true
+        },
+        "unapproved_execution": {
+          "output_files_unchanged": true,
+          "record_unchanged": true,
+          "refused": true
+        }
+      }
+    }
+  ],
+  "config": {
+    "approval_origin": "scripted_test",
+    "machine": "arm64",
+    "python_version": "3.13.7",
+    "source_sha256": {
+      "scripts/smoke_repair.py": "a198f1062e822abece60d5206ca59f249f738dbf4e7e2b62069bac0a94c9e1af",
+      "src/pipesleuth/checkpoints.py": "28b6c02d01d498cbf8b34a8945c7618e2cc72651a355715a641c6666e689a733",
+      "src/pipesleuth/domain.py": "d160718693b663c91a094dbae7753e658cfa362ba5b81582b77aa00dd27e6d82",
+      "src/pipesleuth/evidence.py": "a9944554bae4692d78e9c544fca6759d3fc7f52e23b599057a1bcee466afea35",
+      "src/pipesleuth/input_binding.py": "3c39de4f0de7af93a693dea72ba653edf1b009c73d61ec3698b83887b422a310",
+      "src/pipesleuth/pipeline.py": "d829d66f727c16dfea5031a415ee0cec3a03ef3ae589d5aba55e8e7da2c6e1d7",
+      "src/pipesleuth/repair_executor.py": "5bfa1c2730e92ff98f444a30e2579381eb5aed01885048ca35d947e1bb7b29fc",
+      "src/pipesleuth/repair_plan.py": "439a8805b13df5462230019c653420962d2ef436a35393af81b2d5cce17b74c7",
+      "src/pipesleuth/repair_verifier.py": "a039182de5ca011a1689f3846c7acc6848e0840ad1c486551d1ca71e4cd20d8b",
+      "src/pipesleuth/repairs.py": "0e18a4abffffb593c5ff813a2b1172508a5aef42025b90c353a280f27980d8f4"
+    }
+  },
+  "errors": [],
+  "generated_at": "2026-10-31T20:09:13.569436Z",
+  "human_review_claimed": false,
+  "model_inference_performed": false,
+  "repair_checks_passed": true,
+  "scope": "Deterministic trusted repair integration; no model diagnosis or human approval claim.",
+  "source_hashes_unchanged_during_run": true,
+  "stale_input_refusal": {
+    "fixture_mutation": "Added source whitespace after scripted approval; observed rows unchanged.",
+    "original_files_unchanged_during_refusal": true,
+    "output_files_unchanged": true,
+    "passed": true,
+    "record_unchanged": true,
+    "refused": true
+  },
+  "summary": {
+    "case_errors": 0,
+    "driver_errors": 0,
+    "model_generation_requests": 0,
+    "planned_repair_cases": 3,
+    "recorded_repair_cases": 3,
+    "semantic_quality_evaluated": false,
+    "verified_derived_runs": 3,
+    "verified_refusals": 10
+  }
+}

@@ -58,6 +58,15 @@ configuration are bound to the saved run. A pending operation with no durable
 result cannot be automatically replayed: its external outcome is uncertain.
 This adds restart behavior, without repair or approval authority.
 
+Stage 10 adds the [trusted repair workflow](REPAIRS.md). A trusted caller chooses
+one of three fixed actions, reviews its plan, and separately acknowledges both
+the plan hash and current input fingerprint. Execution creates a new derived
+run under a bound output root, preserving the original failed incident. A shared
+input snapshot, final stale check, single load transaction, and independent
+pre-commit/fresh-read verification guard that operation. Unknown outcomes retain
+their intent and cannot be replayed automatically. The model has no approval or
+executor tool, and these actions are not general schema inference or repair.
+
 The initial incident families are schema drift, duplicate records, and invalid or missing data. Each incident runs in an isolated SQLite sandbox. The investigator explains evidence and proposes a bounded repair; successful recovery is established by independent database checks.
 
 ## Planned flow
