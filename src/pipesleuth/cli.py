@@ -126,6 +126,25 @@ def _parser() -> argparse.ArgumentParser:
     for operation in (start, resume):
         operation.add_argument("--max-operations", type=int,
                                help="Pause after 1–16 durable operations; omitted runs to a finish or limit")
+    repair = commands.add_parser("repair", help="Plan and explicitly approve a fixed repair into a new run")
+    repairs = repair.add_subparsers(dest="operation", required=True)
+    repairs.add_parser("actions", help="List the three supported repair actions")
+    plan = repairs.add_parser("plan", help="Prepare a reviewable plan for a failed incident")
+    plan.add_argument("run_id")
+    plan.add_argument("--action", required=True, choices=("rename_amount_column", "skip_identical_duplicates",
+                                                       "quarantine_invalid_rows"))
+    plan.add_argument("--data-dir", type=Path, default=Path("var/sandboxes"))
+    plan.add_argument("--output-dir", type=Path, default=Path("var/repaired"))
+    inspect = repairs.add_parser("show", help="Inspect a saved repair without changing it")
+    inspect.add_argument("repair_id")
+    approve = repairs.add_parser("approve", help="Acknowledge the exact displayed plan and input hashes")
+    approve.add_argument("repair_id")
+    approve.add_argument("--plan-sha256", required=True)
+    approve.add_argument("--input-fingerprint-sha256", required=True)
+    execute = repairs.add_parser("execute", help="Apply an unused approval and independently verify the result")
+    execute.add_argument("repair_id")
+    for operation in (plan, inspect, approve, execute):
+        operation.add_argument("--state-dir", type=Path, default=Path("var/repairs"))
     return parser
 
 
@@ -152,6 +171,27 @@ def main(argv: Sequence[str] | None = None) -> int:
             payload = fixture.to_authoring_dict()
         else:
             payload = fixture.to_source_payload()
+    elif args.command == "repair":
+        from pipesleuth.checkpoints import CheckpointStore
+        from pipesleuth.repair_plan import action_descriptions
+        from pipesleuth.repairs import RepairService
+        try:
+            if args.operation == "actions":
+                payload = {"actions": action_descriptions()}
+            elif args.operation == "plan":
+                payload = RepairService(args.data_dir, args.output_dir, args.state_dir).plan(args.run_id, args.action)
+            else:
+                saved = CheckpointStore(args.state_dir).load(args.repair_id)
+                binding = saved["binding"]
+                service = RepairService(binding["data_dir"], binding["output_dir"], args.state_dir)
+                if args.operation == "show":
+                    payload = service.show(args.repair_id)
+                elif args.operation == "approve":
+                    payload = service.approve(args.repair_id, args.plan_sha256, args.input_fingerprint_sha256)
+                else:
+                    payload = service.execute(args.repair_id)
+        except (ValueError, OSError, KeyError, TypeError) as exc:
+            parser.error(str(exc))
     elif args.command == "investigation":
         # Import here so ordinary pipeline commands do not open checkpoint storage.
         from pipesleuth.checkpoints import CheckpointStore
@@ -249,7 +289,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 payload = pipeline.inspect(args.run_id).to_dict()
         except (ValueError, OSError) as exc:
             parser.error(str(exc))
-    if args.command in {"evidence", "diagnose", "investigation"}:
+    if args.command in {"evidence", "diagnose", "investigation", "repair"}:
         print(json.dumps(payload, separators=(",", ":"), sort_keys=True, ensure_ascii=False, allow_nan=False))
     else:
         print(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False, allow_nan=False))
@@ -257,4 +297,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.operation == "show":
             return 0
         return 1 if payload["state"]["done"] and payload["state"]["result"]["status"] == "unknown" else 0
+    if args.command == "repair":
+        return 1 if args.operation == "execute" and payload["state"]["status"] == "failed" else 0
     return 1 if payload.get("status") in {"failed", "unknown"} else 0
