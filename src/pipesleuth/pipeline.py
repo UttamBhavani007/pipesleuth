@@ -193,8 +193,10 @@ class SandboxPipeline:
 
     def create(
         self, source_payload: Mapping[str, object], *, duplicate_policy: str = "reject",
-        invalid_policy: str = "reject",
+        invalid_policy: str = "reject", run_id: str | None = None,
     ) -> RunSummary:
+        if run_id is not None and (not isinstance(run_id, str) or _RUN_ID.fullmatch(run_id) is None):
+            raise PipelineError("run_id must be exactly 32 lowercase hexadecimal characters")
         if not isinstance(duplicate_policy, str) or duplicate_policy not in _DUPLICATE_POLICIES:
             raise PipelineError("duplicate_policy must be reject or skip_identical")
         if not isinstance(invalid_policy, str) or invalid_policy not in _INVALID_POLICIES:
@@ -204,7 +206,7 @@ class SandboxPipeline:
         _check_no_symlinks(self.data_dir)
         try:
             self.data_dir.mkdir(parents=True, exist_ok=True)
-            directory = self.data_dir / uuid4().hex
+            directory = self.data_dir / (uuid4().hex if run_id is None else run_id)
             directory.mkdir()
             (directory / "source.json").write_bytes(encoded)
             with closing(sqlite3.connect(directory / "warehouse.sqlite3")) as connection, connection:
