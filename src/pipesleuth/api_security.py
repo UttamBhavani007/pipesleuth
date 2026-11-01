@@ -108,13 +108,13 @@ class ApiSecurity:
         for key, value in raw:
             name = key.lower()
             if name.startswith(b"x-forwarded-") or name in {b"forwarded", b"x-real-ip"}:
-                raise _Denied(403, "forbidden")
+                raise _Denied(400, "invalid_request")
             if name in _SECURITY_HEADERS:
                 if name in headers or b"\r" in value or b"\n" in value:
                     raise _Denied(400, "invalid_request")
                 headers[name] = value
         if headers.get(b"host") != self.authority:
-            raise _Denied(403, "forbidden")
+            raise _Denied(400, "invalid_request")
         if b"origin" in headers and headers[b"origin"] != self.origin:
             raise _Denied(403, "forbidden")
         if headers.get(b"sec-fetch-site", b"none") not in {b"same-origin", b"none"}:
@@ -137,6 +137,8 @@ class ApiSecurity:
         matches = [hmac.compare_digest(token, expected) for expected in self.tokens]
         allowed = any(matches) if method in {"GET", "HEAD"} else matches[2 if _APPROVE.fullmatch(path or "") else 1]
         if not allowed:
+            if any(matches):
+                raise _Denied(403, "forbidden")
             raise _Denied(401, "unauthorized")
 
     @staticmethod

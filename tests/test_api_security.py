@@ -82,6 +82,7 @@ class ApiSecurityTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual((await self.request(path="/health", token=None))[0], 200)
         self.assert_code(await self.request(method="HEAD", path="/health", token=None), 401, "unauthorized")
         self.assert_code(await self.request(token=None), 401, "unauthorized")
+        self.assert_code(await self.request(token="unknown" * 6), 401, "unauthorized")
         for token in (READ, OPERATE, APPROVE):
             response = await self.request(token=token)
             self.assertEqual(response[0], 200)
@@ -90,20 +91,21 @@ class ApiSecurityTests(unittest.IsolatedAsyncioTestCase):
     async def test_operation_and_approval_authorities_cannot_substitute(self):
         approve_path = "/v1/repairs/" + "a" * 32 + "/approve"
         for token in (READ, APPROVE):
-            self.assert_code(await self.request(method="POST", token=token, body=b"{}"), 401, "unauthorized")
+            self.assert_code(await self.request(method="POST", token=token, body=b"{}"), 403, "forbidden")
         self.assertEqual((await self.request(method="POST", token=OPERATE, body=b"{}"))[0], 200)
         for token in (READ, OPERATE):
-            self.assert_code(await self.request(method="POST", path=approve_path, token=token, body=b"{}"), 401, "unauthorized")
+            self.assert_code(await self.request(method="POST", path=approve_path, token=token, body=b"{}"), 403, "forbidden")
         self.assertEqual((await self.request(method="POST", path=approve_path, token=APPROVE, body=b"{}"))[0], 200)
-        self.assert_code(await self.request(method="POST", path=approve_path + "/", token=APPROVE, body=b"{}"), 401, "unauthorized")
+        self.assert_code(await self.request(method="POST", path=approve_path + "/", token=APPROVE, body=b"{}"), 403, "forbidden")
 
     async def test_nonloopback_origin_proxy_cookie_and_crosssite_are_refused(self):
         for client in (("192.0.2.1", 1), ("localhost", 1), None):
             self.assert_code(await self.request(client=client), 403, "forbidden")
         for header in ((b"origin", b"http://evil.example"), (b"origin", b"null"),
-                       (b"sec-fetch-site", b"cross-site"), (b"sec-fetch-site", b"same-site"),
-                       (b"forwarded", b"for=127.0.0.1"), (b"x-forwarded-host", b"127.0.0.1")):
+                       (b"sec-fetch-site", b"cross-site"), (b"sec-fetch-site", b"same-site")):
             self.assert_code(await self.request(headers=[header]), 403, "forbidden")
+        for header in ((b"forwarded", b"for=127.0.0.1"), (b"x-forwarded-host", b"127.0.0.1")):
+            self.assert_code(await self.request(headers=[header]), 400, "invalid_request")
         self.assert_code(await self.request(headers=[(b"cookie", b"session=anything")]), 400, "invalid_request")
         self.assertEqual((await self.request(headers=[(b"origin", f"http://127.0.0.1:{PORT}".encode()),
                                                        (b"sec-fetch-site", b"same-origin")]))[0], 200)
@@ -125,7 +127,7 @@ class ApiSecurityTests(unittest.IsolatedAsyncioTestCase):
             scope = {"type": "http", "method": "GET", "path": "/health",
                      "client": ("127.0.0.1", 1), "headers": [(b"host", host)]}
             await self.secured(scope, receive, self.sender(sent))
-            self.assertEqual(sent[0]["status"], 403)
+            self.assertEqual(sent[0]["status"], 400)
 
     async def test_strict_json_rejects_duplicates_nonfinite_unicode_and_trailing_values(self):
         for body in (b'{"a":1,"a":2}', b'{"a":{"b":1,"b":2}}', b'{"x":NaN}',
