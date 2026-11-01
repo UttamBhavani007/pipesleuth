@@ -27,6 +27,17 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--version", action="version", version=__version__)
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("scenarios", help="List the supported synthetic incident families")
+    serve = commands.add_parser("serve", help="Start the protected local API in the foreground")
+    serve.add_argument("--port", type=int, default=8765)
+    serve.add_argument("--data-dir", type=Path, default=Path("var/sandboxes"))
+    serve.add_argument("--output-dir", type=Path, default=Path("var/repaired"))
+    serve.add_argument("--investigation-state-dir", type=Path, default=Path("var/investigations"))
+    serve.add_argument("--repair-state-dir", type=Path, default=Path("var/repairs"))
+    serve.add_argument("--session-file", type=Path, default=Path(".runtime/api-session.json"))
+    serve.add_argument("--model-digest", help="Optional pin enabling local model operations")
+    serve.add_argument("--model-endpoint", default="http://127.0.0.1:11436")
+    serve.add_argument("--model-timeout", type=float, default=120)
+    serve.add_argument("--agent-timeout", type=float, default=60)
     fixture = commands.add_parser("fixture", help="Print deterministic synthetic source JSON")
     fixture.add_argument("--scenario", choices=[kind.value for kind in IncidentKind], required=True)
     fixture.add_argument("--seed", type=int, default=42, help="Unsigned 32-bit seed (default: 42)")
@@ -152,6 +163,17 @@ def main(argv: Sequence[str] | None = None) -> int:
     """Emit JSON on stdout and actionable errors on stderr."""
     parser = _parser()
     args = parser.parse_args(argv)
+    if args.command == "serve":
+        from pipesleuth.api_server import serve_api
+        try:
+            serve_api(data_dir=args.data_dir, output_dir=args.output_dir,
+                investigation_state_dir=args.investigation_state_dir, repair_state_dir=args.repair_state_dir,
+                session_file=args.session_file, port=args.port, model_digest=args.model_digest,
+                model_endpoint=args.model_endpoint, model_timeout=args.model_timeout,
+                agent_timeout=args.agent_timeout)
+        except (ValueError, OSError) as exc:
+            parser.error(str(exc))
+        return 0
     if args.command == "scenarios":
         payload = {
             "synthetic": True,
