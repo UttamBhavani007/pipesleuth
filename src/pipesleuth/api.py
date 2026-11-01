@@ -13,7 +13,10 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException
 
-from pipesleuth.api_contracts import ApiError, EvidenceEnvelope, RunSummary, SavedRecord
+from pipesleuth.api_contracts import (
+    ApiError, ApprovalRequest, DiagnosisRequest, DiagnosisResult, EvidenceEnvelope,
+    ExecuteRequest, InvestigationStart, RepairPlanRequest, ResumeRequest, RunSummary, SavedRecord,
+)
 from pipesleuth.api_security import ApiSecurity
 from pipesleuth.checkpoints import CheckpointStore
 from pipesleuth.evidence import EvidenceGateway
@@ -184,5 +187,77 @@ def create_app(settings: ApiSettings, *, read_token, operation_token, approval_t
     def repair(repair_id: RunId):
         return read(lambda: SavedRecord.model_validate(RepairService(settings.data_dir, settings.output_dir,
             settings.repair_state_dir).show(repair_id)))
+
+    def operate(operation):
+        try:
+            settings.guard_roots()
+            return operation()
+        except (ValueError, OSError):
+            raise _ApiFailure(409, "operation_rejected") from None
+
+    def require_model():
+        if settings.model_digest is None:
+            raise _ApiFailure(409, "model_unconfigured")
+
+    def engine():
+        from pipesleuth.investigator import BoundedInvestigator
+        from pipesleuth.local_model import LocalModelClient
+        require_model()
+        return BoundedInvestigator(gateway(), LocalModelClient(settings.model_config()),
+            max_steps=settings.max_steps, max_tool_calls=settings.max_tool_calls,
+            timeout_seconds=settings.agent_timeout)
+
+    def persistent():
+        from pipesleuth.persistent import PersistentInvestigator
+        # Restore only the server's own settings. The coordinator compares the
+        # saved configuration before admitting any evidence/model operation.
+        return PersistentInvestigator(engine(), CheckpointStore(settings.investigation_state_dir),
+                                      retry_limit=settings.retry_limit)
+
+    def repair_service():
+        return RepairService(settings.data_dir, settings.output_dir, settings.repair_state_dir)
+
+    @app.post("/v1/runs/{run_id}/diagnosis", response_model=DiagnosisResult,
+              response_model_exclude_unset=True)
+    def diagnosis(run_id: RunId, body: DiagnosisRequest):
+        if body.method != "checklist":
+            require_model()
+
+        def diagnose():
+            if body.method == "checklist":
+                from pipesleuth.checklist import ChecklistBaseline
+                result = ChecklistBaseline(gateway()).diagnose(run_id)
+            elif body.method == "local":
+                from pipesleuth.local_model import LocalModelClient
+                from pipesleuth.single_call import SingleCallBaseline
+                result = SingleCallBaseline(gateway(), LocalModelClient(settings.model_config())).diagnose(run_id)
+            else:
+                result = engine().investigate(run_id)
+            return DiagnosisResult.model_validate(result)
+        return operate(diagnose)
+
+    @app.post("/v1/investigations", response_model=SavedRecord)
+    def start_investigation(body: InvestigationStart):
+        require_model()
+        return operate(lambda: SavedRecord.model_validate(persistent().start(body.run_id)))
+
+    @app.post("/v1/investigations/{investigation_id}/resume", response_model=SavedRecord)
+    def resume_investigation(investigation_id: RunId, body: ResumeRequest):
+        require_model()
+        return operate(lambda: SavedRecord.model_validate(persistent().resume(
+            investigation_id, max_operations=body.max_operations)))
+
+    @app.post("/v1/repairs", response_model=SavedRecord)
+    def plan_repair(body: RepairPlanRequest):
+        return operate(lambda: SavedRecord.model_validate(repair_service().plan(body.run_id, body.action)))
+
+    @app.post("/v1/repairs/{repair_id}/approve", response_model=SavedRecord)
+    def approve_repair(repair_id: RunId, body: ApprovalRequest):
+        return operate(lambda: SavedRecord.model_validate(repair_service().approve(
+            repair_id, body.plan_sha256, body.input_fingerprint_sha256, origin="trusted_api")))
+
+    @app.post("/v1/repairs/{repair_id}/execute", response_model=SavedRecord)
+    def execute_repair(repair_id: RunId, body: ExecuteRequest):
+        return operate(lambda: SavedRecord.model_validate(repair_service().execute(repair_id)))
 
     return app

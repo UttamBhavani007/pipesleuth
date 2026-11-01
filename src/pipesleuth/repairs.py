@@ -148,7 +148,7 @@ class RepairService:
                         or set(approval) != {"plan_sha256", "input_fingerprint_sha256", "origin", "approved_at"}
                         or approval["plan_sha256"] != state["plan_sha256"]
                         or approval["input_fingerprint_sha256"] != state["input_fingerprint_sha256"]
-                        or approval["origin"] not in {"trusted_cli", "scripted_test"}
+                        or approval["origin"] not in {"trusted_cli", "trusted_api", "scripted_test"}
                         or not isinstance(approval["approved_at"], str)):
                     raise RepairError("approval does not identify this exact plan and input")
                 if (state["status"] == "approved") != (state["execution"] is None):
@@ -196,7 +196,7 @@ class RepairService:
         self._available(record)
         state = record["state"]
         if (state["status"] != "planned" or not isinstance(origin, str)
-                or origin not in {"trusted_cli", "scripted_test"}
+                or origin not in {"trusted_cli", "trusted_api", "scripted_test"}
                 or plan_sha256 != state["plan_sha256"]
                 or input_fingerprint_sha256 != state["input_fingerprint_sha256"]):
             raise RepairError("approval requires the exact planned hashes and an explicit trusted caller")
