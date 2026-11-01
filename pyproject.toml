@@ -12,6 +12,10 @@ license = {file = "LICENSE"}
 authors = [{name = "Uttam Bhavani"}]
 dependencies = []
 
+[project.optional-dependencies]
+api = ["fastapi==0.162.0", "uvicorn==0.54.0"]
+test-api = ["httpx==0.28.1"]
+
 [project.scripts]
 pipesleuth = "pipesleuth.cli:main"
 
