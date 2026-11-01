@@ -45,6 +45,8 @@ plan hash and input fingerprint. Changed inputs, a different plan or missing
 approval prevent execution. The trusted CLI approval represents the local
 operator; `scripted_test` is reserved for clearly labelled software fixtures.
 Neither label proves an external human review occurred.
+The local API records `trusted_api` for its separately authorized approval
+requests. This names the caller channel and likewise does not prove human review.
 
 Execution records a durable pending intent before creating the derived run.
 Trusted code loads it in one transaction and checks actual order/quarantine

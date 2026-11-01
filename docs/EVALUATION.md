@@ -70,6 +70,11 @@ scripted approvals and fixed action choices on synthetic inputs. It checks
 actual derived database contents and rejection paths. It is not human review,
 model-selected repair success, or a comparison of the three diagnosis methods.
 
+The [local HTTP audit](../reports/api-smoke.json) checks the API boundary and
+fixed repairs using scripted requests. Controlled HTTP model fixtures are
+software tests, not real inference. Neither audit replaces matched model
+evaluation or resolves the earlier diagnosis failures.
+
 The verifier runs outside the model. After each approach, compare actual warehouse rows, key uniqueness, relevant schema, row counts, and quarantine rows/reasons with evaluator-only expectations. Row counts alone are insufficient. Confirm no unrelated sandbox data changed. Include a clean rerun to check the applicable idempotency requirements.
 
 Use an identical scripted trusted approval policy when measuring repair execution, clearly labelled as an **evaluation protocol**, not human approval or human review. Separately test actual approval rejection paths. A diagnosis-only run is not a repair success; a repair proposal is not an executed action; an executed action is not recovery until state verification passes.

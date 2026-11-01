@@ -752,3 +752,102 @@ Stage 11, the local API, is next for the next development date. Do not advance
 it during another 31 October wake-up. UI, matched three-approach evaluation and
 final packaging also remain unfinished. Keep the **2 November cutoff** and
 report incomplete scope honestly rather than extending or backdating work.
+
+## 2026-11-01 — stage 11, local API
+
+Started from clean published `48f8426` with no commits for today's Berlin date.
+Only the next unfinished stage was built. VersionLens's prototype release at
+`2c69be6` was rechecked read-only; pending human evaluation is still not claimed
+complete. Public pushes continue under the owner's existing approval. No
+VersionLens files, schedules or parent reference sources were changed.
+
+### What changed
+
+- An optional FastAPI interface exposes typed pipeline/evidence reads, checklist
+  and local-model diagnosis, saved investigations, and the fixed repair workflow.
+  Requests cannot choose roots, model settings, paths, SQL or approval provenance.
+  Closed Pydantic models reject coercion and extra body fields. Errors return
+  short codes without echoing input or local exception details.
+- The pure ASGI boundary checks literal Host, loopback peer, origin, forwarded
+  headers and duplicate security headers. Bodies have a 4 KiB cap and a real
+  2-second read deadline; JSON rejects duplicate keys and nonfinite values.
+  Closed queries and buffered 512 KiB response limits are enforced. Redirects,
+  permissive CORS, cookies and externally loaded API documentation are disabled.
+- Separate random local capabilities authorize reads, operations and exact-plan
+  approvals. An operation token cannot approve its own repair. API acknowledgments
+  record `trusted_api`; this identifies the caller channel, not authenticated
+  human review. The model receives none of the capabilities.
+- Roots and model settings are server-owned. Model operations require an explicit
+  digest pin before admission; no pin returns `model_unconfigured`, without
+  creating a store or contacting a runtime. Resume compares saved settings with
+  the server's configuration rather than restoring an endpoint from state.
+  The existing executor, verifier and model-generation policy were unchanged.
+- One nonblocking mutation admission prevents concurrent operations from being
+  silently queued/retried. Core budgets and pending-outcome refusal still apply.
+  HTTP timeout/disconnect does not establish cancellation or rollback; inspect
+  the saved record before acting again.
+- `serve` runs one owned foreground Uvicorn worker on literal `127.0.0.1`.
+  It claims the port first, strips inherited provider/proxy/exporter settings,
+  disables telemetry SDK use, and writes three random capabilities to an
+  exclusive mode-0600 local session file. Logs print no tokens. Graceful shutdown
+  removes only its own unchanged session and closes its port. Existing files,
+  symlinks and replacements are preserved or refused.
+- The optional dependencies were downloaded as wheels from public PyPI,
+  license/hash reviewed, then installed offline from that reviewed wheel set
+  into ignored `.venv`. All 17 packages are pinned in `requirements-api.txt`;
+  `pip check` passed. The dependency manifest records licenses, wheel hashes
+  and sizes. There is no SDK/exporter, cloud service, billing or API-key setup.
+
+### Verification and actual local HTTP audit
+
+- `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python
+  -W error::ResourceWarning -m unittest discover -s tests -q`: **341 tests pass**
+  on Python 3.13.7/macOS arm64. The 46 new checks comprise 6 contracts,
+  13 raw-ASGI boundary, 6 read-route, 8 operation-route, 6 independent integration
+  and 7 launcher/session/failure checks. No imported TestCase counts were padded.
+- A separate standard-library-only discovery passed: **318 discovery entries,
+  10 skips** (308 executed). Optional API imports are skipped in that environment;
+  this does not claim the API was tested without its dependencies. Its pure
+  security boundary remains testable with the standard library.
+- Checks cover role separation, real body-read deadline, nonblocking mutation
+  admission, malformed/oversized/ambiguous requests, fixed roots, unavailable
+  reads, configuration mismatch, exact approval, stale plans and saved counts.
+  The foreground CLI was exercised with occupied ports, invalid configuration,
+  failed startup, private file permissions, symlinks, conditional cleanup and
+  actual SIGTERM shutdown. Startup failures are not returned as CLI success.
+- The [actual HTTP audit](../reports/api-smoke.json) ran once against the frozen
+  foreground server: **51/51 audited requests received responses**, plus one
+  separately recorded startup health probe. **All 16 request-boundary checks
+  passed**, with zero case/driver errors and **zero actual model requests**.
+- All **3/3 derived repairs** matched independently read exact warehouse,
+  quarantine and run metadata. Original/unrelated files were preserved.
+  Concurrent execution returned one 200 and one 503 and produced one target.
+  A deliberately stale source was rejected with 409 and unchanged state/output.
+  Every approval request in this audit was scripted, with no human-review claim.
+- Separate software tests used three simulated generation responses from a
+  controlled loopback HTTP fixture to check baseline transport and saved-agent
+  resume. These are not real LLM inference, model-quality or recovery evidence.
+- The owned audit server stopped without force, its port refused connections,
+  and its unchanged private session was removed. All 18 bound implementation/
+  dependency hashes match the final files. The public audit contains no local
+  absolute paths or bearer credentials. No Ollama runtime or weights were used.
+- The pinned Starlette test transport emits an `httpx` deprecation warning;
+  tests and the actual HTTP server audit passed. Only the recorded Python/macOS
+  platform was tested, not every platform allowed by the core package metadata.
+
+### Commit boundaries and next stage
+
+Five implementation commits are `c86c4c8` (contracts/dependency pins), `f60f88e`
+(session/request boundary), `4c4c3f8` (typed reads and integrated HTTP errors),
+`51f4827` (guarded operations/provenance) and `6579f91` (owned foreground launcher).
+The sixth contains the actual HTTP driver/report, concise README, API guide,
+cost/license notes and this log. No credentials, wheel binaries or databases
+are included in publication.
+
+Stage 12, the small local UI, is next on **2 November**, the final authorized
+work date. Do not advance it in another 1 November session. Matched evaluation
+and final packaging remain unfinished and cannot be claimed complete. Earlier
+local-model diagnosis failures are unresolved. Keep the 2 November cutoff;
+report completed/incomplete scope and stop scheduled work instead of extending
+it. No production deployment, production security, human review or diagnosis
+accuracy is established by this local integration audit. See [API.md](API.md).

@@ -3,7 +3,7 @@
 A local tool for investigating data pipeline failures.
 
 **In development:** the local pipeline, evidence tools, and experimental model
-investigation are available. Fixed approved repairs are available; the web
+investigation, fixed approved repairs, and a local API are available. The web
 interface is planned.
 
 ## Why this project?
@@ -29,6 +29,7 @@ checks the database afterward to confirm the result.
 - A bounded local investigator that selects read-only evidence tools and records its steps.
 - Saved investigation progress with input checks and explicit restart limits.
 - Three fixed repair actions with exact-plan approval and independent database checks.
+- An optional local API with typed requests and separate read, operation and approval access.
 
 ## Getting started
 
@@ -127,15 +128,29 @@ Repairs create a new run under `var/repaired/` and preserve the original inciden
 The model cannot approve or execute them. The [repair guide](docs/REPAIRS.md)
 explains the three actions, their assumptions, and stale-input rejection.
 
+To run the optional API:
+
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements-api.txt
+PYTHONPATH=src .venv/bin/python -m pipesleuth serve
+```
+
+The foreground server uses `127.0.0.1:8765` and a private local session file.
+See the [API guide](docs/API.md) for requests, access roles and model setup.
+
 ## Tests
 
 ```sh
 PYTHONPATH=src python3 -m unittest discover -s tests -v
 ```
 
+Optional API checks run when those dependencies are installed; use
+`.venv/bin/python` after the API setup above to include them.
+
 ## Roadmap
 
-- A local API and simple web interface.
+- A simple local web interface.
 - Evaluation against a checklist and a single model call.
 
 Built with synthetic data and local infrastructure. No paid services or cloud

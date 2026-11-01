@@ -46,4 +46,8 @@ Do not continue the schedule beyond 2 November without a new user request.
   Fixed repairs require an exact-plan/input approval and produce a new derived
   run. Independent checks compare actual warehouse/quarantine contents before
   commit and after reopening. Original incident files remain read-only.
-  API, UI, matched evaluation and final packaging remain later stages.
+  The optional FastAPI interface has fixed roots, bounded JSON, local session
+  roles and a controlled loopback launcher. API approval is a trusted caller
+  acknowledgement, not proof of human review. UI, matched evaluation and final
+  packaging remain later stages. Install requirements-api.txt in the local
+  .venv to run API checks; source-only discovery skips optional API tests.

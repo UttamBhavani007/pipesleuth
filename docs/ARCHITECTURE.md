@@ -67,6 +67,14 @@ pre-commit/fresh-read verification guard that operation. Unknown outcomes retain
 their intent and cannot be replayed automatically. The model has no approval or
 executor tool, and these actions are not general schema inference or repair.
 
+Stage 11 adds the [local FastAPI interface](API.md) over those same components.
+Requests cannot supply roots, model settings, SQL or approval provenance.
+Separate process-local capabilities protect reads, operations and approvals;
+an operation capability cannot approve its own plan. The owned foreground
+launcher binds literal loopback, strips inherited proxy/provider settings,
+disables telemetry SDK use, and creates a private ephemeral session file.
+HTTP disconnects do not establish that a core operation was cancelled.
+
 The initial incident families are schema drift, duplicate records, and invalid or missing data. Each incident runs in an isolated SQLite sandbox. The investigator explains evidence and proposes a bounded repair; successful recovery is established by independent database checks.
 
 ## Planned flow
@@ -122,7 +130,10 @@ software tests nor a completed request demonstrate diagnosis accuracy.
 
 ## Investigation and repair are separate
 
-The agent returns a diagnosis, supporting evidence references, uncertainty, and an optional structured repair proposal. It cannot approve its own proposal. Approval must be supplied through a trusted programmatic or user interface and must identify the exact plan and incident.
+The investigator returns a diagnosis, supporting evidence references and
+uncertainty. A trusted caller selects a fixed repair action and separately
+acknowledges its exact plan and input fingerprint. The model has no approval
+or execution authority.
 
 At plan creation, fingerprint the affected inputs and relevant sandbox state. Immediately before an approved action, compare the current state with the approved fingerprint within the executor's protected operation. Reject stale plans and require a fresh investigation/approval. Version and validate repair actions rather than accepting generated SQL or shell snippets. Define the initial concrete action names only after the actual ETL and incident behavior exist.
 
@@ -130,6 +141,9 @@ An approved action affects only its incident sandbox. Persist an audit record of
 
 ## Local deployment
 
-Use Python, SQLite, and a loopback model runtime. Add FastAPI and a small local web UI in later stages; avoid remote assets, analytics, and external API calls. No hosted database, cloud deployment, OpenAI API, or other paid service is part of this architecture. See [COST_POLICY.md](COST_POLICY.md) for the distinction between service fees and local resource use.
+Use Python, SQLite, a loopback model runtime and the optional local FastAPI
+service. A small web UI remains planned. Avoid remote assets, analytics and
+external model API calls. No hosted database, cloud deployment, OpenAI API or
+paid service is part of this architecture. See [COST_POLICY.md](COST_POLICY.md).
 
 This first version is a bounded demonstration over synthetic incidents. It does not establish production incident response, general autonomous repair, or safe access to real infrastructure.

@@ -36,4 +36,21 @@ Expected paid external service fees are **€0**. This is not a claim that compu
 
 Codex usage is governed by the user's existing account and limits. This project does not purchase a Codex plan, redeem credits, or guarantee that account use is free. A local automation also depends on the desktop app and host being available; its configuration must be verified separately before claiming it is active.
 
+## Optional local API dependencies (1 November 2026)
+
+The API uses [FastAPI's MIT-licensed framework](https://github.com/fastapi/fastapi/blob/master/LICENSE)
+and [Uvicorn's BSD-licensed server](https://github.com/Kludex/uvicorn/blob/main/LICENSE.md)
+in a local virtual environment. There is no FastAPI Cloud deployment or account.
+The [wheel manifest](../reports/api-dependencies.json) records all 17 reviewed
+package versions, license metadata, wheel hashes and download sizes. The pinned
+[requirements](../requirements-api.txt) include the local HTTP test client.
+Only Python 3.13.7 on macOS arm64 was tested for this API stage; the manifest's
+wheel hashes describe that observed platform, not every supported platform.
+
+FastAPI's dependency set includes the free OpenTelemetry API package, with no
+SDK or exporter installed. The controlled launcher removes inherited exporter
+settings and sets `OTEL_SDK_DISABLED=true`. No telemetry service is configured.
+Its private local role tokens are process-local capabilities, not paid-provider
+API keys; they are never published or included in the audit report.
+
 Any proposed change that cannot meet this policy remains unimplemented until the user changes the requirement. Do not reinterpret a free tier or a temporary credit as permission to use a paid service.
