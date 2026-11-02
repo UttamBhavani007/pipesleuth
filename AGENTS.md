@@ -48,6 +48,9 @@ Do not continue the schedule beyond 2 November without a new user request.
   commit and after reopening. Original incident files remain read-only.
   The optional FastAPI interface has fixed roots, bounded JSON, local session
   roles and a controlled loopback launcher. API approval is a trusted caller
-  acknowledgement, not proof of human review. UI, matched evaluation and final
-  packaging remain later stages. Install requirements-api.txt in the local
+  acknowledgement, not proof of human review. The small local UI is available
+  with in-memory capabilities, explicit approval and bounded resume views.
+  Matched evaluation and final clean-environment packaging remain unfinished
+  at the 2 November cutoff. Do not resume scheduled development without a new
+  user request. Install requirements-api.txt in the local
   .venv to run API checks; source-only discovery skips optional API tests.

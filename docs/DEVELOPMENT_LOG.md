@@ -851,3 +851,111 @@ local-model diagnosis failures are unresolved. Keep the 2 November cutoff;
 report completed/incomplete scope and stop scheduled work instead of extending
 it. No production deployment, production security, human review or diagnosis
 accuracy is established by this local integration audit. See [API.md](API.md).
+
+## 2026-11-02 — stage 12, local browser workspace and schedule cutoff
+
+Started from clean published `0aca78d`, with no commits for today's Berlin date.
+Only the next unfinished stage was implemented. VersionLens's completed
+prototype build/release was rechecked read-only; its outstanding human evaluation
+is not claimed complete. Existing publication approval covers these verified
+commits. No VersionLens, parent reference or synced source files were changed.
+
+### What changed
+
+- Project-owned HTML, CSS and JavaScript run from the existing loopback API.
+  There is no frontend build, dependency, CDN, telemetry or hosted service.
+  Six exact static GET/HEAD paths are public; API access remains protected.
+  Host/origin/peer/query/body protections also cover assets. Static reads refuse
+  symlinks, nonregular files and oversized content. CSP, no-store, no-referrer
+  and no-framing headers are applied without an HTTP credential bootstrap.
+- Choosing a private session file retains read/operation capabilities only in
+  tab memory. Separate file selection loads approval access. Requests use a
+  closed route/role allowlist, same-origin transport, omitted cookies, refused
+  redirects, bounded streaming responses and a deadline. No automatic mutation
+  retry is sent. This is local capability handling, not authenticated identity.
+- The workspace opens a known CLI-created run, displays its bounded event
+  timeline and evidence details, and distinguishes checklist, experimental
+  model, unknown and unfinished investigation results. Saved IDs, revisions,
+  counters, trace, pending outcomes and bounded explicit resume are inspectable.
+- Repair review displays the fixed action, source, distinct target, expected
+  effects, same-unit warning and both hashes. A fresh checkbox acknowledges
+  exactly the displayed record. Approval and execution are separate actions;
+  missing access, pending and terminal records block inappropriate actions.
+  Editing an ID clears the plan/acknowledgement. Receipts distinguish verified,
+  committed-failure, rollback and uncertain outcomes.
+- Session/run changes invalidate late responses and clear displayed data.
+  Mutation admission temporarily disables the workspace and connection changes.
+  Review caught an initial-log response race; all evidence selections now share
+  one ordering ticket. All received data is rendered as text, without HTML
+  interpretation. The trusted executor and independent verifier were unchanged.
+
+### Checks actually run
+
+- API-enabled Python discovery with `-W error::ResourceWarning` passed **350
+  tests** on Python 3.13.7/macOS arm64: the previous 341 plus 9 static-serving
+  boundary checks. The existing Starlette/httpx deprecation warning remains.
+- **41 JavaScript tests passed**, both through the available tool runtime and
+  the documented direct `node --test tests/ui_*.mjs` command with existing
+  Node 24.22.1. They include 16 session/transport checks, 15 investigation
+  presentation/controller checks and 10 exact-plan repair/controller checks.
+  Controlled fixtures cover late responses, uncertainty and pending refusal;
+  these software tests are not real model-quality evidence.
+- The actual foreground server ran on literal `127.0.0.1:8766` over four isolated
+  synthetic runs, with evaluator labels/oracles outside its input root. Native
+  Chrome interaction connected the session, opened a schema incident and its
+  events, displayed the checklist's schema finding and four evidence references,
+  and started/resumed a saved investigation one operation at a time.
+- The model digest was pinned, but no model runtime was started. Saved revisions
+  1 → 3 → 5 → 7 demonstrated a trusted read, explicit bounded failure/retry and
+  terminal **unknown** with `local_model_error`, one read and **zero generation
+  requests**. The terminal resume control was disabled. This checks unavailable
+  runtime handling, not diagnosis accuracy or a fresh real model smoke run.
+- Browser interaction created a schema repair plan, showed both exact hashes,
+  refused approval without separately loaded access, cleared acknowledgement
+  on refresh, loaded approval access, approved the displayed plan, and separately
+  executed it. The final browser receipt showed succeeded revision 5 with a
+  committed, independently verified derived database. These were agent-operated
+  synthetic test acknowledgements (`trusted_api`), not human review.
+- The [UI audit](../reports/ui-smoke.json) independently read actual SQLite rows,
+  types, quarantine, metadata and derived source: **1/1 derived run matched**.
+  All **4/4 original source/database pairs** retained their exact hashes.
+  **14/14 public HTTP checks** passed, including all six actual asset bytes,
+  headers and refused unauthorized/session/encoded/foreign-origin paths.
+- A separate probe through the exact unmodified JavaScript client passed **5/5
+  real HTTP response checks**, including a healthy checklist POST and completed
+  repair presentation. Its workspace remained unchanged. This was a Node HTTP
+  check, not browser rendering or response-time measurement. All 35 bound source
+  hashes match the report. No credentials or local absolute paths are published.
+- Browser automation had long startup delays, intermittent capture/scroll
+  failures and delayed native snapshots. Final states were observed, but no
+  browser responsiveness result is inferred from tool timing. Actual desktop
+  screenshots were inspected in the tool. Exporting image files was refused by
+  the computer tool's filesystem/network permissions; **no screenshot artifact
+  is published**. Mobile, screen-reader and complete keyboard audits were not
+  performed; Tab/Space acknowledgement and labelled controls were inspected.
+- Disconnect cleared access and displayed records. The owned foreground server
+  exited normally, its port refused connections and its private session file
+  was removed. This session started no model runtime; its temporary capture
+  receiver was also stopped.
+
+### Commits, incomplete work and stop
+
+Five implementation commits are `6e536ed` (closed static boundary), `01d765f`
+(in-memory client), `b917ee7` (diagnosis/resume views), `cfdf81f` (exact repair
+review), and `42a9a89` (connected workspace). The sixth includes actual preparation,
+read-only audit/client probes, the public evidence, simplified README, UI guide
+and cutoff record. Counts reflect useful work, with no backdating or padded
+commits. Publication uses a normal push under the existing approval.
+
+The small UI is implemented and its local integration is demonstrated with the
+limits above. **Stages 13 and 14 remain unfinished:** matched three-approach
+model evaluation, frozen holdout execution and final clean-environment release
+packaging were not performed. Exported portfolio screenshots and broader
+browser/accessibility checks are also incomplete. Earlier real model smoke
+failures remain unresolved. Software tests do not establish diagnosis accuracy,
+production recovery, human review or a working production deployment.
+
+This is the final authorized scheduled development date. The daily automation
+was **deleted through the app tool at the 2 November cutoff**, so it will not
+continue. Further implementation requires a new user request; the deadline has
+not been extended and no missing work or dates are invented.

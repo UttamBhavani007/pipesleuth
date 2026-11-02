@@ -1,162 +1,104 @@
 # PipeSleuth
 
-A local tool for investigating data pipeline failures.
-
-**In development:** the local pipeline, evidence tools, and experimental model
-investigation, fixed approved repairs, and a local API are available. The web
-interface is planned.
+A local workspace for investigating data pipeline failures and reviewing fixed repairs.
 
 ## Why this project?
 
-A renamed column can break an import. A retry can load the same orders twice.
-Bad records can leave incorrect data in a database. Finding the cause often
-means checking logs, schemas, and validation results by hand.
+A renamed column can break an import. Repeated batches can duplicate orders, and
+invalid records can leave a load incomplete. Finding the cause usually means
+checking logs, schemas and validation results separately.
 
-PipeSleuth is being built to bring that evidence together, explain the likely
-cause, and suggest a repair. You review the repair before it runs, and the tool
-checks the database afterward to confirm the result.
+PipeSleuth brings those facts together. Inspect an incident, run a checklist or
+an experimental local model, and review a supported repair before it creates a
+new database. The original incident stays available for comparison.
 
-## Current features
+**Status: local prototype.** The pipeline, browser interface and repair workflow
+are implemented. Model diagnosis accuracy has not been established; earlier
+local-model smoke runs include false findings and rejected responses.
 
-- Reproducible order data with healthy, schema-change, duplicate, and invalid-record scenarios.
-- Isolated SQLite runs with exact integer amounts, row counts, and currency totals.
-- Logged schema-change and duplicate-record failures.
-- Optional skipping of identical retry records, with safe verification of completed runs.
-- Optional quarantine of invalid rows, preserving their input and validation reasons.
-- Read-only evidence tools for run status, logs, schema, and validation results.
-- A deterministic troubleshooting checklist with evidence references and uncertainty.
-- An experimental single-call local model baseline with validated JSON and evidence references.
-- A bounded local investigator that selects read-only evidence tools and records its steps.
-- Saved investigation progress with input checks and explicit restart limits.
-- Three fixed repair actions with exact-plan approval and independent database checks.
-- An optional local API with typed requests and separate read, operation and approval access.
+## Features
+
+- Synthetic healthy, schema-change, duplicate and invalid-record inputs.
+- Isolated SQLite runs, validation, quarantine and guarded replay.
+- Read-only evidence tools with content fingerprints.
+- A deterministic checklist, single-call local model and bounded tool agent.
+- Saved investigations with explicit resume and uncertain-outcome limits.
+- Three fixed repairs with exact-plan approval and independent database checks.
+- A local API and browser workspace with separate operation and approval access.
+
+The model cannot run arbitrary SQL or shell commands, or approve a repair.
+These are development demonstrations, not production recovery results.
 
 ## Getting started
 
-Requires Python **3.11+**. The pipeline and checklist use the standard library.
-The optional model method needs a local Ollama installation and cached model;
-no account or API key is used.
+The pipeline uses Python **3.11+** and the standard library. The browser interface
+uses the optional API dependencies; that environment was checked with Python
+3.13.7 on macOS arm64.
 
 ```sh
 git clone https://github.com/UttamBhavani007/pipesleuth.git
 cd pipesleuth
-
-# Load clean orders into a new local database
-PYTHONPATH=src python3 -m pipesleuth pipeline run --seed 42 --rows 12
-
-# Inspect a run using the run_id printed by the command above
-PYTHONPATH=src python3 -m pipesleuth pipeline show RUN_ID
-
-# Read its events, or verify it again without inserting rows
-PYTHONPATH=src python3 -m pipesleuth pipeline events RUN_ID
-PYTHONPATH=src python3 -m pipesleuth pipeline rerun RUN_ID
-
-# Diagnose observed faults using the deterministic checklist
-PYTHONPATH=src python3 -m pipesleuth diagnose RUN_ID
-```
-
-To try incident inputs:
-
-```sh
-# Deliberately fail on a renamed amount column; inspect the returned run_id
-PYTHONPATH=src python3 -m pipesleuth pipeline run --scenario schema_drift
-
-# Load a retry batch while skipping identical repeated orders
-PYTHONPATH=src python3 -m pipesleuth pipeline run --scenario duplicate_ingestion --deduplicate
-
-# Load valid rows and retain invalid records separately, then inspect them
-PYTHONPATH=src python3 -m pipesleuth pipeline run --scenario invalid_records --quarantine
-PYTHONPATH=src python3 -m pipesleuth pipeline quarantine RUN_ID
-```
-
-Without `--deduplicate`, duplicate IDs fail the load. Conflicting valid orders
-with the same ID always fail. Without `--quarantine`, an invalid row fails the
-whole load. Quarantine retains each rejected input and its first validation
-reason; the result reports `rows_loaded` and `rows_quarantined` separately.
-
-Replaying a completed run checks the source, accepted rows, and quarantined
-records first. Changed data is rejected without reloading it.
-
-Pipeline files are saved under `var/sandboxes/RUN_ID/`. Each run has its own
-`source.json` and `warehouse.sqlite3`. Use `--data-dir PATH` with any pipeline
-command to choose another local directory.
-
-To inspect investigation evidence:
-
-```sh
-PYTHONPATH=src python3 -m pipesleuth evidence tools
-PYTHONPATH=src python3 -m pipesleuth evidence inspect_schema RUN_ID
-PYTHONPATH=src python3 -m pipesleuth evidence inspect_validation RUN_ID --limit 5
-```
-
-The tools return bounded JSON with a content fingerprint. They cannot change
-data or run caller-supplied SQL or shell commands. See the
-[tool reference](docs/EVIDENCE_TOOLS.md).
-
-The checklist reports supported faults or `unknown` when evidence is incomplete
-or inconsistent. It leaves the data unchanged. See the
-[checklist reference](docs/CHECKLIST.md) for its rules and limitations.
-
-To try the single-call model, follow the [local setup](docs/LOCAL_MODEL.md), then:
-
-```sh
-PYTHONPATH=src python3 -m pipesleuth diagnose RUN_ID --method local
-
-# Let the bounded investigator select additional evidence tools
-PYTHONPATH=src python3 -m pipesleuth diagnose RUN_ID --method agent
-```
-
-Both model methods are experimental: the small local model has produced false
-findings on healthy input. Output validation checks structure and references,
-not accuracy. The [investigator guide](docs/INVESTIGATOR.md) explains its limits.
-
-For saved progress, use `investigation start RUN_ID --model-digest SHA256`,
-then `investigation show INVESTIGATION_ID` or `investigation resume INVESTIGATION_ID`.
-The [checkpoint guide](docs/CHECKPOINTS.md) covers setup, pausing, and interrupted
-requests whose outcomes could not be saved.
-
-For a supported failed incident, prepare a repair and inspect its printed plan:
-
-```sh
-PYTHONPATH=src python3 -m pipesleuth repair plan RUN_ID --action rename_amount_column
-PYTHONPATH=src python3 -m pipesleuth repair approve REPAIR_ID \
-  --plan-sha256 PLAN_HASH --input-fingerprint-sha256 INPUT_HASH
-PYTHONPATH=src python3 -m pipesleuth repair execute REPAIR_ID
-```
-
-Repairs create a new run under `var/repaired/` and preserve the original incident.
-The model cannot approve or execute them. The [repair guide](docs/REPAIRS.md)
-explains the three actions, their assumptions, and stale-input rejection.
-
-To run the optional API:
-
-```sh
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements-api.txt
+
+# Create a run and keep the printed run_id
+PYTHONPATH=src .venv/bin/python -m pipesleuth pipeline run --seed 42 --rows 12
+
+# Start the local API and browser workspace
 PYTHONPATH=src .venv/bin/python -m pipesleuth serve
 ```
 
-The foreground server uses `127.0.0.1:8765` and a private local session file.
-See the [API guide](docs/API.md) for requests, access roles and model setup.
+Open **http://127.0.0.1:8765**. Choose the private session file printed by the
+server, then enter the run ID. Inspect its events, schema and validation, or run
+the deterministic checklist. Stop the server with Ctrl-C.
+
+To create an incident, run this in another terminal. A failed load is expected;
+the command prints the ID to inspect:
+
+```sh
+PYTHONPATH=src .venv/bin/python -m pipesleuth pipeline run --scenario schema_drift
+```
+
+For a supported incident, choose a repair action and review its plan and warnings.
+Load approval access separately using the session file, acknowledge the exact
+plan, approve it, then execute it. Repairs produce a new run under `var/repaired/`.
+See the [UI guide](docs/UI.md) for the workflow and interruption limits.
+
+The checklist needs no model. To enable the experimental model methods, follow
+[local model setup](docs/LOCAL_MODEL.md) and the digest-pinning instructions in
+[the API guide](docs/API.md). There is no remote fallback.
+
+For command-line use:
+
+```sh
+PYTHONPATH=src python3 -m pipesleuth diagnose RUN_ID
+PYTHONPATH=src python3 -m pipesleuth evidence inspect_schema RUN_ID
+```
+
+[Evidence tools](docs/EVIDENCE_TOOLS.md) · [Investigator](docs/INVESTIGATOR.md) ·
+[Saved progress](docs/CHECKPOINTS.md) · [Repairs](docs/REPAIRS.md)
 
 ## Tests
 
 ```sh
-PYTHONPATH=src python3 -m unittest discover -s tests -v
+PYTHONPATH=src .venv/bin/python -m unittest discover -s tests -v
+# Optional JavaScript development checks, with an existing Node installation
+node --test tests/ui_*.mjs
 ```
 
-Optional API checks run when those dependencies are installed; use
-`.venv/bin/python` after the API setup above to include them.
+Without API dependencies, standard-library discovery skips the optional API
+checks. Software tests and browser checks do not establish model accuracy.
 
-## Roadmap
+## Remaining work
 
-- A simple local web interface.
-- Evaluation against a checklist and a single model call.
+- Matched evaluation of the checklist, single-call model and tool agent.
+- Clean-environment packaging and broader browser/accessibility checks.
 
-Built with synthetic data and local infrastructure. No paid services or cloud
-model APIs are required. See the [delivery plan](docs/DELIVERY_PLAN.md),
-[development log](docs/DEVELOPMENT_LOG.md), and [cost policy](docs/COST_POLICY.md)
-for details.
+The scheduled build ends on **2 November 2026** with that scope unfinished.
+[Development log](docs/DEVELOPMENT_LOG.md) · [Delivery plan](docs/DELIVERY_PLAN.md)
+
+All execution is local. No paid services, cloud inference or provider API keys
+are used. [Cost policy](docs/COST_POLICY.md).
 
 ## License
 

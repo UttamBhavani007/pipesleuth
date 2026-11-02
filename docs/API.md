@@ -135,3 +135,12 @@ refused connections, its unchanged private session file was removed, and all 18
 recorded implementation/dependency hashes matched. The public report contains
 no local absolute paths or bearer credentials. This demonstrates local HTTP
 integration, not diagnosis accuracy, production security or every crash outcome.
+
+## Browser workspace (2 November)
+
+The same foreground server now serves the small [local UI](UI.md) at `/`.
+Only six literal static GET/HEAD paths are public. They contain no session data;
+API reads and operations still require their existing roles. Encoded aliases,
+unknown files, session-file URLs and caller-supplied paths do not gain access.
+The security boundary applies to static requests too, with a closed content
+security policy, no framing, no cache, no cookies and no remote assets.

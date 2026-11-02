@@ -54,3 +54,11 @@ Its private local role tokens are process-local capabilities, not paid-provider
 API keys; they are never published or included in the audit report.
 
 Any proposed change that cannot meet this policy remains unimplemented until the user changes the requirement. Do not reinterpret a free tier or a temporary credit as permission to use a paid service.
+
+## Local UI (2 November 2026)
+
+The browser workspace adds only project-owned HTML, CSS and JavaScript. It uses
+system fonts and the existing loopback API, with no package manager, CDN,
+analytics, hosting or new runtime dependency. JavaScript development checks can
+use an existing Node installation; the recorded checks used the app's already
+available Node test runtime. The browser itself is existing local software.

@@ -15,7 +15,7 @@ Build a local data-pipeline incident investigator over **14 actual days, 20 Octo
 - Use real commit dates. If a session is missed or a stage is blocked, record the delay and continue from it. Do not backdate, fabricate progress, or silently compress unfinished work into later days.
 - Each stage must pass its acceptance check before being marked complete. Record commands and observed results; distinguish a skipped check from a passed check.
 - Use local execution and free software only. Follow [COST_POLICY.md](COST_POLICY.md); never add a paid or cloud fallback.
-- Stage 11 is the current delivery boundary: the SQLite pipeline, bounded evidence tools, deterministic checklist, single-call model baseline, bounded local investigator, saved investigations, fixed approved repairs into new derived runs, and a local API. Model diagnosis remains experimental. UI, matched evaluation and final packaging belong to later stages.
+- Stage 12 is the final implemented delivery boundary: the SQLite pipeline, bounded evidence tools, deterministic checklist, single-call model baseline, bounded local investigator, saved investigations, fixed approved repairs into new derived runs, a local API and a small browser workspace. Model diagnosis remains experimental. Matched evaluation and final packaging remain unfinished at the cutoff.
 
 The 26 October wake-up reached execution after midnight in Berlin. Stage 7
 therefore continued on 27 October with real dates; no 26 October work or commits
@@ -44,6 +44,11 @@ The 1 November session attempts only stage 11. A duplicate session must not
 advance to the UI that day. The UI is next on 2 November, the final authorized
 development date. Matched evaluation and final packaging may remain incomplete;
 report that at the cutoff and stop the schedule rather than extending it.
+
+The 2 November session implements only stage 12. The original dates below remain
+planning history. Stages 13 and 14 were not implemented: no matched frozen
+evaluation or complete clean-environment release is claimed. Scheduled work ends
+at this cutoff; continuing requires a new user request.
 
 ## Stages and acceptance checks
 

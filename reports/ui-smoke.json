@@ -1,0 +1,710 @@
+{
+  "bound_sources_unchanged_during_audit": true,
+  "browser_observation_scope": "Agent-operated native-browser observations, supplied separately; this read-only audit does not drive or score a browser. No human review is established.",
+  "browser_observations": [
+    {
+      "check": "initial_connection",
+      "observed": "Actual local page loaded with disabled workspace controls; selecting the private file connected read and operation access while approval remained locked.",
+      "passed": true
+    },
+    {
+      "check": "failed_incident_and_events",
+      "observed": "Failed status, zero loaded rows and three recorded source/load events were displayed.",
+      "passed": true,
+      "run_id": "2bcef4779e9b480cb71080d791b4a58f"
+    },
+    {
+      "check": "checklist_diagnosis",
+      "observed": "Incident reported: schema_mismatch; four read tools, four evidence references and zero model requests. The view identified the method as deterministic.",
+      "passed": true
+    },
+    {
+      "check": "saved_investigation",
+      "investigation_id": "e158cec90b5d4e18a4c6f6fe395f3a46",
+      "observed": "Start saved revision 1 without evidence/model calls. Explicit one-operation resumes reached revisions 3, 5 and terminal 7. The final view showed Unknown, local_model_error, one read tool, zero model requests and disabled resume.",
+      "passed": true
+    },
+    {
+      "check": "exact_plan_review",
+      "observed": "The displayed plan identified the source, distinct target, six loaded rows, same-unit warning and both exact fingerprints. Approval and execution started disabled.",
+      "passed": true,
+      "repair_id": "0d68ef430d3440cea4617765eb9e0160"
+    },
+    {
+      "check": "missing_approval_access",
+      "observed": "Acknowledging and attempting approval without separate access showed no_approval_authority, cleared the checkbox and required explicit saved inspection; the next inspection still showed planned revision 1.",
+      "passed": true
+    },
+    {
+      "check": "explicit_approval",
+      "observed": "A second local file selection loaded approval access. Fresh inspection cleared acknowledgement. Tab/Space interaction checked the acknowledgement; the separate approval action reached approved revision 3 and enabled execution. This was an agent-operated synthetic check, not human review.",
+      "passed": true
+    },
+    {
+      "check": "separate_execution_and_receipt",
+      "observed": "The separate execution action reached succeeded revision 5. The browser displayed a committed, independently verified derived database with rechecked original input and disabled replay controls.",
+      "passed": true,
+      "target_run_id": "0880d11c69d94e9682b5e3ebc1aa57b0"
+    },
+    {
+      "check": "disconnect_clears_access_and_views",
+      "observed": "Disconnect showed no access loaded, locked approval access, empty run/diagnosis/repair views and disabled workspace controls.",
+      "passed": true
+    },
+    {
+      "check": "visual_and_tool_limits",
+      "observed": "Actual desktop interface screenshots were inspected in the tool. Native browser/window snapshots were sometimes delayed and capture/scroll operations failed intermittently; no browser response-time, mobile or complete accessibility claim is made. Screenshot file export was blocked by computer-tool filesystem/network permissions, so no screenshot artifact is published.",
+      "passed": null
+    }
+  ],
+  "cleanup": {
+    "browser_disconnected_observed": true,
+    "observed_at": "2026-11-02T20:47:38.530436+00:00",
+    "owned_port_refused_connections": true,
+    "owned_private_session_removed": true,
+    "owned_server_exited_normally": true,
+    "published_screenshot_files": 0,
+    "screenshot_export_limit": "Computer-tool filesystem and network permissions refused image-file export; actual interface images were inspected in the tool only."
+  },
+  "config": {
+    "machine": "arm64",
+    "python_version": "3.13.7",
+    "source_sha256": {
+      "pyproject.toml": "252e8b1e14050051aa82f37b2368101ac8932e45ef0833ae0deb75ee06f3f361",
+      "requirements-api.txt": "cec3d9b3560b01cdeae1014539bf9868ae2b7de1cdcd55368554334dc787b0c9",
+      "scripts/audit_ui_state.py": "1d9ec1d0f96a7ba93b77480862eed20d05ad5ae75220f5e56d7391645cf7dc3f",
+      "scripts/check_ui_client.mjs": "dd5962e8452346c5f205e885f5539c3ea4597640144376962d10539f87f16bc4",
+      "scripts/prepare_ui_smoke.py": "74b958b541dfeecfe9ca82df5c7d68a83d383247d75b448afbeef27e956dff89",
+      "src/pipesleuth/api.py": "c623c733d61086c4a011a6a4b2bc17c394a8151b0700ae5b2adc886a95d997d5",
+      "src/pipesleuth/api_contracts.py": "10d2eaf38ed8faf549ee28475652700c3cdcd62cc4b29557de449fe1ec46d7db",
+      "src/pipesleuth/api_security.py": "92f577c52df90a82fc5097e980cc20438b70f3db14f95dac3724a2c150df3689",
+      "src/pipesleuth/api_server.py": "2391d63276d91e01c3d9e0e3c4607178cac7dd9e34fb56ae900fba973245ca9e",
+      "src/pipesleuth/checklist.py": "de2ef5c99067b3d57cec110842fe1213e216d7db3d997dbb56842777e4b05343",
+      "src/pipesleuth/checkpoints.py": "28b6c02d01d498cbf8b34a8945c7618e2cc72651a355715a641c6666e689a733",
+      "src/pipesleuth/cli.py": "0b045aca029ac2c4e242be46fe92665bdd9fd3c2f4d74a96853ecaf064c85e2e",
+      "src/pipesleuth/domain.py": "d160718693b663c91a094dbae7753e658cfa362ba5b81582b77aa00dd27e6d82",
+      "src/pipesleuth/evidence.py": "a9944554bae4692d78e9c544fca6759d3fc7f52e23b599057a1bcee466afea35",
+      "src/pipesleuth/fixtures.py": "5bda9eabb8442001521f66808eadd73c1f33f5516abe0b02fc329da61baf0186",
+      "src/pipesleuth/input_binding.py": "3c39de4f0de7af93a693dea72ba653edf1b009c73d61ec3698b83887b422a310",
+      "src/pipesleuth/investigator.py": "ecfb0c846f7589b19f5303dbfd4f84dbf1f2cd9859df4d8cd2fb5b82c457228e",
+      "src/pipesleuth/local_model.py": "91045f890f23b59c89839d133011e92f7a2c922babcd3cdd6ca205dc1c80dc56",
+      "src/pipesleuth/persistent.py": "3377307723101848a3687bc403e306079f035923bf40fe65c3cd69cf63d766b5",
+      "src/pipesleuth/pipeline.py": "d829d66f727c16dfea5031a415ee0cec3a03ef3ae589d5aba55e8e7da2c6e1d7",
+      "src/pipesleuth/repair_executor.py": "5bfa1c2730e92ff98f444a30e2579381eb5aed01885048ca35d947e1bb7b29fc",
+      "src/pipesleuth/repair_plan.py": "439a8805b13df5462230019c653420962d2ef436a35393af81b2d5cce17b74c7",
+      "src/pipesleuth/repair_verifier.py": "a039182de5ca011a1689f3846c7acc6848e0840ad1c486551d1ca71e4cd20d8b",
+      "src/pipesleuth/repairs.py": "eda06aecd85763acb6b89053a9984c823fa8bb617b23d585dc2800a067831cbf",
+      "src/pipesleuth/web/app.mjs": "8a0f129b056ac641ac46fd11717d3d1086d8ec5f6d4704d9cd48ddb954798231",
+      "src/pipesleuth/web/core.mjs": "30cd78cf3abf3e8dd2f03dd91e074cd4d37fb850cbd11f93baff12381287bc67",
+      "src/pipesleuth/web/index.html": "75868423fa7565186a9d4745933fa012c42e1b4641ffe844ce0cc4695053a1a6",
+      "src/pipesleuth/web/investigations.mjs": "5a9d2d396c7531c096bc7927ba839f83a9eb32be7829485687d62810382072a2",
+      "src/pipesleuth/web/repairs.mjs": "33ac00f9a06d492fff04a0329eaa668e8662d2a16bc5f96b317539ddba227474",
+      "src/pipesleuth/web/style.css": "14df753c8965d41b1a04b5669e0dd738d9a34a3aaaf1796e99dbe664be63a83b",
+      "src/pipesleuth/web_assets.py": "ae15de14269ee2d80cb0152a7ed3b4c6cfd8294caa5f292300a428054f8778d9",
+      "tests/test_ui_serving.py": "8646b44add354f0386d13d7190cdc7d9503f29924bb49e5e5191671ee8f8807b",
+      "tests/ui_core.mjs": "c6ef3bb48be7c3bd29ad57976b6fb2316454ebd0eab50b0a8cc607fb77fd9733",
+      "tests/ui_investigations.mjs": "61f9f21dbc240761963e2f966b25f872de56a467f5b275c00ce1be7605b549a3",
+      "tests/ui_repairs.mjs": "7e9f6024f095134fbe5e6a4736f3b9c8c42a54e6b1b7fc17350b370d61df65df"
+    }
+  },
+  "errors": [],
+  "exact_javascript_client_probe": {
+    "actual_model_generation_requests": 0,
+    "bound_sources_unchanged": true,
+    "browser_driven": false,
+    "generated_at": "2026-11-02T20:41:54.384Z",
+    "inference_scope": "Only evidence reads and deterministic healthy checklist; no local-model or agent request.",
+    "mutation_callback_balanced": true,
+    "passed": true,
+    "responses": [
+      {
+        "checks": {
+          "fixed_methods": true,
+          "known_repair_actions": true
+        },
+        "elapsed_ms": 15.695,
+        "error_code": null,
+        "method": "GET",
+        "name": "capabilities",
+        "passed": true,
+        "response_json_bytes": 1476
+      },
+      {
+        "checks": {
+          "content_present": true,
+          "expected_tool": true,
+          "same_run": true
+        },
+        "elapsed_ms": 3.551,
+        "error_code": null,
+        "method": "GET",
+        "name": "schema_evidence",
+        "passed": true,
+        "response_json_bytes": 942
+      },
+      {
+        "checks": {
+          "events_present": true,
+          "expected_tool": true,
+          "same_run": true
+        },
+        "elapsed_ms": 2.43,
+        "error_code": null,
+        "method": "GET",
+        "name": "log_evidence",
+        "passed": true,
+        "response_json_bytes": 1219
+      },
+      {
+        "checks": {
+          "no_replay": true,
+          "presentation_valid": true,
+          "same_record": true,
+          "succeeded": true,
+          "verified_receipt": true
+        },
+        "elapsed_ms": 2.648,
+        "error_code": null,
+        "method": "GET",
+        "name": "completed_saved_repair",
+        "passed": true,
+        "response_json_bytes": 2594
+      },
+      {
+        "checks": {
+          "method_is_checklist": true,
+          "no_generation": true,
+          "no_incident": true,
+          "not_experimental_model": true,
+          "same_run": true
+        },
+        "elapsed_ms": 4.773,
+        "error_code": null,
+        "method": "POST",
+        "name": "healthy_checklist",
+        "passed": true,
+        "response_json_bytes": 3425
+      }
+    ],
+    "runtime": {
+      "architecture": "arm64",
+      "node_version": "24.22.1",
+      "platform": "darwin"
+    },
+    "scope": "Exact JavaScript client against the actual local API. This is not a browser rendering, human review or model-quality check.",
+    "source_sha256": {
+      "scripts/check_ui_client.mjs": "dd5962e8452346c5f205e885f5539c3ea4597640144376962d10539f87f16bc4",
+      "src/pipesleuth/api.py": "c623c733d61086c4a011a6a4b2bc17c394a8151b0700ae5b2adc886a95d997d5",
+      "src/pipesleuth/api_contracts.py": "10d2eaf38ed8faf549ee28475652700c3cdcd62cc4b29557de449fe1ec46d7db",
+      "src/pipesleuth/api_security.py": "92f577c52df90a82fc5097e980cc20438b70f3db14f95dac3724a2c150df3689",
+      "src/pipesleuth/checklist.py": "de2ef5c99067b3d57cec110842fe1213e216d7db3d997dbb56842777e4b05343",
+      "src/pipesleuth/evidence.py": "a9944554bae4692d78e9c544fca6759d3fc7f52e23b599057a1bcee466afea35",
+      "src/pipesleuth/web/core.mjs": "30cd78cf3abf3e8dd2f03dd91e074cd4d37fb850cbd11f93baff12381287bc67",
+      "src/pipesleuth/web/investigations.mjs": "5a9d2d396c7531c096bc7927ba839f83a9eb32be7829485687d62810382072a2",
+      "src/pipesleuth/web/repairs.mjs": "33ac00f9a06d492fff04a0329eaa668e8662d2a16bc5f96b317539ddba227474"
+    },
+    "summary": {
+      "actual_model_generation_requests": 0,
+      "browser_rendering_measured": false,
+      "responses": 5,
+      "responses_passed": 5,
+      "workspace_files_unchanged": true
+    },
+    "workspace_files_unchanged": true
+  },
+  "generated_at": "2026-11-02T20:45:36.686937Z",
+  "human_review_claimed": false,
+  "input_cases": [
+    {
+      "case_id": "case-01",
+      "initial_input_sha256": {
+        "source.json": "ea854b1de104d9af552f6e43cf689761754e295aa69b9250ac256e7135e7561d",
+        "warehouse.sqlite3": "69c545e7230af791e920ba026964e845e1e0fb5503d3bb52c4bdecdd58647b5a"
+      },
+      "initial_pipeline_status": "failed",
+      "observed_input_sha256": {
+        "source.json": "ea854b1de104d9af552f6e43cf689761754e295aa69b9250ac256e7135e7561d",
+        "warehouse.sqlite3": "69c545e7230af791e920ba026964e845e1e0fb5503d3bb52c4bdecdd58647b5a"
+      },
+      "original_files_exactly_preserved": true,
+      "run_id": "2bcef4779e9b480cb71080d791b4a58f"
+    },
+    {
+      "case_id": "case-02",
+      "initial_input_sha256": {
+        "source.json": "7deed97537b5113dc0308dd7fe0e043b384cc2d632d54e1a93118b8f56be93ac",
+        "warehouse.sqlite3": "880485323bb8711c76712614ba37ac536cd1bb35a1e47ff5a9cbcfe481316708"
+      },
+      "initial_pipeline_status": "failed",
+      "observed_input_sha256": {
+        "source.json": "7deed97537b5113dc0308dd7fe0e043b384cc2d632d54e1a93118b8f56be93ac",
+        "warehouse.sqlite3": "880485323bb8711c76712614ba37ac536cd1bb35a1e47ff5a9cbcfe481316708"
+      },
+      "original_files_exactly_preserved": true,
+      "run_id": "1f13e10a2790435ebf58563131d64df6"
+    },
+    {
+      "case_id": "case-03",
+      "initial_input_sha256": {
+        "source.json": "6cdcbafbd66c68563ddc3ea688c03e27402eb28b82e4082d4622ee2afcd10d92",
+        "warehouse.sqlite3": "e76e4de2afc930928ce5ca0dc873ea7175a89f6e2e4947b93e18f07bcf97e263"
+      },
+      "initial_pipeline_status": "failed",
+      "observed_input_sha256": {
+        "source.json": "6cdcbafbd66c68563ddc3ea688c03e27402eb28b82e4082d4622ee2afcd10d92",
+        "warehouse.sqlite3": "e76e4de2afc930928ce5ca0dc873ea7175a89f6e2e4947b93e18f07bcf97e263"
+      },
+      "original_files_exactly_preserved": true,
+      "run_id": "44e74a40df57409a8a187e7307d8829d"
+    },
+    {
+      "case_id": "case-04",
+      "initial_input_sha256": {
+        "source.json": "0d60fd98b671bb681813ee17e2e3809ada217993974f39dc69f04d4ab10f1133",
+        "warehouse.sqlite3": "8871914e8367a9ce6d50bd7aa051691fcd3c2a602307bbc83c71d1fcefdf6387"
+      },
+      "initial_pipeline_status": "succeeded",
+      "observed_input_sha256": {
+        "source.json": "0d60fd98b671bb681813ee17e2e3809ada217993974f39dc69f04d4ab10f1133",
+        "warehouse.sqlite3": "8871914e8367a9ce6d50bd7aa051691fcd3c2a602307bbc83c71d1fcefdf6387"
+      },
+      "original_files_exactly_preserved": true,
+      "run_id": "a006e33ba49d4da888545e76340a2e94"
+    }
+  ],
+  "model_quality_evaluated": false,
+  "public_http_audit": {
+    "passed": true,
+    "responses": [
+      {
+        "checks": {
+          "bounded_response": true,
+          "exact_asset_bytes": true,
+          "exact_csp": true,
+          "exact_media_type": true,
+          "expected_status": true,
+          "no_cookie": true,
+          "no_referrer": true,
+          "no_store": true
+        },
+        "method": "GET",
+        "passed": true,
+        "path": "/",
+        "response_bytes": 4791,
+        "response_sha256": "75868423fa7565186a9d4745933fa012c42e1b4641ffe844ce0cc4695053a1a6",
+        "status": 200
+      },
+      {
+        "checks": {
+          "bounded_response": true,
+          "exact_asset_bytes": true,
+          "exact_csp": true,
+          "exact_media_type": true,
+          "expected_status": true,
+          "no_cookie": true,
+          "no_referrer": true,
+          "no_store": true
+        },
+        "method": "GET",
+        "passed": true,
+        "path": "/ui/style.css",
+        "response_bytes": 8814,
+        "response_sha256": "14df753c8965d41b1a04b5669e0dd738d9a34a3aaaf1796e99dbe664be63a83b",
+        "status": 200
+      },
+      {
+        "checks": {
+          "bounded_response": true,
+          "exact_asset_bytes": true,
+          "exact_csp": true,
+          "exact_media_type": true,
+          "expected_status": true,
+          "no_cookie": true,
+          "no_referrer": true,
+          "no_store": true
+        },
+        "method": "GET",
+        "passed": true,
+        "path": "/ui/app.mjs",
+        "response_bytes": 6939,
+        "response_sha256": "8a0f129b056ac641ac46fd11717d3d1086d8ec5f6d4704d9cd48ddb954798231",
+        "status": 200
+      },
+      {
+        "checks": {
+          "bounded_response": true,
+          "exact_asset_bytes": true,
+          "exact_csp": true,
+          "exact_media_type": true,
+          "expected_status": true,
+          "no_cookie": true,
+          "no_referrer": true,
+          "no_store": true
+        },
+        "method": "GET",
+        "passed": true,
+        "path": "/ui/core.mjs",
+        "response_bytes": 6946,
+        "response_sha256": "30cd78cf3abf3e8dd2f03dd91e074cd4d37fb850cbd11f93baff12381287bc67",
+        "status": 200
+      },
+      {
+        "checks": {
+          "bounded_response": true,
+          "exact_asset_bytes": true,
+          "exact_csp": true,
+          "exact_media_type": true,
+          "expected_status": true,
+          "no_cookie": true,
+          "no_referrer": true,
+          "no_store": true
+        },
+        "method": "GET",
+        "passed": true,
+        "path": "/ui/investigations.mjs",
+        "response_bytes": 15955,
+        "response_sha256": "5a9d2d396c7531c096bc7927ba839f83a9eb32be7829485687d62810382072a2",
+        "status": 200
+      },
+      {
+        "checks": {
+          "bounded_response": true,
+          "exact_asset_bytes": true,
+          "exact_csp": true,
+          "exact_media_type": true,
+          "expected_status": true,
+          "no_cookie": true,
+          "no_referrer": true,
+          "no_store": true
+        },
+        "method": "GET",
+        "passed": true,
+        "path": "/ui/repairs.mjs",
+        "response_bytes": 13472,
+        "response_sha256": "33ac00f9a06d492fff04a0329eaa668e8662d2a16bc5f96b317539ddba227474",
+        "status": 200
+      },
+      {
+        "checks": {
+          "bounded_response": true,
+          "exact_csp": true,
+          "expected_status": true,
+          "generic_error_only": true,
+          "no_cookie": true,
+          "no_referrer": true,
+          "no_store": true
+        },
+        "method": "GET",
+        "passed": true,
+        "path": "/.runtime/api-session.json",
+        "response_bytes": 33,
+        "response_sha256": "1ea0ca13adaba22808e95a6c823fbedc67904880f1bd9f6f52376a8669928833",
+        "status": 401
+      },
+      {
+        "checks": {
+          "bounded_response": true,
+          "exact_csp": true,
+          "expected_status": true,
+          "generic_error_only": true,
+          "no_cookie": true,
+          "no_referrer": true,
+          "no_store": true
+        },
+        "method": "GET",
+        "passed": true,
+        "path": "/session",
+        "response_bytes": 33,
+        "response_sha256": "1ea0ca13adaba22808e95a6c823fbedc67904880f1bd9f6f52376a8669928833",
+        "status": 401
+      },
+      {
+        "checks": {
+          "bounded_response": true,
+          "exact_csp": true,
+          "expected_status": true,
+          "generic_error_only": true,
+          "no_cookie": true,
+          "no_referrer": true,
+          "no_store": true
+        },
+        "method": "GET",
+        "passed": true,
+        "path": "/v1/capabilities",
+        "response_bytes": 33,
+        "response_sha256": "1ea0ca13adaba22808e95a6c823fbedc67904880f1bd9f6f52376a8669928833",
+        "status": 401
+      },
+      {
+        "checks": {
+          "bounded_response": true,
+          "exact_csp": true,
+          "expected_status": true,
+          "generic_error_only": true,
+          "no_cookie": true,
+          "no_referrer": true,
+          "no_store": true
+        },
+        "method": "GET",
+        "passed": true,
+        "path": "/ui/missing.mjs",
+        "response_bytes": 33,
+        "response_sha256": "1ea0ca13adaba22808e95a6c823fbedc67904880f1bd9f6f52376a8669928833",
+        "status": 401
+      },
+      {
+        "checks": {
+          "bounded_response": true,
+          "exact_csp": true,
+          "expected_status": true,
+          "generic_error_only": true,
+          "no_cookie": true,
+          "no_referrer": true,
+          "no_store": true
+        },
+        "method": "GET",
+        "passed": true,
+        "path": "/ui/%61pp.mjs",
+        "response_bytes": 33,
+        "response_sha256": "1ea0ca13adaba22808e95a6c823fbedc67904880f1bd9f6f52376a8669928833",
+        "status": 401
+      },
+      {
+        "checks": {
+          "bounded_response": true,
+          "exact_csp": true,
+          "expected_status": true,
+          "generic_error_only": true,
+          "no_cookie": true,
+          "no_referrer": true,
+          "no_store": true
+        },
+        "method": "GET",
+        "passed": true,
+        "path": "/?token=not-a-credential",
+        "response_bytes": 34,
+        "response_sha256": "43467109a0f2e6e93f46d493ac0d68f98330426a45300ec2ab08621b556d2790",
+        "status": 400
+      },
+      {
+        "checks": {
+          "bounded_response": true,
+          "exact_csp": true,
+          "expected_status": true,
+          "generic_error_only": true,
+          "no_cookie": true,
+          "no_referrer": true,
+          "no_store": true
+        },
+        "method": "GET",
+        "passed": true,
+        "path": "/",
+        "response_bytes": 30,
+        "response_sha256": "b4c5d2b34bed0b3a9cf74b1c389d9436ad25ddbc5e9264a5920a856c5fae2be0",
+        "status": 403
+      },
+      {
+        "checks": {
+          "bounded_response": true,
+          "exact_csp": true,
+          "expected_status": true,
+          "generic_error_only": true,
+          "no_cookie": true,
+          "no_referrer": true,
+          "no_store": true
+        },
+        "method": "GET",
+        "passed": true,
+        "path": "/",
+        "response_bytes": 36,
+        "response_sha256": "9709956ad4554d08d61fdbaa3a14997a02251ff75264facea02cac2d6b60bf7a",
+        "status": 400
+      }
+    ],
+    "scope": "Independent public GET audit; no capability tokens loaded or mutations sent."
+  },
+  "readonly_audit_passed": true,
+  "repair_records": [
+    {
+      "action": "rename_amount_column",
+      "actual_database": {
+        "pipeline_run": [
+          [
+            "0880d11c69d94e9682b5e3ebc1aa57b0",
+            "succeeded",
+            "reject",
+            "reject",
+            0,
+            0
+          ]
+        ],
+        "quarantined_records": [],
+        "warehouse_orders": [
+          [
+            "ORD-0001",
+            "CUST-002",
+            909,
+            "EUR",
+            "2026-01-01T09:00:00Z"
+          ],
+          [
+            "ORD-0002",
+            "CUST-005",
+            4512,
+            "EUR",
+            "2026-01-01T09:07:00Z"
+          ],
+          [
+            "ORD-0003",
+            "CUST-004",
+            2786,
+            "EUR",
+            "2026-01-01T09:14:00Z"
+          ],
+          [
+            "ORD-0004",
+            "CUST-002",
+            11587,
+            "EUR",
+            "2026-01-01T09:21:00Z"
+          ],
+          [
+            "ORD-0005",
+            "CUST-002",
+            10174,
+            "EUR",
+            "2026-01-01T09:28:00Z"
+          ],
+          [
+            "ORD-0006",
+            "CUST-007",
+            1020,
+            "EUR",
+            "2026-01-01T09:35:00Z"
+          ]
+        ],
+        "warehouse_value_types": [
+          [
+            "text",
+            "text",
+            "integer",
+            "text",
+            "text"
+          ],
+          [
+            "text",
+            "text",
+            "integer",
+            "text",
+            "text"
+          ],
+          [
+            "text",
+            "text",
+            "integer",
+            "text",
+            "text"
+          ],
+          [
+            "text",
+            "text",
+            "integer",
+            "text",
+            "text"
+          ],
+          [
+            "text",
+            "text",
+            "integer",
+            "text",
+            "text"
+          ],
+          [
+            "text",
+            "text",
+            "integer",
+            "text",
+            "text"
+          ]
+        ]
+      },
+      "approval_origin": "trusted_api",
+      "derived_run_present": true,
+      "execution_recorded": true,
+      "independent_database_checks": {
+        "exact_derived_source": true,
+        "exact_pipeline_metadata": true,
+        "exact_quarantine_rows_and_reasons": true,
+        "exact_warehouse_rows_from_fixture_oracle": true,
+        "exact_warehouse_value_types": true,
+        "target_is_distinct": true
+      },
+      "independently_verified": true,
+      "input_fingerprint_sha256": "5273961635f80152a54ce9a96f2b5a6fc4eb678d8e7aad791cff754e3837a433",
+      "pending_operation": null,
+      "plan_sha256": "c7d1d215f4da7f120ab0e30fcfb4a22aa69b9e1cd5d57fefd1e6cef5be6addfc",
+      "repair_id": "0d68ef430d3440cea4617765eb9e0160",
+      "revision": 5,
+      "source_run_id": "2bcef4779e9b480cb71080d791b4a58f",
+      "status": "succeeded",
+      "target_run_id": "0880d11c69d94e9682b5e3ebc1aa57b0"
+    }
+  ],
+  "saved_investigations": [
+    {
+      "done": true,
+      "evidence_count": 1,
+      "generation_count_is_lower_bound": false,
+      "investigation_id": "e158cec90b5d4e18a4c6f6fe395f3a46",
+      "limitations": [
+        "local_model_error"
+      ],
+      "model_generation_requests": 0,
+      "pending_operation": null,
+      "revision": 7,
+      "run_id": "2bcef4779e9b480cb71080d791b4a58f",
+      "semantic_support_verified": false,
+      "status": "unknown",
+      "tool_calls": 1,
+      "trace": [
+        {
+          "action": "tool",
+          "failure_code": null,
+          "model_calls": null,
+          "status": "ok",
+          "step": 0,
+          "tool": "read_run"
+        },
+        {
+          "action": "generate",
+          "failure_code": "local_model_error",
+          "model_calls": 0,
+          "status": "error",
+          "step": 1,
+          "tool": null
+        },
+        {
+          "action": "generate",
+          "failure_code": "local_model_error",
+          "model_calls": 0,
+          "status": "error",
+          "step": 2,
+          "tool": null
+        }
+      ]
+    }
+  ],
+  "scope": "Local UI integration acceptance; not model accuracy, human review, production recovery or deployment evidence.",
+  "summary": {
+    "audit_errors": 0,
+    "generation_count_is_lower_bound": false,
+    "independently_verified_derived_runs": 1,
+    "original_inputs_exactly_preserved": 4,
+    "prepared_input_runs": 4,
+    "public_http_responses": 14,
+    "recorded_model_generation_requests": 0,
+    "repair_records": 1,
+    "saved_investigations": 1
+  },
+  "workspace_unchanged_during_readonly_audit": true
+}

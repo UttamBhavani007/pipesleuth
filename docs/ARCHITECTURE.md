@@ -142,7 +142,12 @@ An approved action affects only its incident sandbox. Persist an audit record of
 ## Local deployment
 
 Use Python, SQLite, a loopback model runtime and the optional local FastAPI
-service. A small web UI remains planned. Avoid remote assets, analytics and
+service. The small [browser workspace](UI.md) serves project-owned static assets
+from the same origin. A local file selection loads capabilities into tab memory;
+there is no HTTP credential bootstrap, cookie or persistent browser storage.
+Approval is loaded separately and binds the exact displayed plan and current
+input. Unknown, pending, committed-failure and verified states remain distinct.
+Avoid remote assets, analytics and
 external model API calls. No hosted database, cloud deployment, OpenAI API or
 paid service is part of this architecture. See [COST_POLICY.md](COST_POLICY.md).
 
