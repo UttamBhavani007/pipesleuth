@@ -6,11 +6,13 @@ roots, model configuration, evidence arguments, SQL or execution authority.
 
 from dataclasses import dataclass
 from pathlib import Path
+import os
+import stat
 from typing import Annotated, Literal
 
 from fastapi import Depends, FastAPI, Path as ApiPath, Query, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from starlette.exceptions import HTTPException
 
 from pipesleuth.api_contracts import (
@@ -24,6 +26,7 @@ from pipesleuth.local_model import ALLOWED_MODEL, LocalModelConfig
 from pipesleuth.pipeline import SandboxPipeline
 from pipesleuth.repair_plan import ACTIONS
 from pipesleuth.repairs import RepairService
+from pipesleuth.web_assets import UI_ASSETS, is_ui_asset
 
 
 @dataclass(frozen=True, slots=True)
@@ -145,6 +148,34 @@ def create_app(settings: ApiSettings, *, read_token, operation_token, approval_t
             return operation()
         except (ValueError, OSError):
             raise _ApiFailure(404, "read_unavailable") from None
+
+    def ui_asset(request: Request):
+        if not is_ui_asset(request.scope):
+            raise _ApiFailure(404, "not_found")
+        filename, media_type = UI_ASSETS[request.url.path]
+        # The manifest supplies every filename. Reject local symlink/replacement
+        # accidents rather than turning static serving into a file reader.
+        root = Path(__file__).with_name("web")
+        try:
+            if root.is_symlink():
+                raise ValueError()
+            path = root / filename
+            with open(path, "rb", opener=lambda name, flags: os.open(name, flags | os.O_NOFOLLOW | os.O_NONBLOCK)) as asset:
+                info = os.fstat(asset.fileno())
+                if not stat.S_ISREG(info.st_mode) or info.st_size > 256 * 1024:
+                    raise ValueError()
+                content = asset.read(256 * 1024 + 1)
+                if len(content) > 256 * 1024:
+                    raise ValueError()
+        except (OSError, ValueError):
+            raise _ApiFailure(404, "ui_unavailable") from None
+        response = Response(content=content, media_type=media_type)
+        if request.method == "HEAD":
+            response.body = b""
+        return response
+
+    for path in UI_ASSETS:
+        app.add_api_route(path, ui_asset, methods=["GET", "HEAD"], include_in_schema=False)
 
     @app.get("/health")
     def health():

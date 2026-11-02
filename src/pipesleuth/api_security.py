@@ -15,6 +15,8 @@ import re
 import threading
 from urllib.parse import parse_qsl
 
+from pipesleuth.web_assets import CSP, is_ui_asset
+
 
 MAX_BODY_BYTES = 4096
 BODY_TIMEOUT_SECONDS = 2.0
@@ -28,7 +30,10 @@ _SECURITY_HEADERS = {
 }
 _RESPONSE_HEADERS = [(b"cache-control", b"no-store"), (b"pragma", b"no-cache"),
                      (b"x-content-type-options", b"nosniff"),
-                     (b"referrer-policy", b"no-referrer")]
+                     (b"referrer-policy", b"no-referrer"),
+                     (b"content-security-policy", CSP.encode("ascii")),
+                     (b"x-frame-options", b"DENY"),
+                     (b"permissions-policy", b"camera=(), microphone=(), geolocation=()")]
 
 
 class _Denied(Exception):
@@ -128,7 +133,8 @@ class ApiSecurity:
         method, path = scope.get("method"), scope.get("path")
         if method not in {"GET", "HEAD", "POST"}:
             raise _Denied(405, "method_not_allowed")
-        if method == "GET" and path == "/health":
+        if ((method == "GET" and path == "/health")
+                or (method in {"GET", "HEAD"} and is_ui_asset(scope))):
             return
         authorization = headers.get(b"authorization", b"")
         if not authorization.startswith(b"Bearer "):

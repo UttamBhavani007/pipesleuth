@@ -21,3 +21,6 @@ pipesleuth = "pipesleuth.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+pipesleuth = ["web/*.html", "web/*.css", "web/*.mjs"]
