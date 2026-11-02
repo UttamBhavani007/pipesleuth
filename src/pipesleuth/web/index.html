@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>PipeSleuth · Local incident workspace</title>
+  <link rel="stylesheet" href="/ui/style.css">
+  <script type="module" src="/ui/app.mjs"></script>
+</head>
+<body>
+<a class="skip-link" href="#workspace">Skip to workspace</a>
+<header class="site-header">
+  <a class="brand" href="/" aria-label="PipeSleuth home"><span class="brand-mark" aria-hidden="true">P/</span> PipeSleuth</a>
+  <span class="local-tag"><span aria-hidden="true">●</span> Runs on your computer</span>
+</header>
+<main>
+  <section class="intro" aria-labelledby="page-title">
+    <div><p class="eyebrow">LOCAL INCIDENT WORKSPACE</p><h1 id="page-title">Follow the evidence.<br>Review the next step.</h1>
+    <p class="intro-text">Inspect pipeline failures, compare observations and review a fixed repair before it runs.</p></div>
+    <div class="intro-note"><strong>Local prototype</strong><p>Synthetic data · SQLite · optional local model</p><p>Model findings are experimental. Check their evidence.</p></div>
+  </section>
+  <section class="connection panel" aria-labelledby="connection-title">
+    <div><h2 id="connection-title">Connect your workspace</h2><p class="muted">Choose the private session file printed by <code>pipesleuth serve</code>. Its contents stay in this tab’s memory.</p></div>
+    <div class="button-row"><label class="file-button">Choose session file<input id="session-file" type="file" accept=".json,application/json"></label><button id="disconnect" class="secondary" type="button" disabled>Disconnect</button></div>
+    <p id="connection-status" class="connection-state" role="status">Disconnected · no access loaded</p>
+    <details class="access-details"><summary>Separate approval access</summary><p>Connecting loads read and operation access only. To approve a repair, choose the same private file again here, then acknowledge the exact plan. The model never receives access tokens.</p><label class="file-button secondary">Load approval access<input id="approval-file" type="file" accept=".json,application/json" disabled></label><p id="approval-status" class="muted">Approval access locked</p></details>
+  </section>
+  <p id="notice" class="global-notice" role="status" aria-live="polite">Connect, then open a run using the ID printed by the pipeline command.</p>
+  <fieldset id="workspace" disabled>
+    <legend class="sr-only">Incident workspace</legend>
+    <nav aria-label="Workspace sections" class="workspace-nav"><a href="#incident">01 Incident</a><a href="#evidence">02 Evidence</a><a href="#investigations">03 Investigation</a><a href="#repairs">04 Repair review</a></nav>
+    <section id="incident" class="panel" aria-labelledby="incident-title">
+      <div class="section-heading"><div><p class="eyebrow">01 / INCIDENT</p><h2 id="incident-title">Open a pipeline run</h2></div><span class="badge">Read-only inspection</span></div>
+      <form id="run-form" class="run-form"><div><label for="run-id">Run ID</label><input id="run-id" name="run_id" required pattern="[0-9a-f]{32}" maxlength="32" autocomplete="off" spellcheck="false" placeholder="32-character run ID" aria-describedby="run-hint"><p id="run-hint" class="muted">Use a run from the server’s configured input directory.</p></div><button type="submit" id="open-run">Open run</button></form>
+      <div id="run-summary" aria-live="polite"><p class="empty">Your run summary will appear here.</p></div>
+    </section>
+    <section id="evidence" class="panel" aria-labelledby="evidence-title">
+      <div class="section-heading"><div><p class="eyebrow">02 / EVIDENCE</p><h2 id="evidence-title">Inspect the recorded facts</h2></div><span class="badge">Bounded local reads</span></div>
+      <div class="button-row evidence-controls" aria-label="Evidence tools"><button type="button" data-tool="read_logs">Event timeline</button><button type="button" data-tool="inspect_schema" class="secondary">Schema</button><button type="button" data-tool="inspect_validation" class="secondary">Validation</button><button type="button" data-tool="read_run" class="secondary">Run facts</button></div>
+      <div id="evidence-content" aria-live="polite"><p class="empty">Open a run to inspect its events, schema and validation.</p></div>
+    </section>
+    <section id="investigations" class="panel module-panel" aria-label="Diagnosis and saved investigations"></section>
+    <section id="repairs" class="panel module-panel" aria-label="Repair review and execution"></section>
+  </fieldset>
+</main>
+<footer><strong>PipeSleuth</strong><span>A local investigation lab. No production recovery or diagnosis accuracy claim.</span></footer>
+</body>
+</html>
