@@ -1,0 +1,487 @@
+{
+  "builder": {
+    "build_isolation": false,
+    "pip": "25.3",
+    "pip_index_disabled": true,
+    "separate_source_copy": true,
+    "setuptools": "80.9.0"
+  },
+  "generated_at": "2026-11-03T12:18:00.159431+00:00",
+  "installed": {
+    "bootstrap_packages": {
+      "pip": "25.2"
+    },
+    "import_from_venv": true,
+    "installed_entry_point_version": "0.1.0rc1",
+    "isolated_venv": true,
+    "module_version": "0.1.0rc1",
+    "packages": {
+      "annotated-doc": "0.0.5",
+      "annotated-types": "0.8.0",
+      "anyio": "4.16.0",
+      "certifi": "2026.10.23",
+      "click": "8.5.0",
+      "fastapi": "0.162.0",
+      "h11": "0.16.0",
+      "httpcore": "1.0.9",
+      "httpx": "0.28.1",
+      "idna": "3.20",
+      "opentelemetry-api": "1.45.2",
+      "pip": "25.2",
+      "pipesleuth": "0.1.0rc1",
+      "pydantic": "2.14.2",
+      "pydantic-core": "2.50.2",
+      "starlette": "1.10.0",
+      "typing-extensions": "4.16.0",
+      "typing-inspection": "0.4.4",
+      "uvicorn": "0.54.0"
+    },
+    "pip_check_passed": true
+  },
+  "loopback": {
+    "api_requests": [
+      {
+        "capability_role": "read",
+        "elapsed_ms": 0.597,
+        "error_code": null,
+        "method": "GET",
+        "name": "installed_capabilities",
+        "response_bytes": 1477,
+        "response_sha256": "ca877edfb248b16c5c18eabb6a332075db8092a04186a8bd2aedc755e8d124d9",
+        "status": 200,
+        "transport_or_decode_error": null
+      },
+      {
+        "capability_role": "read",
+        "elapsed_ms": 1.907,
+        "error_code": null,
+        "method": "GET",
+        "name": "installed_run_summary",
+        "response_bytes": 408,
+        "response_sha256": "ec4e327e83fbd30557cbcaaecd4874e2c734bcf9c664391733353f5a52f704fb",
+        "status": 200,
+        "transport_or_decode_error": null
+      },
+      {
+        "capability_role": "read",
+        "elapsed_ms": 1.728,
+        "error_code": null,
+        "method": "GET",
+        "name": "installed_schema",
+        "response_bytes": 942,
+        "response_sha256": "6df1973333f6e042dcafe4623849fd92040b113721159aaa70d2c58ef5d46544",
+        "status": 200,
+        "transport_or_decode_error": null
+      },
+      {
+        "capability_role": "operation",
+        "elapsed_ms": 3.705,
+        "error_code": null,
+        "method": "POST",
+        "name": "installed_checklist",
+        "response_bytes": 4426,
+        "response_sha256": "858b9fa3ef24140fe291e86ac2da15153055057bac4189da5c4c2005faeba7b7",
+        "status": 200,
+        "transport_or_decode_error": null
+      },
+      {
+        "capability_role": "operation",
+        "elapsed_ms": 0.62,
+        "error_code": "model_unconfigured",
+        "method": "POST",
+        "name": "installed_model_disabled",
+        "response_bytes": 39,
+        "response_sha256": "005ac08464b0de86c4c5bae6622357ededf83e520736f10a7b4768be18fd0a50",
+        "status": 409,
+        "transport_or_decode_error": null
+      },
+      {
+        "capability_role": "operation",
+        "elapsed_ms": 2.685,
+        "error_code": null,
+        "method": "POST",
+        "name": "installed_repair_plan",
+        "response_bytes": 1752,
+        "response_sha256": "ea6160eb552a76bac5d9e581d9dfc3e3536ae357ce4b3590a0b294324abfa94c",
+        "status": 200,
+        "transport_or_decode_error": null
+      },
+      {
+        "capability_role": "operation",
+        "elapsed_ms": 2.051,
+        "error_code": "operation_rejected",
+        "method": "POST",
+        "name": "installed_unapproved_execute",
+        "response_bytes": 39,
+        "response_sha256": "83e08b8dbcaa0515581a98e55e21fe9a65faae76b4e140249dd0106e9a2df089",
+        "status": 409,
+        "transport_or_decode_error": null
+      },
+      {
+        "capability_role": "operation",
+        "elapsed_ms": 0.266,
+        "error_code": "forbidden",
+        "method": "POST",
+        "name": "installed_operation_cannot_approve",
+        "response_bytes": 30,
+        "response_sha256": "b4c5d2b34bed0b3a9cf74b1c389d9436ad25ddbc5e9264a5920a856c5fae2be0",
+        "status": 403,
+        "transport_or_decode_error": null
+      },
+      {
+        "capability_role": "approval",
+        "elapsed_ms": 3.427,
+        "error_code": null,
+        "method": "POST",
+        "name": "installed_scripted_approval",
+        "response_bytes": 1992,
+        "response_sha256": "92673f90d2d9f10c5cb8eaf5164111f9524c3bf187e81abb6f69f5b55c5ce94f",
+        "status": 200,
+        "transport_or_decode_error": null
+      },
+      {
+        "capability_role": "operation",
+        "elapsed_ms": 6.37,
+        "error_code": null,
+        "method": "POST",
+        "name": "installed_execute",
+        "response_bytes": 2504,
+        "response_sha256": "f81621a6e13f1f0ab6287ab4480b0635eabf6b4fb296ba55773b13a8b6982a26",
+        "status": 200,
+        "transport_or_decode_error": null
+      }
+    ],
+    "approval_kind": "scripted local acceptance check",
+    "cleanup": {
+      "forced_shutdown_required": false,
+      "interrupt_sent_to_owned_process": true,
+      "loopback_port_connection_refused": true,
+      "owned_process_stopped": true,
+      "private_session_file_removed": true
+    },
+    "derived_warehouse_rows_independently_verified": 6,
+    "installed_cli_incident_status": "failed",
+    "model_generation_requests": 0,
+    "original_input_files_unchanged": true,
+    "public_http_checks": {
+      "passed": true,
+      "responses": [
+        {
+          "checks": {
+            "bounded_response": true,
+            "exact_asset_bytes": true,
+            "exact_csp": true,
+            "exact_media_type": true,
+            "expected_status": true,
+            "no_cookie": true,
+            "no_referrer": true,
+            "no_store": true
+          },
+          "method": "GET",
+          "passed": true,
+          "path": "/",
+          "response_bytes": 4791,
+          "response_sha256": "75868423fa7565186a9d4745933fa012c42e1b4641ffe844ce0cc4695053a1a6",
+          "status": 200
+        },
+        {
+          "checks": {
+            "bounded_response": true,
+            "exact_asset_bytes": true,
+            "exact_csp": true,
+            "exact_media_type": true,
+            "expected_status": true,
+            "no_cookie": true,
+            "no_referrer": true,
+            "no_store": true
+          },
+          "method": "GET",
+          "passed": true,
+          "path": "/ui/style.css",
+          "response_bytes": 8814,
+          "response_sha256": "14df753c8965d41b1a04b5669e0dd738d9a34a3aaaf1796e99dbe664be63a83b",
+          "status": 200
+        },
+        {
+          "checks": {
+            "bounded_response": true,
+            "exact_asset_bytes": true,
+            "exact_csp": true,
+            "exact_media_type": true,
+            "expected_status": true,
+            "no_cookie": true,
+            "no_referrer": true,
+            "no_store": true
+          },
+          "method": "GET",
+          "passed": true,
+          "path": "/ui/app.mjs",
+          "response_bytes": 6939,
+          "response_sha256": "8a0f129b056ac641ac46fd11717d3d1086d8ec5f6d4704d9cd48ddb954798231",
+          "status": 200
+        },
+        {
+          "checks": {
+            "bounded_response": true,
+            "exact_asset_bytes": true,
+            "exact_csp": true,
+            "exact_media_type": true,
+            "expected_status": true,
+            "no_cookie": true,
+            "no_referrer": true,
+            "no_store": true
+          },
+          "method": "GET",
+          "passed": true,
+          "path": "/ui/core.mjs",
+          "response_bytes": 6946,
+          "response_sha256": "30cd78cf3abf3e8dd2f03dd91e074cd4d37fb850cbd11f93baff12381287bc67",
+          "status": 200
+        },
+        {
+          "checks": {
+            "bounded_response": true,
+            "exact_asset_bytes": true,
+            "exact_csp": true,
+            "exact_media_type": true,
+            "expected_status": true,
+            "no_cookie": true,
+            "no_referrer": true,
+            "no_store": true
+          },
+          "method": "GET",
+          "passed": true,
+          "path": "/ui/investigations.mjs",
+          "response_bytes": 15955,
+          "response_sha256": "5a9d2d396c7531c096bc7927ba839f83a9eb32be7829485687d62810382072a2",
+          "status": 200
+        },
+        {
+          "checks": {
+            "bounded_response": true,
+            "exact_asset_bytes": true,
+            "exact_csp": true,
+            "exact_media_type": true,
+            "expected_status": true,
+            "no_cookie": true,
+            "no_referrer": true,
+            "no_store": true
+          },
+          "method": "GET",
+          "passed": true,
+          "path": "/ui/repairs.mjs",
+          "response_bytes": 13472,
+          "response_sha256": "33ac00f9a06d492fff04a0329eaa668e8662d2a16bc5f96b317539ddba227474",
+          "status": 200
+        },
+        {
+          "checks": {
+            "bounded_response": true,
+            "exact_csp": true,
+            "expected_status": true,
+            "generic_error_only": true,
+            "no_cookie": true,
+            "no_referrer": true,
+            "no_store": true
+          },
+          "method": "GET",
+          "passed": true,
+          "path": "/.runtime/api-session.json",
+          "response_bytes": 33,
+          "response_sha256": "1ea0ca13adaba22808e95a6c823fbedc67904880f1bd9f6f52376a8669928833",
+          "status": 401
+        },
+        {
+          "checks": {
+            "bounded_response": true,
+            "exact_csp": true,
+            "expected_status": true,
+            "generic_error_only": true,
+            "no_cookie": true,
+            "no_referrer": true,
+            "no_store": true
+          },
+          "method": "GET",
+          "passed": true,
+          "path": "/session",
+          "response_bytes": 33,
+          "response_sha256": "1ea0ca13adaba22808e95a6c823fbedc67904880f1bd9f6f52376a8669928833",
+          "status": 401
+        },
+        {
+          "checks": {
+            "bounded_response": true,
+            "exact_csp": true,
+            "expected_status": true,
+            "generic_error_only": true,
+            "no_cookie": true,
+            "no_referrer": true,
+            "no_store": true
+          },
+          "method": "GET",
+          "passed": true,
+          "path": "/v1/capabilities",
+          "response_bytes": 33,
+          "response_sha256": "1ea0ca13adaba22808e95a6c823fbedc67904880f1bd9f6f52376a8669928833",
+          "status": 401
+        },
+        {
+          "checks": {
+            "bounded_response": true,
+            "exact_csp": true,
+            "expected_status": true,
+            "generic_error_only": true,
+            "no_cookie": true,
+            "no_referrer": true,
+            "no_store": true
+          },
+          "method": "GET",
+          "passed": true,
+          "path": "/ui/missing.mjs",
+          "response_bytes": 33,
+          "response_sha256": "1ea0ca13adaba22808e95a6c823fbedc67904880f1bd9f6f52376a8669928833",
+          "status": 401
+        },
+        {
+          "checks": {
+            "bounded_response": true,
+            "exact_csp": true,
+            "expected_status": true,
+            "generic_error_only": true,
+            "no_cookie": true,
+            "no_referrer": true,
+            "no_store": true
+          },
+          "method": "GET",
+          "passed": true,
+          "path": "/ui/%61pp.mjs",
+          "response_bytes": 33,
+          "response_sha256": "1ea0ca13adaba22808e95a6c823fbedc67904880f1bd9f6f52376a8669928833",
+          "status": 401
+        },
+        {
+          "checks": {
+            "bounded_response": true,
+            "exact_csp": true,
+            "expected_status": true,
+            "generic_error_only": true,
+            "no_cookie": true,
+            "no_referrer": true,
+            "no_store": true
+          },
+          "method": "GET",
+          "passed": true,
+          "path": "/?token=not-a-credential",
+          "response_bytes": 34,
+          "response_sha256": "43467109a0f2e6e93f46d493ac0d68f98330426a45300ec2ab08621b556d2790",
+          "status": 400
+        },
+        {
+          "checks": {
+            "bounded_response": true,
+            "exact_csp": true,
+            "expected_status": true,
+            "generic_error_only": true,
+            "no_cookie": true,
+            "no_referrer": true,
+            "no_store": true
+          },
+          "method": "GET",
+          "passed": true,
+          "path": "/",
+          "response_bytes": 30,
+          "response_sha256": "b4c5d2b34bed0b3a9cf74b1c389d9436ad25ddbc5e9264a5920a856c5fae2be0",
+          "status": 403
+        },
+        {
+          "checks": {
+            "bounded_response": true,
+            "exact_csp": true,
+            "expected_status": true,
+            "generic_error_only": true,
+            "no_cookie": true,
+            "no_referrer": true,
+            "no_store": true
+          },
+          "method": "GET",
+          "passed": true,
+          "path": "/",
+          "response_bytes": 36,
+          "response_sha256": "9709956ad4554d08d61fdbaa3a14997a02251ff75264facea02cac2d6b60bf7a",
+          "status": 400
+        }
+      ],
+      "scope": "Independent public GET audit; no capability tokens loaded or mutations sent."
+    },
+    "startup": {
+      "distinct_capabilities_verified": true,
+      "health_probe_attempts": 1,
+      "health_response_statuses": [
+        200
+      ],
+      "private_session_mode_0600": true
+    }
+  },
+  "passed": true,
+  "platform": {
+    "machine": "arm64",
+    "python": "3.13.7",
+    "release": "27.0.0",
+    "sqlite": "3.50.4",
+    "system": "Darwin"
+  },
+  "project_version": "0.1.0rc1",
+  "reviewed_dependency_wheels": 17,
+  "scope": "Offline wheel build and clean installed local prototype verification",
+  "source_sha256": {
+    "LICENSE": "78ff7a42a79f24fcbb3fba5e432773f86466033b3050d380aba25e909d1badf4",
+    "README.md": "bdf3f04aef8bc32b92824a566fda0f93d92daebbfc39eafc1717089e0b666a8b",
+    "pyproject.toml": "054120c14a55983bf1c454a5dc220f47077076e0b6722c26a7b9e36f94ca403b",
+    "reports/api-dependencies.json": "101fbceabc7426690e21af16e5f1848dc93eecc3422e2e7dbe67c42846530cd7",
+    "requirements-api.txt": "cec3d9b3560b01cdeae1014539bf9868ae2b7de1cdcd55368554334dc787b0c9",
+    "scripts/audit_ui_state.py": "1d9ec1d0f96a7ba93b77480862eed20d05ad5ae75220f5e56d7391645cf7dc3f",
+    "scripts/smoke_api.py": "c25a3a911e447613e233e4ddd78d494e60d762753d15f0a1651702a2eab2423a",
+    "scripts/smoke_install.py": "c739afe4a5a8cc08117cfc95b6d904875740cdac3e9bd52bc70ca4c968f97b36",
+    "scripts/smoke_repair.py": "a198f1062e822abece60d5206ca59f249f738dbf4e7e2b62069bac0a94c9e1af",
+    "src/pipesleuth/__init__.py": "fb89759ffe0b2f6e54b28ea849ae02c43fc62bc877f4688422e10a1a637aa09a",
+    "src/pipesleuth/__main__.py": "c7092beb7a0d1060ed429dfc227df5966aaec45a32740973498d4179844c2604",
+    "src/pipesleuth/agent_protocol.py": "2813b7086ede63bdcd652d46709f49dd40965290b2de7ab2a0098b4c4ceed3fc",
+    "src/pipesleuth/api.py": "c623c733d61086c4a011a6a4b2bc17c394a8151b0700ae5b2adc886a95d997d5",
+    "src/pipesleuth/api_contracts.py": "10d2eaf38ed8faf549ee28475652700c3cdcd62cc4b29557de449fe1ec46d7db",
+    "src/pipesleuth/api_security.py": "92f577c52df90a82fc5097e980cc20438b70f3db14f95dac3724a2c150df3689",
+    "src/pipesleuth/api_server.py": "2391d63276d91e01c3d9e0e3c4607178cac7dd9e34fb56ae900fba973245ca9e",
+    "src/pipesleuth/checklist.py": "de2ef5c99067b3d57cec110842fe1213e216d7db3d997dbb56842777e4b05343",
+    "src/pipesleuth/checkpoints.py": "28b6c02d01d498cbf8b34a8945c7618e2cc72651a355715a641c6666e689a733",
+    "src/pipesleuth/cli.py": "0b045aca029ac2c4e242be46fe92665bdd9fd3c2f4d74a96853ecaf064c85e2e",
+    "src/pipesleuth/domain.py": "d160718693b663c91a094dbae7753e658cfa362ba5b81582b77aa00dd27e6d82",
+    "src/pipesleuth/evidence.py": "a9944554bae4692d78e9c544fca6759d3fc7f52e23b599057a1bcee466afea35",
+    "src/pipesleuth/fixtures.py": "5bda9eabb8442001521f66808eadd73c1f33f5516abe0b02fc329da61baf0186",
+    "src/pipesleuth/input_binding.py": "3c39de4f0de7af93a693dea72ba653edf1b009c73d61ec3698b83887b422a310",
+    "src/pipesleuth/investigator.py": "ecfb0c846f7589b19f5303dbfd4f84dbf1f2cd9859df4d8cd2fb5b82c457228e",
+    "src/pipesleuth/local_model.py": "91045f890f23b59c89839d133011e92f7a2c922babcd3cdd6ca205dc1c80dc56",
+    "src/pipesleuth/persistent.py": "3377307723101848a3687bc403e306079f035923bf40fe65c3cd69cf63d766b5",
+    "src/pipesleuth/pipeline.py": "d829d66f727c16dfea5031a415ee0cec3a03ef3ae589d5aba55e8e7da2c6e1d7",
+    "src/pipesleuth/repair_executor.py": "5bfa1c2730e92ff98f444a30e2579381eb5aed01885048ca35d947e1bb7b29fc",
+    "src/pipesleuth/repair_plan.py": "439a8805b13df5462230019c653420962d2ef436a35393af81b2d5cce17b74c7",
+    "src/pipesleuth/repair_verifier.py": "a039182de5ca011a1689f3846c7acc6848e0840ad1c486551d1ca71e4cd20d8b",
+    "src/pipesleuth/repairs.py": "eda06aecd85763acb6b89053a9984c823fa8bb617b23d585dc2800a067831cbf",
+    "src/pipesleuth/single_call.py": "9af969c2cc60729f14af65b572baca21e95962d960c9a5018bbc8ff817a7fac1",
+    "src/pipesleuth/web/app.mjs": "8a0f129b056ac641ac46fd11717d3d1086d8ec5f6d4704d9cd48ddb954798231",
+    "src/pipesleuth/web/core.mjs": "30cd78cf3abf3e8dd2f03dd91e074cd4d37fb850cbd11f93baff12381287bc67",
+    "src/pipesleuth/web/index.html": "75868423fa7565186a9d4745933fa012c42e1b4641ffe844ce0cc4695053a1a6",
+    "src/pipesleuth/web/investigations.mjs": "5a9d2d396c7531c096bc7927ba839f83a9eb32be7829485687d62810382072a2",
+    "src/pipesleuth/web/repairs.mjs": "33ac00f9a06d492fff04a0329eaa668e8662d2a16bc5f96b317539ddba227474",
+    "src/pipesleuth/web/style.css": "14df753c8965d41b1a04b5669e0dd738d9a34a3aaaf1796e99dbe664be63a83b",
+    "src/pipesleuth/web_assets.py": "ae15de14269ee2d80cb0152a7ed3b4c6cfd8294caa5f292300a428054f8778d9"
+  },
+  "temporary_workspace_removed": true,
+  "wheel": {
+    "browser_assets_verified": 6,
+    "bytes": 100934,
+    "filename": "pipesleuth-0.1.0rc1-py3-none-any.whl",
+    "mit_license_bytes_verified": true,
+    "package_files_verified": 30,
+    "sha256": "f881d034a738a0af5369b0aee7de76ac150568264ee32b04ed8edc16925e9495",
+    "unexpected_wheel_entries": 0
+  }
+}

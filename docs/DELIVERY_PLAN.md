@@ -15,7 +15,7 @@ Build a local data-pipeline incident investigator over **14 actual days, 20 Octo
 - Use real commit dates. If a session is missed or a stage is blocked, record the delay and continue from it. Do not backdate, fabricate progress, or silently compress unfinished work into later days.
 - Each stage must pass its acceptance check before being marked complete. Record commands and observed results; distinguish a skipped check from a passed check.
 - Use local execution and free software only. Follow [COST_POLICY.md](COST_POLICY.md); never add a paid or cloud fallback.
-- Stage 12 is the final implemented delivery boundary: the SQLite pipeline, bounded evidence tools, deterministic checklist, single-call model baseline, bounded local investigator, saved investigations, fixed approved repairs into new derived runs, a local API and a small browser workspace. Model diagnosis remains experimental. Matched evaluation and final packaging remain unfinished at the cutoff.
+- Stage 12 was the implemented delivery boundary at the scheduled cutoff: the SQLite pipeline, bounded evidence tools, deterministic checklist, single-call model baseline, bounded local investigator, saved investigations, fixed approved repairs into new derived runs, a local API and a small browser workspace. Model diagnosis remains experimental. Matched evaluation and final packaging were unfinished at the cutoff.
 
 The 26 October wake-up reached execution after midnight in Berlin. Stage 7
 therefore continued on 27 October with real dates; no 26 October work or commits
@@ -96,4 +96,7 @@ Do not claim production readiness, learning gains, human review, measured reliab
 
 ## Work time
 
-The local heartbeat `build-pipesleuth-daily-milestones` is active for **19:30 Europe/Berlin**, daily from **21 October through 2 November 2026**. Its saved rule covers 13 scheduled sessions and preserves the local time across the October DST change. Local execution requires the desktop app and host to be available and awake. A missed run follows the delivery rules above; it does not justify fabricated commits. Stop at the 2 November cutoff and report any unfinished scope accurately.
+The daily schedule ran through 2 November 2026 and the heartbeat was deleted
+that day. The owner requested a manual continuation on 3 November to finish
+the comparison and local release. See the [development log](DEVELOPMENT_LOG.md)
+for the actual checks and published scope.

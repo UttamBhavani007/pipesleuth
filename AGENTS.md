@@ -1,6 +1,6 @@
 # PipeSleuth working instructions
 
-Build this project progressively through **2026-11-02**, starting 2026-10-20
+The original progressive build ran from 2026-10-20 through **2026-11-02**
 (14 planned days). The owner requested **1–2 meaningful commits per development
 day through 26 October**, increasing to **5–6 substantial commits daily from
 27 October through 2 November**, after the RAG project's planned completion.
@@ -50,7 +50,7 @@ Do not continue the schedule beyond 2 November without a new user request.
   roles and a controlled loopback launcher. API approval is a trusted caller
   acknowledgement, not proof of human review. The small local UI is available
   with in-memory capabilities, explicit approval and bounded resume views.
-  Matched evaluation and final clean-environment packaging remain unfinished
-  at the 2 November cutoff. Do not resume scheduled development without a new
-  user request. Install requirements-api.txt in the local
+  The 3 November manual continuation covers the matched evaluation and local
+  prerelease. Consult the latest development log for measured limits. Scheduled
+  development remains stopped. Install requirements-api.txt in the local
   .venv to run API checks; source-only discovery skips optional API tests.

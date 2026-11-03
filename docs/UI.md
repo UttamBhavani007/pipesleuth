@@ -155,16 +155,16 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python \
   -W error::ResourceWarning -m unittest discover -s tests -q
 ```
 
-The authorized progressive build ends on **2 November 2026**. This UI stage does
-not complete the planned matched three-approach evaluation, frozen synthetic
-holdout or final clean-environment packaging. Those remain incomplete at the
-cutoff. Earlier real local-model diagnosis failures are not resolved by adding a
-browser interface. No production deployment, diagnosis accuracy or human review
-is claimed.
+The [matched evaluation](EVALUATION.md) reports model outcomes separately.
+[Local installation](LOCAL_DEPLOYMENT.md) covers the verified release setup.
 
 The [2 November integration report](../reports/ui-smoke.json) separates observed
 native-browser interactions, independent database reads and the exact-client
 HTTP probe. Actual UI images were inspected in the tool; screenshot-file export
-was blocked by that tool's filesystem/network permissions, so no screenshot
-artifact is included. Native snapshots sometimes lagged, and browser response
-time was not measured. The owned server and private session were cleaned up.
+was blocked by that tool's filesystem and network permissions. Native
+snapshots sometimes lagged. The owned server and private session were cleaned
+up after the checks.
+
+Two actual captures from that desktop session were recovered and exported on
+3 November. The [demo walkthrough](DEMO.md#desktop-captures) shows the incident
+and fixed repair review. The recorded checks cover the desktop workflow.

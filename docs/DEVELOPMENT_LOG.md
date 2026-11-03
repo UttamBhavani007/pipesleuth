@@ -959,3 +959,49 @@ This is the final authorized scheduled development date. The daily automation
 was **deleted through the app tool at the 2 November cutoff**, so it will not
 continue. Further implementation requires a new user request; the deadline has
 not been extended and no missing work or dates are invented.
+
+## 2026-11-03 — manual continuation and local prerelease
+
+The owner requested completion after the scheduled cutoff. The manual session
+continued the two remaining stages from published `5a5ac29`.
+
+- Froze nine literal synthetic cases and the matched scorer in `37791c6`.
+  Checked all nine initial database states and verified the three development
+  checklist repairs before running the comparison. The evaluator kept expected
+  labels and rows outside the model's evidence root.
+- Reused the pinned cached model in a temporary copy through the cloud-disabled
+  loopback launcher. Two real preflight generations completed in about 6.1 and
+  7.4 seconds and missed their literal expectations. That run informed the
+  25-second call and 45-second agent budgets. The model and prompts stayed
+  fixed for the matched run.
+- Recorded 27 matched trials, 24 actual generations, zero transport timeouts
+  and seven independently verified derived databases. Holdout outcome matches
+  were 6/6 for the checklist, 2/6 for the single call and 1/6 for the agent.
+  The agent's only match was missing-evidence abstention before generation.
+  The single-call model reported faults on healthy input. The result archive
+  keeps invalid outputs and uses scripted exact-plan acknowledgements.
+  [Evaluation](EVALUATION.md)
+- Built and installed version `0.1.0rc1` from an isolated source copy into a
+  fresh environment using the reviewed offline wheel set. The first install
+  caught a CLI/package version mismatch, which was corrected. The final
+  report verifies six installed assets, 14 public request checks, 10 API
+  requests, six exact rows in the derived repair, and server/session cleanup.
+  The verified host used macOS arm64 and Python 3.13.7.
+  [Installation report](../reports/local-deployment.json)
+- The regression checks passed 350 Python and 41 JavaScript tests. The
+  Starlette test transport still emits its existing deprecation warning.
+  The owned model server stopped, its port refused connections and the
+  temporary cache copy was removed.
+
+The local source prerelease includes a short README, installation instructions
+and a model-free walkthrough. The matched evaluation describes a small
+synthetic suite. Model output remains experimental and prose explanations
+lack human scoring. The daily schedule ended on 2 November.
+
+Two desktop screenshots were exported from the recorded 2 November live UI
+test. The exports contain the app viewport, with browser chrome removed. The
+underlying web asset hashes match those used in the UI audit. The 3 November
+capture attempt confirmed the app could open in a Safari private window, but
+native export remained blocked. The temporary server and its session were
+removed. Mobile and broad accessibility coverage remain unmeasured.
+[Demo captures](DEMO.md#desktop-captures)

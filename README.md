@@ -12,9 +12,9 @@ PipeSleuth brings those facts together. Inspect an incident, run a checklist or
 an experimental local model, and review a supported repair before it creates a
 new database. The original incident stays available for comparison.
 
-**Status: local prototype.** The pipeline, browser interface and repair workflow
-are implemented. Model diagnosis accuracy has not been established; earlier
-local-model smoke runs include false findings and rejected responses.
+**Status: local prototype prerelease.** The pipeline, browser interface and
+repair workflow are available. Model results are experimental; inspect the
+evidence before acting on a finding.
 
 ## Features
 
@@ -89,13 +89,15 @@ node --test tests/ui_*.mjs
 Without API dependencies, standard-library discovery skips the optional API
 checks. Software tests and browser checks do not establish model accuracy.
 
-## Remaining work
+## Evaluation and release
 
-- Matched evaluation of the checklist, single-call model and tool agent.
-- Clean-environment packaging and broader browser/accessibility checks.
+See the [synthetic evaluation](docs/EVALUATION.md) for the measured comparison,
+failed cases and limits. See [local deployment](docs/LOCAL_DEPLOYMENT.md) for
+installation and clean-environment verification, and the [demo](docs/DEMO.md)
+for a walkthrough. The prototype uses synthetic data and is intended for local
+experimentation.
 
-The scheduled build ends on **2 November 2026** with that scope unfinished.
-[Development log](docs/DEVELOPMENT_LOG.md) · [Delivery plan](docs/DELIVERY_PLAN.md)
+[Development log](docs/DEVELOPMENT_LOG.md)
 
 All execution is local. No paid services, cloud inference or provider API keys
 are used. [Cost policy](docs/COST_POLICY.md).
