@@ -1,0 +1,667 @@
+{
+  "schema_version": 1,
+  "frozen_at_utc": "2026-11-03T12:16:53.200291+00:00",
+  "authoring": "Literal synthetic payloads and independent expected outcomes. Each seed initializes Python random.Random for two order IDs, customer IDs, amounts, currencies, and the invalid amount where applicable. Fault variants were frozen before matched inference.",
+  "cases": [
+    {
+      "case_id": "development-01-rename",
+      "split": "development",
+      "seed": 68173,
+      "source": {
+        "schema": [
+          "order_id",
+          "customer_id",
+          "gross_total_minor",
+          "currency",
+          "created_at"
+        ],
+        "rows": [
+          {
+            "order_id": "R34459",
+            "customer_id": "C901",
+            "currency": "GBP",
+            "created_at": "2026-04-10T09:00:00Z",
+            "gross_total_minor": 4024
+          },
+          {
+            "order_id": "R66849",
+            "customer_id": "C903",
+            "currency": "USD",
+            "created_at": "2026-04-11T09:00:00Z",
+            "gross_total_minor": 5079
+          }
+        ]
+      },
+      "canonical_source_sha256": "c5f3d00dc2c40dd93ce484b60ca9126c4612c23bb735d09081b24cab4eaae470",
+      "injection": "none",
+      "expected": {
+        "status": "diagnosed",
+        "codes": [
+          "schema_mismatch"
+        ],
+        "diagnostic": {
+          "code": "schema_mismatch",
+          "observed_schema": [
+            "order_id",
+            "customer_id",
+            "gross_total_minor",
+            "currency",
+            "created_at"
+          ],
+          "required_schema": [
+            "order_id",
+            "customer_id",
+            "amount_minor",
+            "currency",
+            "created_at"
+          ],
+          "missing_columns": [
+            "amount_minor"
+          ],
+          "extra_columns": [
+            "gross_total_minor"
+          ]
+        },
+        "initial_status": "failed",
+        "initial_orders": [],
+        "logs_available": true,
+        "repair": {
+          "action": "rename_amount_column",
+          "warehouse_orders": [
+            [
+              "R34459",
+              "C901",
+              4024,
+              "GBP",
+              "2026-04-10T09:00:00Z"
+            ],
+            [
+              "R66849",
+              "C903",
+              5079,
+              "USD",
+              "2026-04-11T09:00:00Z"
+            ]
+          ],
+          "quarantined_records": [],
+          "duplicate_policy": "reject",
+          "invalid_policy": "reject",
+          "duplicates_skipped": 0
+        }
+      }
+    },
+    {
+      "case_id": "development-02-duplicate",
+      "split": "development",
+      "seed": 91873,
+      "source": {
+        "schema": [
+          "order_id",
+          "customer_id",
+          "amount_minor",
+          "currency",
+          "created_at"
+        ],
+        "rows": [
+          {
+            "order_id": "R26148",
+            "customer_id": "C712",
+            "amount_minor": 524,
+            "currency": "EUR",
+            "created_at": "2026-04-10T09:00:00Z"
+          },
+          {
+            "order_id": "R48545",
+            "customer_id": "C681",
+            "amount_minor": 7837,
+            "currency": "USD",
+            "created_at": "2026-04-11T09:00:00Z"
+          },
+          {
+            "order_id": "R26148",
+            "customer_id": "C712",
+            "amount_minor": 524,
+            "currency": "EUR",
+            "created_at": "2026-04-10T09:00:00Z"
+          }
+        ]
+      },
+      "canonical_source_sha256": "d295007ef90cdc9a937e7a05382f2dfb95ade3b0ae88b17a08f25782e071d060",
+      "injection": "none",
+      "expected": {
+        "status": "diagnosed",
+        "codes": [
+          "duplicate_key"
+        ],
+        "diagnostic": {
+          "code": "duplicate_key",
+          "row_number": 3,
+          "order_id": "R26148"
+        },
+        "initial_status": "failed",
+        "initial_orders": [],
+        "logs_available": true,
+        "repair": {
+          "action": "skip_identical_duplicates",
+          "warehouse_orders": [
+            [
+              "R26148",
+              "C712",
+              524,
+              "EUR",
+              "2026-04-10T09:00:00Z"
+            ],
+            [
+              "R48545",
+              "C681",
+              7837,
+              "USD",
+              "2026-04-11T09:00:00Z"
+            ]
+          ],
+          "quarantined_records": [],
+          "duplicate_policy": "skip_identical",
+          "invalid_policy": "reject",
+          "duplicates_skipped": 1
+        }
+      }
+    },
+    {
+      "case_id": "development-03-invalid",
+      "split": "development",
+      "seed": 51290,
+      "source": {
+        "schema": [
+          "order_id",
+          "customer_id",
+          "amount_minor",
+          "currency",
+          "created_at"
+        ],
+        "rows": [
+          {
+            "order_id": "R35292",
+            "customer_id": "C165",
+            "amount_minor": 5164,
+            "currency": "EUR",
+            "created_at": "2026-04-10T09:00:00Z"
+          },
+          {
+            "order_id": "R51983",
+            "customer_id": "C364",
+            "amount_minor": 7696,
+            "currency": "EUR",
+            "created_at": "2026-04-11T09:00:00Z"
+          },
+          {
+            "order_id": "R99999",
+            "customer_id": "C364",
+            "amount_minor": -674,
+            "currency": "EUR",
+            "created_at": "2026-04-11T09:00:00Z"
+          }
+        ]
+      },
+      "canonical_source_sha256": "d8f43037482b23d5f4bfdfb21fb226bcfbe4d3015c96ed0ccc2582be2180d3b2",
+      "injection": "none",
+      "expected": {
+        "status": "diagnosed",
+        "codes": [
+          "invalid_row"
+        ],
+        "diagnostic": {
+          "code": "invalid_row",
+          "row_number": 3,
+          "reason": "amount_minor must be a non-negative integer"
+        },
+        "initial_status": "failed",
+        "initial_orders": [],
+        "logs_available": true,
+        "repair": {
+          "action": "quarantine_invalid_rows",
+          "warehouse_orders": [
+            [
+              "R35292",
+              "C165",
+              5164,
+              "EUR",
+              "2026-04-10T09:00:00Z"
+            ],
+            [
+              "R51983",
+              "C364",
+              7696,
+              "EUR",
+              "2026-04-11T09:00:00Z"
+            ]
+          ],
+          "quarantined_records": [
+            [
+              3,
+              "invalid_row",
+              "amount_minor must be a non-negative integer",
+              {
+                "order_id": "R99999",
+                "customer_id": "C364",
+                "amount_minor": -674,
+                "currency": "EUR",
+                "created_at": "2026-04-11T09:00:00Z"
+              }
+            ]
+          ],
+          "duplicate_policy": "reject",
+          "invalid_policy": "quarantine",
+          "duplicates_skipped": 0
+        }
+      }
+    },
+    {
+      "case_id": "holdout-04-clean",
+      "split": "holdout",
+      "seed": 120447,
+      "source": {
+        "schema": [
+          "order_id",
+          "customer_id",
+          "amount_minor",
+          "currency",
+          "created_at"
+        ],
+        "rows": [
+          {
+            "order_id": "R23879",
+            "customer_id": "C797",
+            "amount_minor": 9499,
+            "currency": "USD",
+            "created_at": "2026-04-10T09:00:00Z"
+          },
+          {
+            "order_id": "R36409",
+            "customer_id": "C926",
+            "amount_minor": 7727,
+            "currency": "USD",
+            "created_at": "2026-04-11T09:00:00Z"
+          }
+        ]
+      },
+      "canonical_source_sha256": "e8af5960e64ec4148316e0138611d95791aaf10c9d03c9c303ac9c1672646549",
+      "injection": "none",
+      "expected": {
+        "status": "no_incident",
+        "codes": [],
+        "diagnostic": null,
+        "initial_status": "succeeded",
+        "initial_orders": [
+          [
+            "R23879",
+            "C797",
+            9499,
+            "USD",
+            "2026-04-10T09:00:00Z"
+          ],
+          [
+            "R36409",
+            "C926",
+            7727,
+            "USD",
+            "2026-04-11T09:00:00Z"
+          ]
+        ],
+        "logs_available": true,
+        "repair": null
+      }
+    },
+    {
+      "case_id": "holdout-05-rename",
+      "split": "holdout",
+      "seed": 667357,
+      "source": {
+        "schema": [
+          "order_id",
+          "customer_id",
+          "gross_total_minor",
+          "currency",
+          "created_at"
+        ],
+        "rows": [
+          {
+            "order_id": "R32308",
+            "customer_id": "C900",
+            "currency": "GBP",
+            "created_at": "2026-04-10T09:00:00Z",
+            "gross_total_minor": 1126
+          },
+          {
+            "order_id": "R33588",
+            "customer_id": "C612",
+            "currency": "EUR",
+            "created_at": "2026-04-11T09:00:00Z",
+            "gross_total_minor": 8959
+          }
+        ]
+      },
+      "canonical_source_sha256": "f230a9e7693f4e0004c463c323c81f3b0773f16a3177667826299255208445e3",
+      "injection": "none",
+      "expected": {
+        "status": "diagnosed",
+        "codes": [
+          "schema_mismatch"
+        ],
+        "diagnostic": {
+          "code": "schema_mismatch",
+          "observed_schema": [
+            "order_id",
+            "customer_id",
+            "gross_total_minor",
+            "currency",
+            "created_at"
+          ],
+          "required_schema": [
+            "order_id",
+            "customer_id",
+            "amount_minor",
+            "currency",
+            "created_at"
+          ],
+          "missing_columns": [
+            "amount_minor"
+          ],
+          "extra_columns": [
+            "gross_total_minor"
+          ]
+        },
+        "initial_status": "failed",
+        "initial_orders": [],
+        "logs_available": true,
+        "repair": {
+          "action": "rename_amount_column",
+          "warehouse_orders": [
+            [
+              "R32308",
+              "C900",
+              1126,
+              "GBP",
+              "2026-04-10T09:00:00Z"
+            ],
+            [
+              "R33588",
+              "C612",
+              8959,
+              "EUR",
+              "2026-04-11T09:00:00Z"
+            ]
+          ],
+          "quarantined_records": [],
+          "duplicate_policy": "reject",
+          "invalid_policy": "reject",
+          "duplicates_skipped": 0
+        }
+      }
+    },
+    {
+      "case_id": "holdout-06-duplicate",
+      "split": "holdout",
+      "seed": 952781,
+      "source": {
+        "schema": [
+          "order_id",
+          "customer_id",
+          "amount_minor",
+          "currency",
+          "created_at"
+        ],
+        "rows": [
+          {
+            "order_id": "R22530",
+            "customer_id": "C805",
+            "amount_minor": 4522,
+            "currency": "USD",
+            "created_at": "2026-04-10T09:00:00Z"
+          },
+          {
+            "order_id": "R50204",
+            "customer_id": "C925",
+            "amount_minor": 7658,
+            "currency": "USD",
+            "created_at": "2026-04-11T09:00:00Z"
+          },
+          {
+            "order_id": "R22530",
+            "customer_id": "C805",
+            "amount_minor": 4522,
+            "currency": "USD",
+            "created_at": "2026-04-10T09:00:00Z"
+          }
+        ]
+      },
+      "canonical_source_sha256": "bf23af3b1e9094a3be061aafe1df23920c8e83da0050f181bdd52361ef7d3615",
+      "injection": "none",
+      "expected": {
+        "status": "diagnosed",
+        "codes": [
+          "duplicate_key"
+        ],
+        "diagnostic": {
+          "code": "duplicate_key",
+          "row_number": 3,
+          "order_id": "R22530"
+        },
+        "initial_status": "failed",
+        "initial_orders": [],
+        "logs_available": true,
+        "repair": {
+          "action": "skip_identical_duplicates",
+          "warehouse_orders": [
+            [
+              "R22530",
+              "C805",
+              4522,
+              "USD",
+              "2026-04-10T09:00:00Z"
+            ],
+            [
+              "R50204",
+              "C925",
+              7658,
+              "USD",
+              "2026-04-11T09:00:00Z"
+            ]
+          ],
+          "quarantined_records": [],
+          "duplicate_policy": "skip_identical",
+          "invalid_policy": "reject",
+          "duplicates_skipped": 1
+        }
+      }
+    },
+    {
+      "case_id": "holdout-07-invalid",
+      "split": "holdout",
+      "seed": 424911,
+      "source": {
+        "schema": [
+          "order_id",
+          "customer_id",
+          "amount_minor",
+          "currency",
+          "created_at"
+        ],
+        "rows": [
+          {
+            "order_id": "R11655",
+            "customer_id": "C768",
+            "amount_minor": 3239,
+            "currency": "GBP",
+            "created_at": "2026-04-10T09:00:00Z"
+          },
+          {
+            "order_id": "R21130",
+            "customer_id": "C806",
+            "amount_minor": 1869,
+            "currency": "USD",
+            "created_at": "2026-04-11T09:00:00Z"
+          },
+          {
+            "order_id": "R99999",
+            "customer_id": "C806",
+            "amount_minor": -575,
+            "currency": "USD",
+            "created_at": "2026-04-11T09:00:00Z"
+          }
+        ]
+      },
+      "canonical_source_sha256": "dec71b73fa4dc9870d497e07e230fc2471068e63252d85e5a99d648b0465372d",
+      "injection": "none",
+      "expected": {
+        "status": "diagnosed",
+        "codes": [
+          "invalid_row"
+        ],
+        "diagnostic": {
+          "code": "invalid_row",
+          "row_number": 3,
+          "reason": "amount_minor must be a non-negative integer"
+        },
+        "initial_status": "failed",
+        "initial_orders": [],
+        "logs_available": true,
+        "repair": {
+          "action": "quarantine_invalid_rows",
+          "warehouse_orders": [
+            [
+              "R11655",
+              "C768",
+              3239,
+              "GBP",
+              "2026-04-10T09:00:00Z"
+            ],
+            [
+              "R21130",
+              "C806",
+              1869,
+              "USD",
+              "2026-04-11T09:00:00Z"
+            ]
+          ],
+          "quarantined_records": [
+            [
+              3,
+              "invalid_row",
+              "amount_minor must be a non-negative integer",
+              {
+                "order_id": "R99999",
+                "customer_id": "C806",
+                "amount_minor": -575,
+                "currency": "USD",
+                "created_at": "2026-04-11T09:00:00Z"
+              }
+            ]
+          ],
+          "duplicate_policy": "reject",
+          "invalid_policy": "quarantine",
+          "duplicates_skipped": 0
+        }
+      }
+    },
+    {
+      "case_id": "holdout-08-storage",
+      "split": "holdout",
+      "seed": 187541,
+      "source": {
+        "schema": [
+          "order_id",
+          "customer_id",
+          "amount_minor",
+          "currency",
+          "created_at"
+        ],
+        "rows": [
+          {
+            "order_id": "R34546",
+            "customer_id": "C277",
+            "amount_minor": 7902,
+            "currency": "GBP",
+            "created_at": "2026-04-10T09:00:00Z"
+          },
+          {
+            "order_id": "R48778",
+            "customer_id": "C391",
+            "amount_minor": 4986,
+            "currency": "GBP",
+            "created_at": "2026-04-11T09:00:00Z"
+          }
+        ]
+      },
+      "canonical_source_sha256": "c3c2230e8674707ae9cefd4819d9c435d7c664f46bd4bc4351ea6482a26973f4",
+      "injection": "abort_insert",
+      "expected": {
+        "status": "unknown",
+        "codes": [],
+        "diagnostic": {
+          "code": "load_error",
+          "message": "write blocked"
+        },
+        "initial_status": "failed",
+        "initial_orders": [],
+        "logs_available": true,
+        "repair": null
+      }
+    },
+    {
+      "case_id": "holdout-09-missing",
+      "split": "holdout",
+      "seed": 582139,
+      "source": {
+        "schema": [
+          "order_id",
+          "customer_id",
+          "amount_minor",
+          "currency",
+          "created_at"
+        ],
+        "rows": [
+          {
+            "order_id": "R30000",
+            "customer_id": "C373",
+            "amount_minor": 1290,
+            "currency": "EUR",
+            "created_at": "2026-04-10T09:00:00Z"
+          },
+          {
+            "order_id": "R33394",
+            "customer_id": "C156",
+            "amount_minor": 6780,
+            "currency": "EUR",
+            "created_at": "2026-04-11T09:00:00Z"
+          }
+        ]
+      },
+      "canonical_source_sha256": "86b50d6f198e47e62983bdb4a50e0b7693261d9e4ad0d834e77c0f0b2f30dc29",
+      "injection": "drop_events",
+      "expected": {
+        "status": "unknown",
+        "codes": [],
+        "diagnostic": null,
+        "initial_status": "succeeded",
+        "initial_orders": [
+          [
+            "R30000",
+            "C373",
+            1290,
+            "EUR",
+            "2026-04-10T09:00:00Z"
+          ],
+          [
+            "R33394",
+            "C156",
+            6780,
+            "EUR",
+            "2026-04-11T09:00:00Z"
+          ]
+        ],
+        "logs_available": false,
+        "repair": null
+      }
+    }
+  ]
+}
