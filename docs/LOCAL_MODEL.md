@@ -95,7 +95,7 @@ runtime or model is a failure, not permission to download or call a cloud API.
 
 Only an actually generated report establishes that a smoke ran. Two synthetic
 cases cannot estimate diagnostic accuracy, grounding quality, robustness, or
-production readiness. The later matched evaluation remains separate.
+production readiness. The [matched evaluation](EVALUATION.md) reports the separate comparison.
 
 ## Recorded observations and limitations
 

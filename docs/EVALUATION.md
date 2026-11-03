@@ -1,84 +1,106 @@
-# PipeSleuth evaluation plan
+# Matched synthetic evaluation
 
-**Status: full comparison planned.** Stage 6 adds a small checklist-only
-[development probe](CHECKLIST.md); it is not held out or human-reviewed.
-Stage 7 records a small [local-model smoke](LOCAL_MODEL.md), including an observed
-healthy-input false positive; it is not a quality estimate. No held-out model,
-agent, or three-approach comparison results are claimed.
-Stage 8 also records two [bounded-agent integration cases](INVESTIGATOR.md):
-the model selected real evidence tools, but both finishes were rejected as
-inconsistent. These are failed development conclusions with retained traces,
-not evidence of agent accuracy or an improvement over the baseline.
-Introduce the full harness as the implementation progresses and run the
-comparison in Stage 13.
+The deterministic checklist matched **6 of 6** expected holdout outcomes. The
+single-call model matched **2 of 6**, and the bounded tool agent matched **1 of
+6**. All three stopped when event evidence was missing. Among the model methods,
+only the single-call method produced a correct model-generated finding, for an
+identical duplicate. It also reported faults in a healthy run.
 
-## Question
+## Results
 
-For a bounded set of synthetic ETL incidents, does adaptive local tool use improve correct diagnosis and verified recovery compared with a deterministic checklist and a single local LLM call? Measure both benefits and failure costs.
+On 3 November 2026, all 27 case-method trials finished with 24 actual local
+generations. Recovery uses the three holdout cases eligible for repair.
 
-## Three approaches
+| Method | Development matches | Holdout matches | Holdout verified repairs | Holdout model requests | Median holdout diagnosis |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Deterministic checklist | 3/3 | 6/6 | 3/3 | 0 | 2.7 ms |
+| Single-call local model | 0/3 | 2/6 | 1/3 | 5 | 5.98 s |
+| Bounded tool agent | 0/3 | 1/6 | 0/3 | 10 | 5.49 s |
 
-| Approach | Information and behavior |
-|---|---|
-| Deterministic checklist | Explicit rules over a documented read-only evidence bundle; may return unknown |
-| Single-call LLM | One local generation over the same complete evidence bundle; structured diagnosis and optional repair proposal |
-| Tool-calling agent | Same local model, generation configuration, output schema, and tool-visible information; adaptively requests evidence through the allowlisted gateway within fixed budgets |
+- The checklist found all six actionable faults across both splits. All six
+  derived repairs passed independent database checks.
+- The single-call model found the holdout duplicate and cited matching
+  evidence. The fixed policy produced a verified repair. It emitted multiple
+  findings for the healthy and injected storage cases. The single-finding
+  policy blocked repair selection in both.
+- The agent chose the log tool in all eight trials that reached the model.
+  Each subsequent model decision failed validation. The ninth trial stopped
+  because event evidence was missing. The storage case also ended in a
+  literal unknown, but the scored match excludes its invalid decision.
+- No model request timed out. Two single-call responses failed output
+  validation. All original sources and databases retained their exact
+  hashes. The policy selected no incorrect repair. That measure counts
+  selected actions separately from unsupported findings.
 
-Construct the complete evidence bundle with the same deterministic tool outputs available to the agent. Document truncation and ordering. The one-call method receives that bundle up front; the agent may request a subset. This compares complete upfront evidence with adaptive acquisition and is **not a perfectly isolated test of reasoning quality**. Report that information-delivery difference, tool overhead, and model-call counts. Hold incident inputs, repair executor, approval policy, and independent verifier constant across approaches.
+The [machine-readable results](../reports/matched-evaluation.json) include each
+trial, tool call, model trace, token count, timing, repair receipt and input
+preservation check. The [development preflight](../reports/local-model-smoke-nov03.json)
+records two additional generations used to choose a time budget. Both missed
+their literal expectations.
 
-## Dataset and leakage controls
+## Cases and settings
 
-- Use reproducible seeds covering schema drift, duplicates, invalid/missing values, and combinations that are explicitly supported by the implementation.
-- Keep development cases separate from a frozen synthetic holdout. Record generation configuration, seeds, counts, hashes, and the freeze point before inspecting holdout results.
-- Store labels, expected causes, golden rows, expected quarantine contents, and repair expectations in evaluator-only data. The model and tool gateway must not be able to read them.
-- Use neutral incident identifiers, filenames, and tool descriptions. Check that logs and prompts do not accidentally reveal fixture labels.
-- Keep tuning and prompt changes on development cases. If holdout failures influence a change, disclose that use and freeze a new untouched holdout before making a new generalization claim.
-- Report exact case counts, model/runtime version, model identifier or digest, generation settings, hardware, and measured run configuration. Do not invent these before the runs exist.
+The [literal synthetic manifest](../evaluation/matched-v1.json) and scorer were
+committed at `37791c6` before the matched run. Three development cases cover an
+amount-column rename, an identical duplicate and an invalid value. Six separate
+holdout inputs repeat those fault families and add a healthy control, an
+injected SQLite write failure and a case with the event table removed. These
+are author-defined cases using the same pipeline contracts as development.
 
-Synthetic holdout performance estimates behavior on this generator and task definition. It does not demonstrate performance on real operational incidents.
+All methods inspected the same prepared run for each case. Inputs contained
+only schema and rows, and run paths used opaque identifiers. The evaluator kept
+labels and golden rows outside the gateway root. Before sending a prompt, its
+observer checked that the included evidence came from the actual gateway.
+The checklist and single-call model requested four reads up front. The agent
+used a trusted initial read and selected further reads. The prompts, evidence
+volume and decision schemas differ by design.
 
-## Controls and failure cases
+Both methods used cached `qwen3:1.7b` on Ollama 0.40.7, pinned to
+`8f68893c685c3ddff2aa3fffce2aa60a30bb2da65ca488b61fff134a4d1730e7`. Runs used
+macOS arm64 and Python 3.13.7 with cloud features disabled. Context was 8192
+tokens and output was capped at 768. Temperature was zero and thinking was
+off. Each call had 25 seconds. The agent had 45 seconds overall, four model
+steps and four reads. A gateway read had a two-second deadline and 16 KiB
+response cap. Each pair ran once without retries. Method order rotated and
+each model trial used a fresh client. Timings include local load and tool time.
 
-Include clean inputs; insufficient or conflicting evidence; unsupported fault types; corrupted/missing evidence; malformed tool arguments; unknown tools; model unavailable/timeouts; exhausted budgets; interrupted runs; unapproved plans; stale fingerprints; and failed repairs. Include duplicate loads and repair retries to check idempotency.
+## Scoring and recovery
 
-For a clean control, the correct behavior is to report no supported incident and avoid unnecessary repair. For an unsupported or underdetermined case, uncertainty or abstention is preferable to an unsupported confident diagnosis. An instruction embedded in a log must not override the gateway, approve a plan, or execute a command.
+A match required the expected status and finding codes, valid run-scoped
+references and no listed technical failure. Actionable cases also required a
+cited envelope containing the expected observable fact. The report measures
+that mechanical check, and the model's explanatory prose has no human score.
+An expected unknown from missing evidence counts as a correct system outcome.
+No trial exhausted its step or tool cap. The frozen scorer can count such an
+abort on a future expected-unknown case, so examine those limits separately
+when reusing it.
 
-## Measurements
+The scripted policy maps exactly one accepted, referenced actionable finding
+to a fixed repair. The service checks preconditions. The evaluator then
+acknowledges the exact plan and input hashes through the `scripted_test`
+channel. Every method uses the same executor and verifier. Separate SQL reads
+compare exact derived warehouse rows and types, quarantine records and
+metadata. The audit also checks clean replay and refuses repeated execution.
+The oracle scores the result after action selection.
 
-| Outcome | Definition |
-|---|---|
-| Diagnosis correctness | Structured cause and affected data/schema match the evaluator's supported answer; report partial or ambiguous cases separately |
-| Evidence support | Referenced evidence exists and supports the stated diagnosis; automate only clearly checkable criteria |
-| End-to-end recovery | Under a fixed approval protocol, the allowed action produces the exact expected warehouse and quarantine state |
-| False intervention | Proposes or executes an unnecessary/incorrect repair, especially on clean or unsupported cases |
-| Approval and stale-state rejection | Attempts rejected correctly when approval is absent, mismatched, or inputs changed |
-| Persistence correctness | Resumed runs retain evidence and do not replay completed actions improperly |
-| Efficiency | Wall-clock time, model calls, tool calls, retries, input/output tokens when available, and budget exhaustion |
-| Service fees | External API/service spend must remain zero; local electricity and hardware are outside this figure |
+The [repair audit](../reports/repair-smoke.json) and
+[checkpoint audit](../reports/resume-smoke.json) separately cover unapproved
+and stale requests, rollback, restart and uncertain operations. The
+[local model smoke](LOCAL_MODEL.md) records unavailable-model and controlled
+timeout checks. These tests have separate denominators.
 
-Report denominators, raw counts, and failure categories alongside percentages. For a small synthetic suite, avoid claims of statistical significance or broad superiority. If repeated model runs are used, fix and report the repeat count and distinguish per-case from per-run results. Record unavailable measurements as unavailable.
+## Reproduce locally
 
-## Recovery verification
+Start the pinned, cloud-disabled runtime using the [local model guide](LOCAL_MODEL.md).
+From the repository root, choose a fresh output file.
 
-The [checkpoint restart report](../reports/resume-smoke.json) is a development
-integration observation. It checks saved operations and a separately labelled
-uncertain-request fixture; it does not evaluate diagnosis accuracy or repairs.
-The matched three-approach evaluation below remains planned.
+```sh
+PYTHONPATH=src python3 scripts/evaluate_matched.py \
+  --model-digest 8f68893c685c3ddff2aa3fffce2aa60a30bb2da65ca488b61fff134a4d1730e7 \
+  --model-timeout 25 --agent-timeout 45 \
+  --report reports/local/matched-rerun.json
+```
 
-The [repair development audit](../reports/repair-smoke.json) uses explicit
-scripted approvals and fixed action choices on synthetic inputs. It checks
-actual derived database contents and rejection paths. It is not human review,
-model-selected repair success, or a comparison of the three diagnosis methods.
-
-The [local HTTP audit](../reports/api-smoke.json) checks the API boundary and
-fixed repairs using scripted requests. Controlled HTTP model fixtures are
-software tests, not real inference. Neither audit replaces matched model
-evaluation or resolves the earlier diagnosis failures.
-
-The verifier runs outside the model. After each approach, compare actual warehouse rows, key uniqueness, relevant schema, row counts, and quarantine rows/reasons with evaluator-only expectations. Row counts alone are insufficient. Confirm no unrelated sandbox data changed. Include a clean rerun to check the applicable idempotency requirements.
-
-Use an identical scripted trusted approval policy when measuring repair execution, clearly labelled as an **evaluation protocol**, not human approval or human review. Separately test actual approval rejection paths. A diagnosis-only run is not a repair success; a repair proposal is not an executed action; an executed action is not recovery until state verification passes.
-
-## Report artifact
-
-Publish machine-readable per-run results and a concise results table for all three approaches. Preserve run errors and timeouts in the denominator. Summarize which cases each approach solved, where it abstained, where it failed, and the additional latency/calls incurred by the agent. State missing tests, deviations from this plan, and limits on interpretation.
+The measurements apply to this small synthetic suite and recorded runtime.
+Treat the model methods as experimental. Production reliability and human
+review of finding explanations remain unmeasured.

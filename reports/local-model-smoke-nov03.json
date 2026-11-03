@@ -1,0 +1,621 @@
+{
+  "cache_metadata_unchanged": true,
+  "cases": [
+    {
+      "actual_generation_requests": 1,
+      "case": "healthy_input",
+      "database_counts_after": {
+        "quarantine": 0,
+        "warehouse": 2
+      },
+      "database_counts_before": {
+        "quarantine": 0,
+        "warehouse": 2
+      },
+      "elapsed_seconds": 7.440817415998026,
+      "error": null,
+      "expected_literal_behavior": {
+        "codes": [],
+        "status": "no_incident"
+      },
+      "files_unchanged": true,
+      "literal_development_expectation_match": false,
+      "observed": {
+        "elapsed_ms": 7440.726,
+        "evidence": [
+          {
+            "arguments": {
+              "run_id": "0a237ab8e4804b4a91d6de036bd248ba"
+            },
+            "content_sha256": "5b3610751ee80208a1ce091d54953e5b3b32f242625cefb5d8a683b9d0482343",
+            "data": {
+              "created_at": "2026-11-03T12:17:05.081293Z",
+              "duplicate_policy": "reject",
+              "duplicates_skipped": 0,
+              "finished_at": "2026-11-03T12:17:05.082662Z",
+              "invalid_policy": "reject",
+              "logs_available": true,
+              "quarantine_available": true,
+              "rows_loaded": 2,
+              "rows_quarantined": 0,
+              "source_sha256": "7d43976c3fa211d867796db0091fd4e2cd005957a750d9386485263c0f407646",
+              "started_at": "2026-11-03T12:17:05.082276Z",
+              "status": "succeeded",
+              "totals_minor": {
+                "EUR": 2000
+              },
+              "untrusted_data": true
+            },
+            "evidence_id": "ev_5b3610751ee80208a1ce091d54953e5b",
+            "observed_at": "2026-11-03T12:17:05.083663Z",
+            "run_id": "0a237ab8e4804b4a91d6de036bd248ba",
+            "tool": "read_run",
+            "truncated": false
+          },
+          {
+            "arguments": {
+              "limit": 20,
+              "run_id": "0a237ab8e4804b4a91d6de036bd248ba"
+            },
+            "content_sha256": "bb76b8e47f617e14237929eacad84d5e1281878ac257a860ae2494762b78fd54",
+            "data": {
+              "available": true,
+              "events": [
+                {
+                  "created_at": "2026-11-03T12:17:05.081580Z",
+                  "details": {
+                    "observed_schema": [
+                      "order_id",
+                      "customer_id",
+                      "amount_minor",
+                      "currency",
+                      "created_at"
+                    ],
+                    "raw_row_count": 2,
+                    "required_schema": [
+                      "order_id",
+                      "customer_id",
+                      "amount_minor",
+                      "currency",
+                      "created_at"
+                    ]
+                  },
+                  "event_id": 1,
+                  "event_type": "source_received"
+                },
+                {
+                  "created_at": "2026-11-03T12:17:05.082357Z",
+                  "details": {
+                    "duplicate_policy": "reject",
+                    "invalid_policy": "reject"
+                  },
+                  "event_id": 2,
+                  "event_type": "load_started"
+                },
+                {
+                  "created_at": "2026-11-03T12:17:05.082684Z",
+                  "details": {
+                    "duplicates_skipped": 0,
+                    "rows_loaded": 2,
+                    "rows_quarantined": 0
+                  },
+                  "event_id": 3,
+                  "event_type": "load_succeeded"
+                }
+              ],
+              "events_total": 3,
+              "untrusted_data": true
+            },
+            "evidence_id": "ev_bb76b8e47f617e14237929eacad84d5e",
+            "observed_at": "2026-11-03T12:17:05.084051Z",
+            "run_id": "0a237ab8e4804b4a91d6de036bd248ba",
+            "tool": "read_logs",
+            "truncated": false
+          },
+          {
+            "arguments": {
+              "run_id": "0a237ab8e4804b4a91d6de036bd248ba"
+            },
+            "content_sha256": "6213ccda17a97fc972212bbbac98e6f0f0f141341604f3c13e56b95138a0e74f",
+            "data": {
+              "required_columns": [
+                "order_id",
+                "customer_id",
+                "amount_minor",
+                "currency",
+                "created_at"
+              ],
+              "source_columns": [
+                "order_id",
+                "customer_id",
+                "amount_minor",
+                "currency",
+                "created_at"
+              ],
+              "untrusted_data": true,
+              "warehouse_columns": [
+                {
+                  "name": "order_id",
+                  "not_null": true,
+                  "primary_key": true,
+                  "type": "TEXT"
+                },
+                {
+                  "name": "customer_id",
+                  "not_null": true,
+                  "primary_key": false,
+                  "type": "TEXT"
+                },
+                {
+                  "name": "amount_minor",
+                  "not_null": true,
+                  "primary_key": false,
+                  "type": "INTEGER"
+                },
+                {
+                  "name": "currency",
+                  "not_null": true,
+                  "primary_key": false,
+                  "type": "TEXT"
+                },
+                {
+                  "name": "created_at",
+                  "not_null": true,
+                  "primary_key": false,
+                  "type": "TEXT"
+                }
+              ],
+              "warehouse_columns_omitted": 0
+            },
+            "evidence_id": "ev_6213ccda17a97fc972212bbbac98e6f0",
+            "observed_at": "2026-11-03T12:17:05.084430Z",
+            "run_id": "0a237ab8e4804b4a91d6de036bd248ba",
+            "tool": "inspect_schema",
+            "truncated": false
+          },
+          {
+            "arguments": {
+              "limit": 20,
+              "run_id": "0a237ab8e4804b4a91d6de036bd248ba"
+            },
+            "content_sha256": "04b1f961501d0546e0f0176bf3a7bc0199380336ee2bddbded28db973b35afa5",
+            "data": {
+              "available": true,
+              "failure": null,
+              "records": [],
+              "rows_loaded": 2,
+              "rows_quarantined": 0,
+              "untrusted_data": true,
+              "warehouse_available": true
+            },
+            "evidence_id": "ev_04b1f961501d0546e0f0176bf3a7bc01",
+            "observed_at": "2026-11-03T12:17:05.084761Z",
+            "run_id": "0a237ab8e4804b4a91d6de036bd248ba",
+            "tool": "inspect_validation",
+            "truncated": false
+          }
+        ],
+        "findings": [
+          {
+            "code": "invalid_row",
+            "evidence_refs": [
+              "ev_5b3610751ee80208a1ce091d54953e5b"
+            ],
+            "summary": "Row with order_id '12345' was rejected due to invalid data."
+          },
+          {
+            "code": "duplicate_key",
+            "evidence_refs": [
+              "ev_bb76b8e47f617e14237929eacad84d5e"
+            ],
+            "summary": "Duplicate order_id '12345' detected in the source data."
+          },
+          {
+            "code": "schema_mismatch",
+            "evidence_refs": [
+              "ev_6213ccda17a97fc972212bbbac98e6f0"
+            ],
+            "summary": "Schema mismatch between source and target columns."
+          }
+        ],
+        "limitations": [],
+        "method": "single_call_local_model",
+        "model_calls": 1,
+        "model_response": {
+          "digest": "8f68893c685c3ddff2aa3fffce2aa60a30bb2da65ca488b61fff134a4d1730e7",
+          "done_reason": "stop",
+          "eval_duration_ns": 3840251000,
+          "generated_tokens": 242,
+          "load_duration_ns": 1783901125,
+          "model": "qwen3:1.7b",
+          "prompt_eval_duration_ns": 1799126000,
+          "prompt_tokens": 1637,
+          "raw_text_truncated": false,
+          "text": "{\n  \"status\": \"diagnosed\",\n  \"findings\": [\n    {\n      \"code\": \"invalid_row\",\n      \"summary\": \"Row with order_id '12345' was rejected due to invalid data.\",\n      \"evidence_refs\": [\n        \"ev_5b3610751ee80208a1ce091d54953e5b\"\n      ]\n    },\n    {\n      \"code\": \"duplicate_key\",\n      \"summary\": \"Duplicate order_id '12345' detected in the source data.\",\n      \"evidence_refs\": [\n        \"ev_bb76b8e47f617e14237929eacad84d5e\"\n      ]\n    },\n    {\n      \"code\": \"schema_mismatch\",\n      \"summary\": \"Schema mismatch between source and target columns.\",\n      \"evidence_refs\": [\n        \"ev_6213ccda17a97fc972212bbbac98e6f0\"\n      ]\n    }\n  ]\n}",
+          "total_duration_ns": 7433658125
+        },
+        "run_id": "0a237ab8e4804b4a91d6de036bd248ba",
+        "semantic_support_verified": false,
+        "status": "diagnosed",
+        "tool_calls": 4
+      },
+      "pipeline_status": "succeeded",
+      "run_id": "0a237ab8e4804b4a91d6de036bd248ba",
+      "semantic_quality_evaluated": false
+    },
+    {
+      "actual_generation_requests": 1,
+      "case": "renamed_amount_column",
+      "database_counts_after": {
+        "quarantine": 0,
+        "warehouse": 0
+      },
+      "database_counts_before": {
+        "quarantine": 0,
+        "warehouse": 0
+      },
+      "elapsed_seconds": 6.087442625001131,
+      "error": null,
+      "expected_literal_behavior": {
+        "codes": [
+          "schema_mismatch"
+        ],
+        "status": "diagnosed"
+      },
+      "files_unchanged": true,
+      "literal_development_expectation_match": false,
+      "observed": {
+        "elapsed_ms": 6087.352,
+        "evidence": [
+          {
+            "arguments": {
+              "run_id": "61e1137696ba4b439dcc70ec1ba1a611"
+            },
+            "content_sha256": "1448b90fc6378b1b6c653fe0f03be417ccb9dcf8238e4a5769fc8d5cce71cf04",
+            "data": {
+              "created_at": "2026-11-03T12:17:12.527258Z",
+              "duplicate_policy": "reject",
+              "duplicates_skipped": 0,
+              "finished_at": "2026-11-03T12:17:12.528904Z",
+              "invalid_policy": "reject",
+              "logs_available": true,
+              "quarantine_available": true,
+              "rows_loaded": 0,
+              "rows_quarantined": 0,
+              "source_sha256": "817f749c8bca1c46b05597ab3e008bec3426c0d627ea2c317ba191f36fbcd75d",
+              "started_at": "2026-11-03T12:17:12.528402Z",
+              "status": "failed",
+              "totals_minor": {},
+              "untrusted_data": true
+            },
+            "evidence_id": "ev_1448b90fc6378b1b6c653fe0f03be417",
+            "observed_at": "2026-11-03T12:17:12.530497Z",
+            "run_id": "61e1137696ba4b439dcc70ec1ba1a611",
+            "tool": "read_run",
+            "truncated": false
+          },
+          {
+            "arguments": {
+              "limit": 20,
+              "run_id": "61e1137696ba4b439dcc70ec1ba1a611"
+            },
+            "content_sha256": "7346dcd6b510951f0407b88a8c0a0fa8cbc73038c5fca31d7f84ac8e7830d93f",
+            "data": {
+              "available": true,
+              "events": [
+                {
+                  "created_at": "2026-11-03T12:17:12.527411Z",
+                  "details": {
+                    "observed_schema": [
+                      "order_id",
+                      "customer_id",
+                      "gross_total_minor",
+                      "currency",
+                      "created_at"
+                    ],
+                    "raw_row_count": 2,
+                    "required_schema": [
+                      "order_id",
+                      "customer_id",
+                      "amount_minor",
+                      "currency",
+                      "created_at"
+                    ]
+                  },
+                  "event_id": 1,
+                  "event_type": "source_received"
+                },
+                {
+                  "created_at": "2026-11-03T12:17:12.528513Z",
+                  "details": {
+                    "duplicate_policy": "reject",
+                    "invalid_policy": "reject"
+                  },
+                  "event_id": 2,
+                  "event_type": "load_started"
+                },
+                {
+                  "created_at": "2026-11-03T12:17:12.528933Z",
+                  "details": {
+                    "code": "schema_mismatch",
+                    "extra_columns": [
+                      "gross_total_minor"
+                    ],
+                    "missing_columns": [
+                      "amount_minor"
+                    ],
+                    "observed_schema": [
+                      "order_id",
+                      "customer_id",
+                      "gross_total_minor",
+                      "currency",
+                      "created_at"
+                    ],
+                    "required_schema": [
+                      "order_id",
+                      "customer_id",
+                      "amount_minor",
+                      "currency",
+                      "created_at"
+                    ]
+                  },
+                  "event_id": 3,
+                  "event_type": "load_failed"
+                }
+              ],
+              "events_total": 3,
+              "untrusted_data": true
+            },
+            "evidence_id": "ev_7346dcd6b510951f0407b88a8c0a0fa8",
+            "observed_at": "2026-11-03T12:17:12.531081Z",
+            "run_id": "61e1137696ba4b439dcc70ec1ba1a611",
+            "tool": "read_logs",
+            "truncated": false
+          },
+          {
+            "arguments": {
+              "run_id": "61e1137696ba4b439dcc70ec1ba1a611"
+            },
+            "content_sha256": "51f5afe299055820770f845f23c6c804dae3e754b67da84436906ce0ba0b8a03",
+            "data": {
+              "required_columns": [
+                "order_id",
+                "customer_id",
+                "amount_minor",
+                "currency",
+                "created_at"
+              ],
+              "source_columns": [
+                "order_id",
+                "customer_id",
+                "gross_total_minor",
+                "currency",
+                "created_at"
+              ],
+              "untrusted_data": true,
+              "warehouse_columns": [
+                {
+                  "name": "order_id",
+                  "not_null": true,
+                  "primary_key": true,
+                  "type": "TEXT"
+                },
+                {
+                  "name": "customer_id",
+                  "not_null": true,
+                  "primary_key": false,
+                  "type": "TEXT"
+                },
+                {
+                  "name": "amount_minor",
+                  "not_null": true,
+                  "primary_key": false,
+                  "type": "INTEGER"
+                },
+                {
+                  "name": "currency",
+                  "not_null": true,
+                  "primary_key": false,
+                  "type": "TEXT"
+                },
+                {
+                  "name": "created_at",
+                  "not_null": true,
+                  "primary_key": false,
+                  "type": "TEXT"
+                }
+              ],
+              "warehouse_columns_omitted": 0
+            },
+            "evidence_id": "ev_51f5afe299055820770f845f23c6c804",
+            "observed_at": "2026-11-03T12:17:12.531642Z",
+            "run_id": "61e1137696ba4b439dcc70ec1ba1a611",
+            "tool": "inspect_schema",
+            "truncated": false
+          },
+          {
+            "arguments": {
+              "limit": 20,
+              "run_id": "61e1137696ba4b439dcc70ec1ba1a611"
+            },
+            "content_sha256": "8031b9bd79cfff0d45a28af286b32a793c3e525841f29445c2101f82bd18cdd0",
+            "data": {
+              "available": true,
+              "failure": {
+                "code": "schema_mismatch",
+                "extra_columns": [
+                  "gross_total_minor"
+                ],
+                "missing_columns": [
+                  "amount_minor"
+                ],
+                "observed_schema": [
+                  "order_id",
+                  "customer_id",
+                  "gross_total_minor",
+                  "currency",
+                  "created_at"
+                ],
+                "required_schema": [
+                  "order_id",
+                  "customer_id",
+                  "amount_minor",
+                  "currency",
+                  "created_at"
+                ]
+              },
+              "records": [],
+              "rows_loaded": 0,
+              "rows_quarantined": 0,
+              "untrusted_data": true,
+              "warehouse_available": true
+            },
+            "evidence_id": "ev_8031b9bd79cfff0d45a28af286b32a79",
+            "observed_at": "2026-11-03T12:17:12.532141Z",
+            "run_id": "61e1137696ba4b439dcc70ec1ba1a611",
+            "tool": "inspect_validation",
+            "truncated": false
+          }
+        ],
+        "findings": [],
+        "limitations": [
+          "invalid_generation"
+        ],
+        "method": "single_call_local_model",
+        "model_calls": 1,
+        "model_response": {
+          "digest": "8f68893c685c3ddff2aa3fffce2aa60a30bb2da65ca488b61fff134a4d1730e7",
+          "done_reason": "stop",
+          "eval_duration_ns": 3659734000,
+          "generated_tokens": 225,
+          "load_duration_ns": 539855250,
+          "model": "qwen3:1.7b",
+          "prompt_eval_duration_ns": 1874887000,
+          "prompt_tokens": 1711,
+          "raw_text_truncated": false,
+          "text": "{\n  \"status\": \"unknown\",\n  \"findings\": [\n    {\n      \"code\": \"schema_mismatch\",\n      \"summary\": \"Schema mismatch detected between source and target\",\n      \"evidence_refs\": [\n        \"ev_7346dcd6b510951f0407b88a8c0a0fa8\"\n      ]\n    },\n    {\n      \"code\": \"duplicate_key\",\n      \"summary\": \"Duplicate key detected in source data\",\n      \"evidence_refs\": [\n        \"ev_1448b90fc6378b1b6c653fe0f03be417\"\n      ]\n    },\n    {\n      \"code\": \"invalid_row\",\n      \"summary\": \"Invalid row in source data\",\n      \"evidence_refs\": [\n        \"ev_51f5afe299055820770f845f23c6c804\"\n      ]\n    }\n  ]\n}",
+          "total_duration_ns": 6077644375
+        },
+        "run_id": "61e1137696ba4b439dcc70ec1ba1a611",
+        "semantic_support_verified": false,
+        "status": "unknown",
+        "tool_calls": 4
+      },
+      "pipeline_status": "failed",
+      "run_id": "61e1137696ba4b439dcc70ec1ba1a611",
+      "semantic_quality_evaluated": false
+    }
+  ],
+  "config": {
+    "baseline_source_sha256": "9af969c2cc60729f14af65b572baca21e95962d960c9a5018bbc8ff817a7fac1",
+    "client_source_sha256": "91045f890f23b59c89839d133011e92f7a2c922babcd3cdd6ca205dc1c80dc56",
+    "context_tokens": 8192,
+    "endpoint": "http://127.0.0.1:11436",
+    "evidence_source_sha256": "a9944554bae4692d78e9c544fca6759d3fc7f52e23b599057a1bcee466afea35",
+    "machine": "arm64",
+    "model": "qwen3:1.7b",
+    "output_token_cap": 768,
+    "physical_memory_bytes": 17179869184,
+    "pinned_digest": "8f68893c685c3ddff2aa3fffce2aa60a30bb2da65ca488b61fff134a4d1730e7",
+    "python_version": "3.13.7",
+    "runtime_binary_sha256": "925b36b83a5f931e9535b21d03d601ed14e09cdb3f9667efe4810f9c56c985cb",
+    "smoke_source_sha256": "c2b9776317a455216a777a5818466b23bfaa17dfac60a3d6732cb5f84763e8ce",
+    "timeout_seconds": 120.0
+  },
+  "errors": [],
+  "failure_checks": [
+    {
+      "actual_generation_requests": 0,
+      "backend": "actual_ollama",
+      "check": "missing_model_show",
+      "expected_transport_behavior_observed": true,
+      "http_status": 404,
+      "real_model_inference": false
+    },
+    {
+      "actual_generation_requests": 0,
+      "backend": "controlled_local_http_test_server",
+      "check": "model_unavailable_inventory",
+      "client_timeout_seconds": 1.0,
+      "elapsed_seconds": 0.001058333000401035,
+      "error": "the allowlisted model must already be cached locally",
+      "expected_transport_behavior_observed": true,
+      "real_model_inference": false,
+      "server_delay_seconds": 0,
+      "server_generation_attempts": 0
+    },
+    {
+      "actual_generation_requests": 1,
+      "backend": "controlled_local_http_test_server",
+      "check": "generation_timeout",
+      "client_timeout_seconds": 0.1,
+      "elapsed_seconds": 0.10158475000207545,
+      "error": "local model transport is unavailable or timed out",
+      "expected_transport_behavior_observed": true,
+      "real_model_inference": false,
+      "server_delay_seconds": 0.3,
+      "server_generation_attempts": 1
+    }
+  ],
+  "generated_at": "2026-11-03T12:17:18.753861Z",
+  "runtime": {
+    "capabilities": [
+      "completion",
+      "tools",
+      "thinking"
+    ],
+    "details": {
+      "families": [
+        "qwen3"
+      ],
+      "family": "qwen3",
+      "format": "gguf",
+      "parameter_size": "2.0B",
+      "parent_model": "",
+      "quantization_level": "Q4_K_M"
+    },
+    "health": {
+      "architecture": "qwen3",
+      "capabilities": [
+        "completion",
+        "tools",
+        "thinking"
+      ],
+      "digest": "8f68893c685c3ddff2aa3fffce2aa60a30bb2da65ca488b61fff134a4d1730e7",
+      "installed_size_bytes": 1359293444,
+      "model": "qwen3:1.7b",
+      "runtime_version": "0.40.7",
+      "version": "0.40.7"
+    },
+    "license_is_apache_2": true,
+    "license_sha256": "d18a5cc71b84bc4af394a31116bd3932b42241de70c77d2b76d69a314ec8aa12",
+    "model_info": {
+      "general.architecture": "qwen3",
+      "general.parameter_count": 2031739904,
+      "qwen3.context_length": 40960
+    }
+  },
+  "scope": "Two synthetic integration smokes; no diagnostic accuracy or semantic support claim.",
+  "startup_observations": {
+    "available": true,
+    "cache_pruning_disabled_observed": true,
+    "cloud_disabled_observed": true,
+    "effective_contexts_observed": [
+      8192
+    ],
+    "log_sha256": "11a84b72ebe52662133ac1e65d7567125605b86eec4ed044874bb3371e2aece9",
+    "loopback_binding_observed": true,
+    "request_body_debug_disabled_observed": true
+  },
+  "summary": {
+    "actual_ollama_generation_requests": 2,
+    "completed_model_responses": 2,
+    "controlled_checks": 2,
+    "errors": 0,
+    "literal_development_expectation_matches": 0,
+    "planned_real_model_cases": 2,
+    "recorded_cases": 2,
+    "semantic_quality_evaluated": false,
+    "unchanged_run_cases": 2
+  }
+}
